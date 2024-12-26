@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Национальные Блюда</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+            <ul class="navbar">
+                <div class="navbar-center">
+                    <img src="images/logo.png" alt="Logo" class="navbar-logo">
+                </div>
+                <div class="menu-content">
+                    <li><a href="#hero" class="nav-item">Главная</a></li>
+                    <li><a href="#menu" class="nav-item">Меню</a></li>
+                    <li><a href="#about" class="nav-item">О нас</a></li>
+                    <li><a href="#contacts" class="nav-item">Контакты</a></li>
+                    <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
+                    <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
+                    <li class="cart-container">
+                        <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                        <div id="cartDropdown" class="cart-dropdown">
+                            <h3>Ваша Корзина</h3>
+                            <div id="cartItems"></div>
+                            <p id="totalAmount"></p>
+                            <button onclick="checkout()">Оформить заказ</button>
+                        </div>
+                    </li>
+                </div>
+            </ul>
+        </nav>
+    </header>
+
+
+    <!-- Popular Dishes Section -->
+    <section class="popular-dishes">
+        <h1 class="hero">Кухни Мира</h1>
+        <h2>Откройте для себя вкус национальных блюд и погрузитесь в мир аутентичных вкусов и ароматов</h2>
+        <div class="dishes-grid">
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <a href="Russian national cuisine.html"><img src="images/Без имени-1.png" alt="Блюдо 1">
+                    <div class="text-overlay">
+                        <p class="custom-text">Природные особенности мест проживания - обширные леса и долгие зимы - обусловили многие характерные особенности традиционной русской кухни: разнообразие горячих супов и каш, квашений, солений, грибных блюд и дичи на русском столе.</p>
+					</div>
+					<div class="text2">Русская<br>кухня</div>
+                </div>
+            </div></a>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <img src="images/Без имени-2.png" alt="Блюдо 2">
+                    <div class="text-overlay">
+                        <p class="custom-text">Известна своей изысканностью и разнообразием, сочетая богатые вкусы и уникальные кулинарные техники. Её основа - использование свежих и качественных продуктов, среди которых популярны сыры, мясо, свежие овощи и зелень.</p>
+                    </div>
+					<div class="text4">Французская<br>кухня</div>
+                </div>
+            </div>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <img src="images/Без имени-3.png" alt="Блюдо 3">
+                    <div class="text-overlay">
+                        <p class="custom-text">Национальная кухня Испании, сложившаяся на основе многообразия кулинарных традиций её регионов, обусловленного географическим положением, климатом и культурными особенностями.</p>
+                    </div>
+					<div class="text5">Испанская<br>кухня</div>
+                </div>
+            </div>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <img src="images/Без имени-4.png" alt="Блюдо 4">
+                    <div class="text-overlay">
+                        <p class="custom-text">Грузинская кухня имеет сходство с кавказской кухней. В каждом регионе Грузии есть свой особый способ приготовления пищи. Еда и питье являются важной частью грузинской культуры.</p>
+                    </div>
+					<div class="text1">Грузинская<br>кухня</div>
+                </div>
+            </div>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <img src="images/Без имени-5.png" alt="Блюдо 5">
+                    <div class="text-overlay">
+                        <p class="custom-text">Традиционная кухня Италии, распространённая и популярная во всём мире, благодаря таким блюдам, как пицца и спагетти. Она очень разнообразная и региональная; в каждом регионе есть свои традиционные блюда.</p>
+                    </div>
+					<div class="text4">Итальянская<br>кухня</div>
+                </div>
+            </div>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <img src="images/Без имени-6.png" alt="Блюдо 6">
+                    <div class="text-overlay">
+                        <p class="custom-text">Отличается предпочтением натуральных, минимально обработанных продуктов, широким применением морепродуктов, сезонностью, характерными блюдами, специфическими правилами оформления блюд, сервировкой, застольным этикетом.</p>
+                    </div>
+					<div class="text3">Японская<br>кухня</div>
+                </div>
+            </div>
+            <!-- Добавьте дополнительные карточки блюд здесь -->
+        </div>
+    </section>
+
+    
+<!-- Всплывающее окно корзины -->
+ <div class="cart-container">
+<div id="cartDropdown" class="cart-dropdown">
+    <h3>Ваша Корзина</h3>
+    <div id="cartItems"></div>
+    <p id="totalAmount"></p>
+    <button onclick="checkout()">Оформить заказ</button>
+</div>
+</div>
+    <!-- About Us Section -->
+    <section id="about" class="about">
+        <h2>О нас</h2>
+        <p>Мы стремимся привнести в ваш дом традиционные вкусы и рецепты национальной кухни.</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Контакты | Политика конфиденциальности</p>
+        <p>Национальные Блюда © 2024</p>
+    </footer>
+    <script src="script.js"></script>
+ 
+
+      
+</body>
+</html>

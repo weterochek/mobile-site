@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Национальные Блюда</title>
+    <link rel="stylesheet" href="stylee.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <ul class="navbar">
+                <div class="navbar-left">
+                <li><a href="index.html" class="nav-item">Главная</a></li>
+                <li><a href="#menu" class="nav-item">Меню</a></li>
+                <li><a href="#about" class="nav-item">О нас</a></li>
+            </div>
+            <div class="navbar-center">
+                <img src="images/logo.png" alt="Logo" class="navbar-logo">
+              </div>
+              <div class="navbar-right">
+                <li><a href="#contacts" class="nav-item">Контакты</a></li>
+                <li class="cart-container">
+                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                    <div id="cartDropdown" class="cart-dropdown">
+                        <h3>Ваша Корзина</h3>
+                        <div id="cartItems"></div>
+                        <p id="totalAmount"></p>
+                        <button onclick="checkout()">Оформить заказ</button>
+                    </div>
+                </li>
+                <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
+                <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
+            </div>
+            </ul>
+        </nav>
+    </header>
+    <div class="menu-header">
+        <section id="menu">
+            <h1 class="subtitle">•    МЕНЮ    •</h1>
+        
+    
+    
+        <h2 id="ru" class="subtitlee">РУССКАЯ КУХНЯ</h2>
+        <p>Русская кухня - традиционная кухня русского народа. Природные особенности мест проживания - обширные леса и долгие зимы - обусловили многие характерные особенности традиционной русской кухни: разнообразие горячих супов и каш, квашений, мочений и солений, грибных блюд и дичи на русском столе.
+        </p>
+    </div>
+
+    <section class="popular-dishes full-screen-section">
+        <section class="popular-dishes">
+            <div class="grid-dishes">
+                <div class="card-dish">
+                    <div class="image-container">  
+                            <div class="menu-item">
+                <img src="images/борщ.png" alt="борщ">
+                <p><b>Борщ </b><span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">Классический густой овощной суп, главный ингредиент которого – свекла</span></p>
+                                <div class="price-container" >
+                <p><b>380 ₽</b></p>
+                <div id="controls_Борщ">
+                    <button class="add-button-size" id="addButton_Борщ" onclick="addToCart('Борщ', 380)">Добавить</button>
+            <button class="quantity-control quantity-button-size" id="removeBtn_Борщ" onclick="decrementItem('Борщ')" style="display: none;">-</button>
+            <span class="quantity-display" id="quantity_Борщ" style="display: none;">1</span>
+            <button class="quantity-control quantity-size-button" id="addBtn_Борщ" onclick="incrementItem('Борщ', 380)" style="display: none;">+</button>
+                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/рассольник.png" alt="рассольник">
+                <p><b>Рассольник</b> <span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">Традиционный русский суп с солеными огурцами</span></p>
+                <div class="price-container" >
+                <p><b>390 ₽</b></p>
+                <div id="controls_Рассольник">
+                    <button class="add-button-size" id="addButton_Рассольник" onclick="addToCart('Рассольник', 390)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Рассольник" onclick="decrementItem('Рассольник')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Рассольник" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Рассольник" onclick="incrementItem('Рассольник', 390)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/щи.png" alt="щи">
+                <p><b>Щи</b> <span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">Национальный суп, основу которого составляет рубленая свежая капуста</span></p>
+                <div class="price-container" >
+                <p><b>350 ₽</b></p>
+                <div id="controls_Щи">
+                    <button class="add-button-size" id="addButton_Щи" onclick="addToCart('Щи', 350)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Щи" onclick="decrementItem('Щи')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Щи" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Щи" onclick="incrementItem('Щи', 350)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/солянка.png" alt="солянка">
+                <p><b>Солянка </b><span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">Солянка-многокомпонентный заправочный суп густой консистенции с ярко выраженным ароматом и характерным острым кисло-солёным насыщенным вкусом</span></p>
+                <div class="price-container" >
+                <p><b>420 ₽</b></p>
+                <div id="controls_Солянка">
+                    <button class="add-button-size" id="addButton_Солянка" onclick="addToCart('Солянка', 420)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Солянка" onclick="decrementItem('Солянка')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Солянка" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Солянка" onclick="incrementItem('Солянка', 420)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/окрошка.png" alt="окрошка">
+                <p><b>Окрошка</b> <span class="small-text">(350гр)</span></p>
+            <p><span class="textcolor">традиционный холодный суп русской кухни, который готовят в весенне-летний период.</span></p>
+            <div class="price-container" >
+            <p><b>370 ₽</b></p>
+            <div id="controls_Окрошка">
+                <button class="add-button-size" id="addButton_Окрошка" onclick="addToCart('Окрошка', 370)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Окрошка" onclick="decrementItem('Окрошка')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Окрошка" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Окрошка" onclick="incrementItem('Окрошка', 370)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/пельмени.png" alt="пельмени">
+                <p><b>Пельмени</b> <span class="small-text">(300гр)</span></p>
+            <p><span class="textcolor">Блюдо русской кухни из пресного теста с начинкой из рубленого мяса.</span></p>
+            <div class="price-container" >
+            <p><b>300 ₽</b></p>
+            <div id="controls_Пельмени">
+                <button class="add-button-size" id="addButton_Пельмени" onclick="addToCart('Пельмени', 300)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Пельмени" onclick="decrementItem('Пельмени')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Пельмени" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Пельмени" onclick="incrementItem('Пельмени', 300)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/оладьи.png" alt="оладьи">
+                <p><b>Оладьи</b> <span class="small-text">(5шт)</span></p>
+            <p><span class="textcolor">Народные мучные изделия, выпекаемые из дрожжевого теста на сковороде.</span></p>
+            <div class="price-container" >
+            <p><b>220 ₽</b></p>
+            <div id="controls_Оладьи">
+                <button class="add-button-size" id="addButton_Оладьи" onclick="addToCart('Оладьи', 220)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Оладьи" onclick="decrementItem('Оладьи')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Оладьи" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Оладьи" onclick="incrementItem('Оладьи', 220)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/курник.png" alt="курник">
+                <p><b>Курник</b> <span class="small-text">(300гр)</span></p>
+            <p><span class="textcolor">Русский пирог куполообразной формы с начинкой из курятины.</span></p>
+            <div class="price-container" >
+            <p><b>260 ₽</b></p>
+            <div id="controls_Курник">
+                <button class="add-button-size" id="addButton_Курник" onclick="addToCart('Курник', 260)">Добавить</button>
+                <button class="quantity-control quantity-button-size"  id="removeBtn_Курник" onclick="decrementItem('Курник')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Курник" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Курник" onclick="incrementItem('Курник', 260)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/пирожки.png" alt="пирожки">
+                <p><b>Пирожки</b> <span class="small-text">(2шт)</span></p>
+            <p><span class="textcolor">Небольшое хлебобулочное изделие из дрожжевого, теста с картофельной начинкой внутри.</span></p>
+            <div class="price-container" >
+            <p><b>140 ₽</b></p>
+            <div id="controls_Пирожки">
+                <button class="add-button-size" id="addButton_Пирожки" onclick="addToCart('Пирожки', 140)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Пирожки" onclick="decrementItem('Пирожки')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Пирожки" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Пирожки" onclick="incrementItem('Пирожки', 140)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/ватружка.png" alt="ватрушка">
+                <p><b>Ватрушка</b> <span class="small-text">(1шт)</span></p>
+            <p><span class="textcolor">Выпечное изделие из сдобного дрожжевого теста в виде лепёшки, в середине которой находится начинка.</span></p>
+            <div class="price-container" >
+            <p><b>120 ₽</b></p>
+            <div id="controls_Ватрушка">
+                <button class="add-button-size" id="addButton_Ватрушка" onclick="addToCart('Ватрушка', 120)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Ватрушка" onclick="decrementItem('Ватрушка')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Ватрушка" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Ватрушка" onclick="incrementItem('Ватрушка', 120)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/кисель.png" alt="кисель">
+                <p><b>Кисель</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="textcolor">Студенистое блюдо, приготавливаемое из крахмала и ягод.</span></p>
+            <div class="price-container" >
+            <p><b>110 ₽</b></p>
+            <div id="controls_Кисель">
+                <button class="add-button-size" id="addButton_Кисель" onclick="addToCart('Кисель', 110)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Кисель" onclick="decrementItem('Кисель')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Кисель" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Кисель" onclick="incrementItem('Кисель', 110)" style="display: none;">+</button>
+            </div>
+            </div>
+                     </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/квас.png" alt="квас">
+                <p><b>Квас</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="textcolor">Старинный русский напиток, получаемый в результате брожения.</span></p>
+            <div class="price-container" >
+            <p><b>140 ₽</b></p>
+            <div id="controls_Квас">
+                <button class="add-button-size" id="addButton_Квас" onclick="addToCart('Квас', 140)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Квас" onclick="decrementItem('Квас')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Квас" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button"  id="addBtn_Квас" onclick="incrementItem('Квас', 140)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+            </div>
+        </section>
+    </section>
+<!-- Всплывающее окно корзины -->
+<div class="cart-container">
+    <div id="cartDropdown" class="cart-dropdown">
+        <h3>Ваша Корзина</h3>
+        <div id="cartItems"></div>
+        <p id="totalAmount"></p>
+        <button onclick="checkout()">Оформить заказ</button>
+    </div>
+    </div>
+        <!-- Footer -->
+    <footer>
+        <p>Контакты | Политика конфиденциальности</p>
+        <p>Национальные Блюда © 2024</p>
+    </footer>
+    <script src="script.js"></script>
+     
+</body>
+</html>

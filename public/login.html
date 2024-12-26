@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login/Register</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="form-container">
+    <div class="form-toggle">
+      <button id="toggleRegister" onclick="showRegister()">Регистрация</button>
+      <button id="toggleLogin" onclick="showLogin()">Вход</button>
+    </div>
+
+    <!-- Форма регистрации -->
+    <div id="registerForm" class="form-content">
+      <h2>Регистрация</h2>
+      <form>
+        <input type="text" id="registerUsername" placeholder="Пользователь" required />
+        <input type="password" id="registerPassword" placeholder="Пароль" required />
+        <button type="submit">Зарегистрироваться</button>
+      </form>
+    </div>
+
+    <!-- Форма авторизации -->
+    <div id="loginForm" class="form-content hidden">
+      <h2>Вход</h2>
+      <form>
+        <input type="text" id="loginUsername" placeholder="Пользователь" required />
+        <input type="password" id="loginPassword" placeholder="Пароль" required />
+        <button type="submit">Войти</button>
+      </form>
+    </div>
+  </div>
+
+<script src="auth.js"></script>
+<script>
+  // Проверка доступности сервера
+  async function checkServer() {
+      try {
+          const response = await fetch("http://localhost:3000/");
+          if (response.ok) {
+              console.log("Сервер уже запущен.");
+          }
+      } catch (error) {
+          console.log("Сервер не найден, запуск сервера...");
+          fetch("http://localhost:4000/start-server"); // Запускаем вспомогательный сервер
+      }
+  }
+
+  checkServer();
+</script>
+</body>
+</html>
