@@ -12,29 +12,28 @@
     <!-- Header -->
     <header>
         <nav>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <ul class="navbar">
-                <div class="navbar-left">
-                <li><a href="index.html" class="nav-item">Главная</a></li>
-                <li><a href="#menu" class="nav-item">Меню</a></li>
-                <li><a href="#about" class="nav-item">О нас</a></li>
-            </div>
-            <div class="navbar-center">
-                <img src="images/logo.png" alt="Logo" class="navbar-logo">
-              </div>
-              <div class="navbar-right">
-                <li><a href="#contacts" class="nav-item">Контакты</a></li>
-                <li class="cart-container">
-                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
-                    <div id="cartDropdown" class="cart-dropdown">
-                        <h3>Ваша Корзина</h3>
-                        <div id="cartItems"></div>
-                        <p id="totalAmount"></p>
-                        <button onclick="checkout()">Оформить заказ</button>
-                    </div>
-                </li>
-                <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
-                <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
-            </div>
+                <div class="navbar-center">
+                    <img src="images/logo.png" alt="Logo" class="navbar-logo">
+                </div>
+                <div class="menu-content">
+                    <li><a href="#hero" class="nav-item">Главная</a></li>
+                    <li><a href="#menu" class="nav-item">Меню</a></li>
+                    <li><a href="#about" class="nav-item">О нас</a></li>
+                    <li><a href="#contacts" class="nav-item">Контакты</a></li>
+                    <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
+                    <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
+                    <li class="cart-container">
+                        <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                        <div id="cartDropdown" class="cart-dropdown">
+                            <h3>Ваша Корзина</h3>
+                            <div id="cartItems"></div>
+                            <p id="totalAmount"></p>
+                            <button onclick="checkout()">Оформить заказ</button>
+                        </div>
+                    </li>
+                </div>
             </ul>
         </nav>
     </header>
