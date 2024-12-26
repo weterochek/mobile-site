@@ -464,6 +464,20 @@ footer p {
     margin: 10px 0;
     text-decoration: none;
 }
+@media (max-width: 480px) {
+    .dishes-grid {
+        grid-template-columns: repeat(2, 1fr); /* Сохраняем два столбца */
+        gap: 0.3rem; /* Ещё меньше расстояние */
+    }
+
+    .dish-card img {
+        width: 80%; /* Уменьшенные изображения */
+    }
+
+    .dish-card {
+        padding: 0.3rem; /* Меньше отступы */
+    }
+}
 @media (max-width: 768px) {
     .dishes-grid {
         grid-template-columns: repeat(2, 1fr); /* Два столбца даже на мобильных устройствах */
