@@ -63,7 +63,7 @@ header nav {
 }
 .navbar-logo {
     height: auto; /* Сохранение пропорций изображения */
-    max-height: 40px; /* Ограничение высоты для больших экранов */
+    max-height: 30px; /* Ограничение высоты для больших экранов */
     width: auto;
 }
 .navbar li a {
