@@ -63,7 +63,7 @@ header nav {
 }
 .navbar-logo {
     height: auto; /* Сохранение пропорций изображения */
-    max-height: 30px; /* Ограничение высоты для больших экранов */
+    max-height: 40px; /* Ограничение высоты для больших экранов */
     width: auto;
 }
 .navbar li a {
@@ -248,26 +248,30 @@ header nav {
 
 }
 .dishes-grid {
+    width: 100%; /* Контейнер занимает всю ширину */
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Два столбца всегда */
+    grid-template-columns: repeat(2, 1fr); /* Два столбца */
     gap: 0.5rem; /* Расстояние между карточками */
     padding: 0 0.5rem; /* Отступы от краёв */
+    box-sizing: border-box;
 }
 
 .dish-card {
-    width: 100%; /* Карточка занимает всю ширину своей колонки */
+    width: 100%; /* Карточка адаптируется под колонку */
     height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     padding: 0.5rem;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .dish-card img {
-    width: 90%; /* Размер изображений */
+    width: 100%; /* Адаптивное изображение */
     height: auto;
-    border-radius: 8px; /* Скругление углов */
+    border-radius: 8px;
 }
 /* About Section */
 .about {
@@ -287,8 +291,8 @@ header nav {
 }
 .container {
     position: relative;
-    width: 250px;
-    height: 400px;
+    width: 100%;
+    height: auto;
     overflow: hidden;
     
 }
@@ -317,8 +321,8 @@ header nav {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white; /* Цвет текста */
-    width: 250px;
-    height: 400px;
+    width: 100%;
+    height: 100%;
     background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон под текстом */
     text-align: center;
     font-size: 16px;
@@ -464,18 +468,18 @@ footer p {
     margin: 10px 0;
     text-decoration: none;
 }
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .dishes-grid {
-        grid-template-columns: repeat(2, 1fr); /* Сохраняем два столбца */
-        gap: 0.3rem; /* Ещё меньше расстояние */
-    }
-
-    .dish-card img {
-        width: 80%; /* Уменьшенные изображения */
+        grid-template-columns: repeat(2, 1fr); /* Сохраняем два столбца на телефоне */
+        gap: 0.3rem; /* Уменьшаем расстояние */
     }
 
     .dish-card {
-        padding: 0.3rem; /* Меньше отступы */
+        padding: 0.3rem; /* Уменьшенные отступы */
+    }
+
+    .dish-card img {
+        width: 90%; /* Уменьшение изображения */
     }
 }
 @media (max-width: 768px) {
