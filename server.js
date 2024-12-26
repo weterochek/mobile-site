@@ -20,7 +20,7 @@ app.use(cors(corsOptions));
 
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
-const mongoURI = process.env.MONGO_URI || "mongodb://2_highestdig:0ab76db317f73b4e5da5f3cbdba1b162b9e94675@q1osd.h.filess.io:27018/2_highestdig";
+const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
