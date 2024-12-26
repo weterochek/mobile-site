@@ -28,7 +28,7 @@ registerForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("registerPassword").value;
 
   try {
-    const response = await fetch("https://makadamiy.onrender.com/register", { // Замените localhost на публичный URL
+    const response = await fetch("https://mobile-site.onrender.com", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -57,7 +57,7 @@ loginForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const response = await fetch("https://makadamiy.onrender.com/login", { // Замените localhost на публичный URL
+    const response = await fetch("https://mobile-site.onrender.com", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
