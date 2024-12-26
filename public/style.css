@@ -249,22 +249,25 @@ header nav {
 }
 .dishes-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Всегда два столбца */
-    gap: 1rem; /* Расстояние между карточками */
-    padding: 0 1rem; /* Отступы от краёв */
-}
-
-.dish-card img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px; /* Скругление углов изображений */
+    grid-template-columns: repeat(2, 1fr); /* Два столбца всегда */
+    gap: 0.5rem; /* Расстояние между карточками */
+    padding: 0 0.5rem; /* Отступы от краёв */
 }
 
 .dish-card {
+    width: 100%; /* Карточка занимает всю ширину своей колонки */
+    height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 0.5rem;
+}
+
+.dish-card img {
+    width: 90%; /* Размер изображений */
+    height: auto;
+    border-radius: 8px; /* Скругление углов */
 }
 /* About Section */
 .about {
