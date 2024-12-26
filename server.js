@@ -9,7 +9,7 @@ const app = express();
 
 // Настройка CORS
 const corsOptions = {
-  origin: 'https://makadamiy.onrender.com',  // Укажите точный URL вашего фронтенда
+  origin: 'https://mobile-site.onrender.com',  // Укажите точный URL вашего фронтенда
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Разрешаем основные методы
   allowedHeaders: ['Content-Type', 'Authorization'], // Разрешаем эти заголовки
   credentials: true,  // Разрешить использование cookies/сессий
