@@ -27,6 +27,18 @@ header nav {
     top: 0;
     z-index: 1000;
 }
+
+.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.navbar-logo {
+    height: auto;
+    max-height: 40px; /* Увеличена высота для лучшей видимости */
+    width: auto;
+}
+
 .menu-toggle {
     display: block;
     font-size: 2rem;
@@ -40,51 +52,95 @@ header nav {
     flex-direction: column;
     align-items: center;
     width: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     position: fixed;
     top: 0;
     left: 0;
     height: 100%;
     z-index: 999;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(-100%);
 }
 .navbar.active {
     display: flex;
+    opacity: 1;
+    transform: translateY(0);
+    justify-content: space-evenly; /* Равномерное распределение элементов */
+    flex-direction: column;
 }
 .nav-item {
     color: #fff;
     text-decoration: none;
     font-size: 1.5rem;
     margin: 10px 0;
+    text-align: center;
+}
+.nav-item:hover {
+    color: #f0a500;
+}
+
+.close-menu {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+.close-menu:hover {
+    color: #f0a500;
 }
 
 /* Popular Dishes Section */
 .dishes-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.5rem; /* Уменьшаем отступы */
+    padding: 0; /* Убираем отступы сетки */
+    margin: 0; /* Убираем внешние отступы */
 }
 .dish-card {
     position: relative;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    height: 100%;
+    height: 100%; /* Убираем адаптивную высоту */
+    display: flex; /* Выравнивание содержимого по центру */
+    flex-direction: column;
+    justify-content: flex-end; /* Содержимое внизу */
 }
 .dish-card img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: block;
-    border-radius: 8px;
+    position: relative;
 }
+.dish-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Едва заметное затемнение */
+    z-index: 1;
+    transition: background 0.3s ease;
+}
+/* Усиленное затемнение при наведении */
+.dish-card:hover::before {
+    background: rgba(0, 0, 0, 0.7); /* Сильное затемнение */
+}
+
 .base-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 1;
@@ -94,36 +150,37 @@ header nav {
 }
 .text-overlay {
     position: absolute;
-    top: 10%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    width: 90%;
-    background: rgba(0, 0, 0, 0.7);
+    top: 0; /* Текст в самом верху */
+    left: 0;
+    width: 100%;
     color: white;
-    font-size: 0.9rem;
-    padding: 10px;
+    font-size: 1.2rem; /* Размер текста */
+    line-height: 1.5; /* Читаемость */
     text-align: center;
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
-    border-radius: 4px;
+    padding: 0.5rem; /* Отступы для текста */
+    box-sizing: border-box;
 }
+
+/* Анимация при наведении */
 .dish-card:hover .text-overlay {
     opacity: 1;
 }
+.dish-card:hover img {
+    filter: brightness(70%);
+}
 .text2 {
     position: absolute;
-    bottom: 10px;
+    bottom: 10px; /* Располагается снизу */
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.5);
     color: white;
     font-size: 1rem;
-    padding: 5px 10px;
-    border-radius: 4px;
-    text-align: center;
-    z-index: 2;
-    white-space: nowrap;
+    font-weight: bold;
+    z-index: 3;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Лёгкая тень для выделения текста */
 }
 .dish-card:hover .text2 {
     opacity: 1;
@@ -173,6 +230,9 @@ footer p {
     }
     .menu-toggle {
         font-size: 1.8rem;
+    }
+    .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
     }
     .dishes-grid {
         grid-template-columns: repeat(2, 1fr);
