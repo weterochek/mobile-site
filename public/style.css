@@ -94,13 +94,10 @@ header nav {
 }
 .text-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: 90%;
     background: rgba(0, 0, 0, 0.7);
     color: white;
     font-size: 0.9rem;
@@ -109,6 +106,7 @@ header nav {
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
+    border-radius: 4px;
 }
 .dish-card:hover .text-overlay {
     opacity: 1;
@@ -128,7 +126,7 @@ header nav {
     white-space: nowrap;
 }
 .dish-card:hover .text2 {
-    opacity: 0;
+    opacity: 1;
 }
 .dish-card:hover img {
     filter: brightness(70%);
@@ -144,42 +142,7 @@ footer {
 footer p {
     margin: 0;
 }
-.menu-toggle {
-    display: none;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    z-index: 1001;
-}
 
-.menu-content {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-}
-
-.menu-content.active {
-    display: flex;
-}
-
-.menu-content .nav-item {
-    color: white;
-    font-size: 1.5rem;
-    margin: 10px 0;
-    text-decoration: none;
-}
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
