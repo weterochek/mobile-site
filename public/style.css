@@ -4,15 +4,18 @@
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: Arial, sans-serif;
     line-height: 1.6;
     color: #333;
     background-color: #fdfdfd;
 }
+
 html {
     scroll-behavior: smooth;
 }
+
 /* Header */
 header nav {
     display: flex;
@@ -26,401 +29,6 @@ header nav {
     top: 0;
     z-index: 1000;
 }
-.nav-item {
-    position: relative;
-    text-decoration: none;
-    color: black;
-    font-size: 1.2em;
-    padding: 0;
-    transition: color 0.3s ease;
-}
-.nav-item::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background-color: black;
-    transition: width 0.3s ease, left 0.3s ease;
-}
-.nav-item:hover::after {
-    width: 100%;
-    left: 0;
-}
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    height: 50px;
-    list-style: none;
-    gap: 25px;
-}
-.navbar-left, .navbar-right {
-    display: flex;
-    flex: 1;
-    justify-content: space-evenly;
-}
-.navbar-logo {
-    height: auto; /* Сохранение пропорций изображения */
-    max-height: 40px; /* Ограничение высоты для больших экранов */
-    width: auto;
-}
-.navbar li a {
-    padding: 10px 15px; /* Универсальные отступы */
-    font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
-}
-/* Стили для выпадающего окна корзины */
-.cart-container {
-    position: relative; /* Для корректного позиционирования всплывающего окна */
-}
-
-.cart-dropdown {
-    position: absolute;
-    top: 100%; /* Отображение прямо под кнопкой */
-    left: 50%; /* Центрирование относительно кнопки */
-    transform: translateX(-50%);
-    background-color: #fff;
-    padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 295px;
-    display: none; /* Скрыто изначально */
-    border-radius: 8px;
-    z-index: 1000;
-}
-.cart-dropdown h3 {
-    margin-top: 0;
-}
-
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-
-.cart-dropdown button {
-    background-color: #9C9C9C;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 5px 5px 0 0;
-}
-/* Стиль основной кнопки "Добавить" */
-
-/* Стиль кнопок "+" и "-" */
-.quantity-control {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #333;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-block;
-}
-
-/* Стиль отображения количества товара */
-.quantity-display {
-    font-size: 16px;
-    margin: 0 10px;
-    display: inline-block;
-    color: #333;
-}
-
-/* Стили для кнопок + и - в корзине */
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-}
-
-.cart-item .item-info {
-    flex-grow: 1;
-    padding-right: 10px;
-    text-align: left; /* Выравнивание текста по левому краю */
-}
-
-.cart-item .cart-buttons {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    width: 100px; /* Задаем фиксированную ширину для кнопок */
-}
-
-.cart-item .quantity {
-    padding: 0 5px;
-    min-width: 30px; /* Задаем минимальную ширину для количества */
-    text-align: center; /* Центрируем текст количества */
-}
-
-/* Стили для выпадающего окна */
-.cabinet-dropdown {
-    position: fixed; /* Фиксированное положение */
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 15px;
-    width: 280px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    border-radius: 8px;
-}
-.cabinet-dropdown h2 {
-    padding: 8px; /* Отступы внутри заголовка */
-}
-
-.cabinet-dropdown span {
-    margin-left: auto; /* Сдвиг крестика вправо */
-}
-
-.cabinet-dropdown h2, .cabinet-dropdown h3, .cabinet-dropdown p {
-    margin: 0 0 10px;
-}
-
-.cabinet-dropdown button {
-    background-color: #8D917A;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-}
-.navbar {
-    display: flex; /* Выравниваем кнопки в строку */
-    justify-content: space-around; /* Равномерное распределение кнопок */
-    list-style-type: none; /* Убираем маркеры */
-    padding: 0;
-    margin: 0;
-
-}
-
-.navbar li a {
-    display: block;
-    padding: 10px 20px;
-    color: black;
-    text-decoration: none;
-    white-space: nowrap; /* Предотвращаем перенос текста */
-}
-
-#cartModal h3, #cartModal button {
-    margin-bottom: 10px;
-}
-/* Hero Section */
-.hero {
-    background-image: url('1Блюдо.png'); /* Замените на фактическое изображение */
-    background-size: cover;
-    background-position: center;
-    color: black;
-    text-align: center;
-    padding: 4rem 2rem;
-}
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-.hero p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-}
-.hero button {
-    background-color: #333;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-}
-.hero button:hover {
-    background-color: #555;
-}
-
-/* Popular Dishes Section */
-.popular-dishes {
-    padding: 2rem;
-    text-align: center;
-    
-}
-.popular-dishes h2 {
-    font-size: 2rem;
-    margin-bottom: 2rem;
-
-}
-.dishes-grid {
-    width: 100%; /* Контейнер занимает всю ширину */
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Два столбца */
-    gap: 0.5rem; /* Расстояние между карточками */
-    padding: 0 0.5rem; /* Отступы от краёв */
-    box-sizing: border-box;
-}
-
-.dish-card {
-    width: 100%; /* Карточка адаптируется под колонку */
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 0.5rem;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-.dish-card img {
-    width: 100%; /* Адаптивное изображение */
-    height: auto;
-    border-radius: 8px;
-}
-/* About Section */
-.about {
-    background-color: #fafafa;
-    padding: 2rem;
-    text-align: center;
-}
-.about h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-.about p {
-    font-size: 1rem;
-    color: #555;
-    max-width: 600px;
-    margin: 0 auto;
-}
-.container {
-    position: relative;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-    
-}
-
-  /* Стиль для изображения */
-  .container .image {
-    width: 250px;
-    height: 400px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-/* Базовое затемнение, которое всегда видно */
-.container .base-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3); /* Полупрозрачный черный */
-    z-index: 1;
-}
-
-  /* Текст, который появится при наведении */
-  .container .text-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white; /* Цвет текста */
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Полупрозрачный фон под текстом */
-    text-align: center;
-    font-size: 16px;
-    width: 100%; /* Ширина текста относительно контейнера */
-    box-sizing: content-box;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-    z-index: 3;
-    border-radius: 40px;
-  }
-
-
-.text1 {
-    position: absolute;
-    bottom: 16%;
-    left: 50px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 3;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-}
-.text2 {
-    position: absolute;
-    bottom: 16%;
-    left: 75px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 3;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-}
-.text3 {
-    position: absolute;
-    bottom: 16%;
-    left: 65px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 3;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-}
-.text4 {
-    position: absolute;
-    bottom: 16%;
-    left: 40px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 3;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-}
-.text5 {
-    position: absolute;
-    bottom: 16%;
-    left: 55px;
-    text-align: center;
-    color: white;
-    font-size: 28px;
-    font-weight: bold;
-    z-index: 3;
-    font-family: "Times New Roman", Times, serif; /* Задаем Times New Roman */
-}
-.small-text {
-    font-size: 0.7em; /* Adjust the size as needed */
-    color: gray;
-}
-.container:hover .text1 {
-    opacity: 1; /* Первый текст также виден при наведении */
-  }
-  
-  /* Эффект при наведении */
-  .container:hover .image {
-    transform: scale(1.1);
-    opacity: 0.5;
-  }
-  
-  .container:hover .text-overlay {
-    opacity: 1;
-    border-radius: 15px;
-  }
-
-  .image-container {
-    position: relative;
-    width: 250px; /* Ширина контейнера */
-    overflow: hidden;
-  }
-  
- 
-  /* Увеличение при наведении */
-  .container:hover .overlay-image {
-    transform: scale(1.1) translateX(-25%); /* Увеличение с сохранением позиции */
-  }
 
 /* Footer */
 footer {
@@ -429,316 +37,56 @@ footer {
     text-align: center;
     padding: 1rem;
 }
-footer p {
-    margin: 0.5rem 0;
-}
-.menu-toggle {
-    display: none;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    z-index: 1001;
+
+/* Сетка для карточек */
+.dishes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Два столбца */
+    gap: 16px;
+    padding: 16px;
 }
 
-.menu-content {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-}
-
-.menu-content.active {
+.dish-card {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: #fff;
 }
 
-.menu-content .nav-item {
-    color: white;
-    font-size: 1.5rem;
-    margin: 10px 0;
-    text-decoration: none;
+.dish-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
-@media (max-width: 768px) {
+
+/* Медиазапросы */
+@media screen and (max-width: 768px) {
     .dishes-grid {
-        grid-template-columns: repeat(2, 1fr); /* Сохраняем два столбца на телефоне */
-        gap: 0.3rem; /* Уменьшаем расстояние */
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .dishes-grid {
+        grid-template-columns: repeat(2, 1fr); /* Два столбца */
+        gap: 8px;
+        padding: 8px;
     }
 
     .dish-card {
-        padding: 0.3rem; /* Уменьшенные отступы */
-    }
-
-    .dish-card img {
-        width: 90%; /* Уменьшение изображения */
-    }
-}
-@media (max-width: 768px) {
-    .dishes-grid {
-        grid-template-columns: repeat(2, 1fr); /* Два столбца даже на мобильных устройствах */
-    }
-}
-/* Адаптация для телефона */
-@media (max-width: 768px) {
-    .menu-toggle {
-        display: block;
-    }
-
-    .navbar {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .dishes-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        padding: 0.5rem;
     }
 
     .dish-card img {
         width: 100%;
         height: auto;
     }
-}
 
-/* Поддержка гамбургер-меню на ПК для адаптивности */
-@media (min-width: 769px) {
-    header nav {
-        justify-content: flex-start;
-    }
-
-    .menu-toggle {
-        display: none;
-    }
-
-    .navbar {
-        flex-direction: row;
-        gap: 20px;
-        position: static;
-        box-shadow: none;
-        background-color: transparent;
-    }
-}
-
-/* --- Адаптация навигации под Full HD и 2K разрешения --- */
-@media (min-width: 1920px) {
-    header nav {
-        padding: 20px 30px;
-    }
-
-    .navbar {
-        gap: 25px;
-    }
-
-    .navbar a {
-        font-size: 18px;
-        padding: 12px;
-    }
-}
-
-@media (min-width: 2560px) {
-    header nav {
-        padding: 25px 40px;
-    }
-
-    .navbar {
-        gap: 35px;
-    }
-
-    .navbar a {
-        font-size: 20px;
-        padding: 15px;
-    }
-}
-
-/* --- Существующие адаптивные стили --- */
-@media (max-width: 1200px) {
-    .dishes-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 карточки в ряд */
-    }
-
-    .hero {
-        padding: 3rem 1.5rem;
-    }
-
-    .hero h1 {
-        font-size: 1.8rem;
-    }
-
-    .hero p {
+    .dish-card p {
         font-size: 0.9rem;
     }
 }
-
-@media (max-width: 768px) {
-    body {
-      font-size: 13px;
-      line-height: 1.4;
-      margin: 0 10px;
-    }
-  
-    header nav {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 10px;
-    }
-  
-    .navbar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-    }
-  
-    .hero {
-      padding: 2rem 1rem;
-    }
-  
-    .hero h1 {
-      font-size: 1.6rem;
-    }
-  
-    .hero p {
-      font-size: 0.9rem;
-    }
-  
-    .dishes-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-  
-    .form-container {
-      width: 90%;
-      margin: 0 auto;
-    }
-  
-    .form-toggle {
-      flex-direction: column;
-      gap: 10px;
-    }
-  
-    button {
-      font-size: 13px;
-    }
-  
-    footer {
-      padding: 1rem;
-      text-align: center;
-    }
-}
-
-@media (max-width: 480px) {
-    body {
-        font-size: 11px;
-        line-height: 1.3;
-        margin: 0 5px;
-    }
-
-    header nav {
-        flex-direction: column;
-        align-items: center;
-        padding: 5px;
-    }
-
-    .navbar {
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .hero {
-        padding: 1rem 0.5rem;
-    }
-
-    .hero h1 {
-        font-size: 1.4rem;
-    }
-
-    .hero p {
-        font-size: 0.8rem;
-    }
-
-    .dishes-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .dish-card {
-        width: 100%;
-    }
-
-    footer {
-        font-size: 11px;
-    }
-}
-
-@media (min-width: 1920px) {
-    body {
-        font-size: 16px;
-        line-height: 1.7;
-    }
-
-    .dishes-grid {
-        grid-template-columns: repeat(4, 1fr); /* 4 карточки в ряд */
-        gap: 2rem;
-    }
-
-    .hero {
-        padding: 6rem 3rem;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero p {
-        font-size: 1.3rem;
-    }
-
-    footer {
-        padding: 2rem;
-        font-size: 1.1rem;
-    }
-}
-
-@media (min-width: 2560px) {
-    body {
-        font-size: 18px;
-        line-height: 1.8;
-    }
-
-    .dishes-grid {
-        grid-template-columns: repeat(5, 1fr); /* 5 карточек в ряд */
-        gap: 2.5rem;
-    }
-
-    .hero {
-        padding: 8rem 4rem;
-    }
-
-    .hero h1 {
-        font-size: 3rem;
-    }
-
-    .hero p {
-        font-size: 1.6rem;
-    }
-
-    footer {
-        padding: 2.5rem;
-        font-size: 1.3rem;
-    }
-}
-
-/* Гибкость шрифтов через clamp */
-body {
-    font-size: clamp(11px, 1.4vw, 16px); /* Автоматическое масштабирование */
-}
- 
