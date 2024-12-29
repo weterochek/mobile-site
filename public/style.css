@@ -1,3 +1,4 @@
+/* Основные стили */
 * {
     margin: 0;
     padding: 0;
@@ -71,7 +72,8 @@ header nav {
 }
 .dish-card img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     display: block;
     border-radius: 8px;
 }
@@ -140,42 +142,7 @@ footer {
 footer p {
     margin: 0;
 }
-.menu-toggle {
-    display: none;
-    font-size: 2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    z-index: 1001;
-}
 
-.menu-content {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-}
-
-.menu-content.active {
-    display: flex;
-}
-
-.menu-content .nav-item {
-    color: white;
-    font-size: 1.5rem;
-    margin: 10px 0;
-    text-decoration: none;
-}
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
