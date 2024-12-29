@@ -253,10 +253,26 @@ function calculateBalance() {
     }
     return balance;
 }
-function toggleMenu() {
-    document.querySelector('.menu-content').classList.toggle('active');
-}
+
 function toggleMenu() {
     const navbar = document.querySelector('.navbar');
     navbar.classList.toggle('active');
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const closeMenu = document.querySelector('.close-menu');
+    const navbar = document.querySelector('.navbar');
+
+    // Открытие меню
+    menuToggle.addEventListener('click', () => {
+        navbar.classList.add('active');
+    });
+
+    // Закрытие меню
+    closeMenu.addEventListener('click', () => {
+        navbar.classList.remove('active');
+    });
+});
+function toggleMenu() {
+    document.querySelector('.menu-content').classList.toggle('active');
 }
