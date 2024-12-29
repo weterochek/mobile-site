@@ -256,3 +256,7 @@ function calculateBalance() {
 function toggleMenu() {
     document.querySelector('.menu-content').classList.toggle('active');
 }
+function toggleMenu() {
+    const navbar = document.querySelector('.navbar');
+    navbar.classList.toggle('active');
+}
