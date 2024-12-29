@@ -1,4 +1,3 @@
-/* Основные стили */
 * {
     margin: 0;
     padding: 0;
@@ -76,20 +75,21 @@ header nav {
     display: block;
     border-radius: 8px;
 }
-.text-always-visible {
+.base-overlay {
     position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.5);
-    color: white;
-    font-size: 1rem;
-    padding: 5px 10px;
-    border-radius: 4px;
-    text-align: center;
-    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
 }
-.text-hover-visible {
+.dish-card:hover .base-overlay {
+    opacity: 1;
+}
+.text-overlay {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -103,9 +103,28 @@ header nav {
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 2;
+    max-width: 90%;
+    overflow-wrap: break-word;
 }
-.dish-card:hover .text-hover-visible {
+.dish-card:hover .text-overlay {
     opacity: 1;
+}
+.text2 {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-align: center;
+    z-index: 2;
+    transition: opacity 0.3s ease;
+}
+.dish-card:hover .text2 {
+    opacity: 0;
 }
 .dish-card:hover img {
     filter: brightness(70%);
@@ -135,11 +154,11 @@ footer p {
         gap: 0.8rem;
         padding: 0.8rem;
     }
-    .text-always-visible {
+    .text2 {
         font-size: 0.9rem;
         padding: 4px 8px;
     }
-    .text-hover-visible {
+    .text-overlay {
         font-size: 0.8rem;
         padding: 8px;
     }
@@ -158,11 +177,11 @@ footer p {
         gap: 0.5rem;
         padding: 0.5rem;
     }
-    .text-always-visible {
+    .text2 {
         font-size: 0.8rem;
         padding: 3px 6px;
     }
-    .text-hover-visible {
+    .text-overlay {
         font-size: 0.7rem;
         padding: 6px;
     }
