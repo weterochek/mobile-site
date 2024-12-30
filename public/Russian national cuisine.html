@@ -18,23 +18,26 @@
             </div>
             <ul class="navbar">
                 <div class="menu-content">
+                    <button class="close-menu">✕</button>
                     <li><a href="index.html" class="nav-item">Главная</a></li>
                     <li><a href="#menu" class="nav-item">Меню</a></li>
                     <li><a href="#about" class="nav-item">О нас</a></li>
                     <li><a href="#contacts" class="nav-item">Контакты</a></li>
                     <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
                     <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
-                    <li class="cart-container">
-                        <a href="#1" class="nav-item" id="cartButton">Корзина</a>
-                        <div id="cartDropdown" class="cart-dropdown">
-                            <h3>Ваша Корзина</h3>
-                            <div id="cartItems"></div>
-                            <p id="totalAmount"></p>
-                            <button onclick="checkout()">Оформить заказ</button>
-                        </div>
-                    </li>
                 </div>
             </ul>
+            <div class="cart-container">
+                <a href="#cart" id="cartButton" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="checkout()">Оформить заказ</button>
+                </div>
+            </div>
         </nav>
     </header>
     <div class="menu-header">
@@ -46,6 +49,7 @@
         <h2 id="ru" class="subtitlee">РУССКАЯ КУХНЯ</h2>
         <p>Русская кухня - традиционная кухня русского народа. Природные особенности мест проживания - обширные леса и долгие зимы - обусловили многие характерные особенности традиционной русской кухни: разнообразие горячих супов и каш, квашений, мочений и солений, грибных блюд и дичи на русском столе.
         </p>
+        </section>
     </div>
 
     <section class="popular-dishes full-screen-section">
