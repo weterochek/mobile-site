@@ -119,6 +119,7 @@ header nav {
     font-size: 20px;
     font-weight: bold;
     margin-top: 90px;
+    margin: 0px 15px;
 }
 
 #menu p {
@@ -127,6 +128,7 @@ header nav {
     margin: 0 auto;
     padding-top: 10px;
     line-height: 1.6;
+    margin: 0px 15px;
 }
 
 /* Стили карточек блюд */
