@@ -9,9 +9,6 @@ body {
     color: #333;
     background-color: #fdfdfd;
 }
-html {
-    scroll-behavior: smooth;
-}
 
 /* Header */
 header nav {
@@ -26,7 +23,10 @@ header nav {
     width: 100%;
     z-index: 1000;
 }
-
+.content {
+    position: relative;
+    z-index: 1; /* Контент будет ниже панели */
+  }
 .navbar-center {
     position: fixed; /* Фиксируем логотип */
     left: 50%;
@@ -219,7 +219,7 @@ footer p {
     border: none;
     cursor: pointer;
     position: absolute;
-    top: 15px;
+    top: 10px;
     left: 15px;
     z-index: 1001;
 }
@@ -259,7 +259,7 @@ nav {
 /* Корзина в правом углу */
 .cart-container {
     position: absolute;
-    right: 20px;
+    right: 35px;
     top: 15px;
 }
 
@@ -374,25 +374,39 @@ nav {
     cursor: pointer;
     border-radius: 4px;
 }
-.navbar {
-    display: flex; /* Выравниваем кнопки в строку */
-    justify-content: space-around; /* Равномерное распределение кнопок */
-    list-style-type: none; /* Убираем маркеры */
-    padding: 0;
-    margin: 0;
 
-}
-
-.navbar li a {
-    display: block;
-    padding: 10px 20px;
-    color: black;
-    text-decoration: none;
-    white-space: nowrap; /* Предотвращаем перенос текста */
-}
 
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
+}
+.menu-header {
+    text-align: center;
+}
+.menu-header .subtitle {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 20%;
+}
+
+.menu-headeer .subtitlee {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 90px;
+}
+.about {
+    background-color: #fafafa;
+    padding: 0.5rem;
+    text-align: center;
+}
+.about h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.about p {
+    font-size: 0.8rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto;
 }
 /* Медиазапросы */
 @media (max-width: 768px) {
