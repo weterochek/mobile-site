@@ -1,14 +1,23 @@
 let cart = {};
 // Функция для показа/скрытия выпадающего окна корзины под кнопкой "Корзина"
-document.addEventListener("DOMContentLoaded", function() {
+function toggleCart() {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+// Закрытие корзины при клике на крестик
+document.addEventListener("DOMContentLoaded", function () {
     const cartButton = document.getElementById('cartButton');
     const cartDropdown = document.getElementById('cartDropdown');
-
+    
     // Открытие/закрытие корзины при клике на кнопку
-    cartButton.addEventListener('click', function(event) {
+    cartButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Остановка распространения события клика
-        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+        toggleCart(); // Переключение корзины
     });
+    
     // Закрытие корзины при клике на крестик
     const closeCartButton = document.createElement("span");
     closeCartButton.innerHTML = "✖";
@@ -18,15 +27,22 @@ document.addEventListener("DOMContentLoaded", function() {
     closeCartButton.style.right = "10px";
     closeCartButton.style.fontSize = "1.2em";
     closeCartButton.style.color = "black";
-    closeCartButton.addEventListener("click", function(event) {
+    closeCartButton.addEventListener("click", function (event) {
         event.stopPropagation();
-        cartDropdown.style.display = 'none';
+        cartDropdown.style.display = 'none'; // Скрыть корзину
     });
 
     cartDropdown.prepend(closeCartButton); // Добавляем крестик в начало содержимого
 });
 
-// Добавление товара в корзину
+// Закрытие корзины при клике вне корзины
+document.addEventListener("click", function (event) {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton")) {
+        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины
+    }
+});
+// Функция добавления товара в корзину
 function addToCart(itemName, itemPrice) {
     if (cart[itemName]) {
         cart[itemName].quantity += 1;
@@ -38,7 +54,7 @@ function addToCart(itemName, itemPrice) {
     replaceAddButtonWithControls(itemName);
 }
 
-// Уменьшение количества товара
+// Функции для увеличения/уменьшения количества товаров
 function decrementItem(itemName) {
     if (cart[itemName]) {
         cart[itemName].quantity -= 1;
@@ -51,11 +67,9 @@ function decrementItem(itemName) {
     }
 }
 
-// Увеличение количества товара
 function incrementItem(itemName, itemPrice) {
     addToCart(itemName, itemPrice);
 }
-
 // Преобразование кнопки "Добавить" в контролы "+", "-", и количество
 function replaceAddButtonWithControls(itemName) {
     const addButton = document.getElementById(`addButton_${itemName}`);
