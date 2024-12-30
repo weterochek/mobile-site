@@ -25,17 +25,19 @@
                     <li><a href="#contacts" class="nav-item">Контакты</a></li>
                     <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
                     <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
-                    <li class="cart-container">
-                        <a href="#1" class="nav-item" id="cartButton">Корзина</a>
-                        <div id="cartDropdown" class="cart-dropdown">
-                            <h3>Ваша Корзина</h3>
-                            <div id="cartItems"></div>
-                            <p id="totalAmount"></p>
-                            <button onclick="checkout()">Оформить заказ</button>
-                        </div>
-                    </li>
                 </div>
             </ul>
+            <div class="cart-container">
+                <a href="#cart" id="cartButton" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="checkout()">Оформить заказ</button>
+                </div>
+            </div>
         </nav>
     </header>
 
