@@ -253,11 +253,6 @@ function calculateBalance() {
     }
     return balance;
 }
-
-function toggleMenu() {
-    const navbar = document.querySelector('.navbar');
-    navbar.classList.toggle('active');
-}
 document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');
     const closeMenu = document.querySelector('.close-menu');
@@ -276,3 +271,25 @@ document.addEventListener('DOMContentLoaded', () => {
 function toggleMenu() {
     document.querySelector('.menu-content').classList.toggle('active');
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleButtons = document.querySelectorAll(".toggle-description-btn");
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            // Ищем текст внутри родительского элемента
+            const parent = button.closest(".menu-item"); // Находим общий контейнер
+            const description = parent.querySelector(".description-collapsible"); // Находим текст
+
+            if (description) {
+                description.classList.toggle("expanded"); // Переключаем класс "expanded"
+
+                // Меняем текст кнопки
+                button.textContent = description.classList.contains("expanded")
+                    ? "Свернуть"
+                    : "Читать далее";
+            } else {
+                console.error("Описание не найдено!");
+            }
+        });
+    });
+});
