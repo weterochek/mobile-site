@@ -58,7 +58,7 @@ header nav {
     left: 0;
 }
 .navbar-center .navbar-logo {
-    max-height: 40px; /* Увеличить логотип при необходимости */
+    max-height: 35px; /* Увеличить логотип при необходимости */
 }
 
 .navbar {
@@ -81,7 +81,7 @@ header nav {
 }
 .navbar-logo {
     height: auto;
-    max-height: 40px;
+    max-height: 35px;
     width: auto;
     display: block;
     transition: opacity 0.3s ease;
@@ -167,8 +167,8 @@ header nav {
     left: 0;
     width: 100%;
     color: white;
-    font-size: 1rem; /* Размер текста */
-    line-height: 0.9; /* Читаемость */
+    font-size: 0.8rem; /* Размер текста */
+    line-height: 0.8; /* Читаемость */
     text-align: center;
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -248,45 +248,55 @@ footer p {
     margin: 10px 0;
     text-decoration: none;
 }
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+/* Корзина в правом углу */
 .cart-container {
-    position: relative; /* Для корректного позиционирования всплывающего окна */
+    position: absolute;
+    right: 20px;
+    top: 15px;
+}
+
+.cart-icon {
+    font-size: 24px;
+    color: #333;
+    text-decoration: none;
+}
+
+.cart-icon:hover {
+    color: #ff6600;
 }
 
 .cart-dropdown {
+    display: none;
     position: absolute;
-    top: 100%; /* Отображение прямо под кнопкой */
-    left: 50%; /* Центрирование относительно кнопки */
-    transform: translateX(-50%);
+    top: 40px;
+    right: 0;
     background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    z-index: 10;
     padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 295px;
-    display: none; /* Скрыто изначально */
-    border-radius: 8px;
-    z-index: 1000;
-}
-.cart-dropdown h3 {
-    margin-top: 0;
 }
 
-.cart-item {
-    display: flex;
-    justify-content: space-between;
+.cart-dropdown h3 {
+    margin: 0;
+    font-size: 18px;
     margin-bottom: 10px;
 }
 
-
-.cart-dropdown button {
-    background-color: #9C9C9C;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 5px 5px 0 0;
+/* Показать всплывающее окно при наведении */
+.cart-container:hover .cart-dropdown {
+    display: block;
 }
-/* Стиль основной кнопки "Добавить" */
-
 /* Стиль кнопок "+" и "-" */
 .quantity-control {
     background-color: #f8f9fa;
