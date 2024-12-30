@@ -1,5 +1,6 @@
 let cart = {};
 // Функция для показа/скрытия выпадающего окна корзины под кнопкой "Корзина"
+// Функция для показа/скрытия выпадающего окна корзины
 function toggleCart() {
     const cartDropdown = document.getElementById('cartDropdown');
     if (cartDropdown) {
@@ -28,18 +29,18 @@ document.addEventListener("DOMContentLoaded", function () {
     closeCartButton.style.fontSize = "1.2em";
     closeCartButton.style.color = "black";
     closeCartButton.addEventListener("click", function (event) {
-        event.stopPropagation();
+        event.stopPropagation(); // Останавливаем событие
         cartDropdown.style.display = 'none'; // Скрыть корзину
     });
 
     cartDropdown.prepend(closeCartButton); // Добавляем крестик в начало содержимого
 });
 
-// Закрытие корзины при клике вне корзины
+// Закрытие корзины при клике вне корзины (но не на товарах)
 document.addEventListener("click", function (event) {
     const cartDropdown = document.getElementById('cartDropdown');
-    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton")) {
-        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины
+    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton") && !event.target.closest(".cart-item")) {
+        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины и её элементов
     }
 });
 // Функция добавления товара в корзину
