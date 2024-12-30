@@ -176,7 +176,13 @@ header nav {
     position: relative;
     overflow: hidden;
 }
-
+.card-dish img {
+    width: 100%;
+    height: 200px; /* Ограничиваем высоту изображения */
+    object-fit: cover;
+    border-radius: 10%;
+    margin-bottom: 10px;
+}
 /* Описание и текст */
 .card-dish .menu-item {
     flex-grow: 1; /* Заставляет текст занимать всё доступное пространство */
@@ -188,25 +194,25 @@ header nav {
 .description-collapsible {
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Ограничиваем до 3 строк */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    transition: max-height 0.3s ease;
-    max-height: 4.5em; /* Высота для 3 строк */
+    margin-bottom: 10px; /* Отступ снизу */
 }
 
+/* Полное описание */
 .description-collapsible.expanded {
-    -webkit-line-clamp: unset; /* Отменяем ограничение строк */
-    max-height: none; /* Убираем ограничение высоты */
+    -webkit-line-clamp: unset;
+    max-height: none;
 }
 
 /* Блок с ценой и кнопками */
 .price-container {
     display: flex;
-    justify-content: space-between; /* Цена и кнопки по краям */
-    align-items: center;
-    margin-top: auto; /* Прижимаем блок вниз */
+    flex-direction: column; /* Ставим элементы в колонку */
+    justify-content: flex-end; /* Выровнять элементы по низу */
+    align-items: center; /* Центрируем по горизонтали */
+    width: 100%;
     padding-top: 10px;
-    border-top: 1px solid #eaeaea; /* Разделяем линией */
 }
 
 /* Стили для кнопки */
