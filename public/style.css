@@ -166,6 +166,7 @@ header nav {
     top: 0; /* Текст в самом верху */
     left: 0;
     width: 100%;
+    height: 100%;
     color: white;
     font-size: 0.8rem; /* Размер текста */
     line-height: 0.8; /* Читаемость */
