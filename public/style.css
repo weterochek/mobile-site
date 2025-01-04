@@ -194,6 +194,7 @@ header nav {
     font-weight: bold;
     z-index: 3;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8); /* Лёгкая тень для выделения текста */
+    font-family: "Times New Roman", Times, serif;
 }
 .dish-card:hover .text2 {
     opacity: 1;
