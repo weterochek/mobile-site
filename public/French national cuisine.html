@@ -12,30 +12,32 @@
     <!-- Header -->
     <header>
         <nav>
-            <ul class="navbar">
-                <div class="navbar-left">
-                <li><a href="index.html" class="nav-item">Главная</a></li>
-                <li><a href="#menu" class="nav-item">Меню</a></li>
-                <li><a href="#about" class="nav-item">О нас</a></li>
-            </div>
+            <button class="menu-toggle" onclick="toggleMenu()">☰</button>
             <div class="navbar-center">
                 <img src="images/logo.png" alt="Logo" class="navbar-logo">
-              </div>
-              <div class="navbar-right">
-                <li><a href="#contacts" class="nav-item">Контакты</a></li>
-                <li class="cart-container">
-                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
-                    <div id="cartDropdown" class="cart-dropdown">
-                        <h3>Ваша Корзина</h3>
-                        <div id="cartItems"></div>
-                        <p id="totalAmount"></p>
-                        <button onclick="checkout()">Оформить заказ</button>
-                    </div>
-                </li>
-                <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
-                <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
             </div>
+            <ul class="navbar">
+                <div class="menu-content">
+                    <button class="close-menu">✕</button>
+                    <a href="index.html" class="nav-item">Главная</a>
+                    <a href="#menu" class="nav-item">Меню</a>
+                    <a href="#about" class="nav-item">О нас</a>
+                    <a href="#contacts" class="nav-item">Контакты</a>
+                    <a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+                    <a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a>
+                </div>
             </ul>
+            <div class="cart-container">
+                <a href="#cart" id="cartButton" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="checkout()">Оформить заказ</button>
+                </div>
+            </div>
         </nav>
     </header>
     <div class="menu-header">
@@ -57,8 +59,8 @@
                             <div class="menu-item">
                 <img src="images/French/беф бургиньон.png" alt="беф бургиньон">
                 <p><b>беф бургиньон </b><span class="small-text">(350гр)</span></p>
-                <p><span class="textcolor">традиционное блюдо, готовится из тушёных кусочков говядины в густом винном соусе на говяжьем бульоне </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+                <p><span class="description-collapsible">традиционное блюдо, готовится из тушёных кусочков говядины в густом винном соусе на говяжьем бульоне </span></p>
+                <button class="toggle-description-btn">Читать далее</button>
                                 <div class="price-container" >
                 <p><b>380 ₽</b></p>
                 <div id="controls_беф бургиньон">
@@ -79,8 +81,8 @@
                             <div class="menu-item">
                 <img src="images/French/бланкет из телятины.png" alt="бланкет из телятины">
                 <p><b>бланкет из телятины</b> <span class="small-text">(350гр)</span></p>
-                <p><span class="textcolor">мясное блюдо из телятины, белое рагу под белым соусом, приправленным лимоном</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+                <p><span class="description-collapsible">мясное блюдо из телятины, белое рагу под белым соусом, приправленным лимоном</span></p>
+                <button class="toggle-description-btn">Читать далее</button>
                 <div class="price-container" >
                 <p><b>390 ₽</b></p>
                 <div id="controls_бланкет из телятины">
@@ -100,8 +102,8 @@
                             <div class="menu-item">
                 <img src="images/French/буйабес.png" alt="буйабес">
                 <p><b>буйабес</b> <span class="small-text">(350гр)</span></p>
-                <p><span class="textcolor">суп на основе морепродуктов и белого вина </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+                <p><span class="description-collapsible">суп на основе морепродуктов и белого вина </span></p>
+                <button class="toggle-description-btn">Читать далее</button>
                 <div class="price-container" >
                 <p><b>350 ₽</b></p>
                 <div id="controls_буйабес">
@@ -121,8 +123,8 @@
                             <div class="menu-item">
                 <img src="images/French/кок о вен.png" alt="кок о вен">
                 <p><b>кок о вен </b><span class="small-text">(350гр)</span></p>
-                <p><span class="textcolor">Тушеный петух в красном вине </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+                <p><span class="description-collapsible">Тушеный петух в красном вине </span></p>
+                <button class="toggle-description-btn">Читать далее</button>
                 <div class="price-container" >
                 <p><b>420 ₽</b></p>
                 <div id="controls_кок о вен">
@@ -142,8 +144,8 @@
                             <div class="menu-item">
                 <img src="images/French/крепы.png" alt="крепы">
                 <p><b>крепы</b> <span class="small-text">(350гр)</span></p>
-            <p><span class="textcolor">Блюдо из тонкого пресного теста, готовящееся на сковороде   </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Блюдо из тонкого пресного теста, готовящееся на сковороде   </span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>370 ₽</b></p>
             <div id="controls_крепы">
@@ -163,8 +165,8 @@
                             <div class="menu-item">
                 <img src="images/French/луковый суп.png" alt="луковый суп">
                 <p><b>луковый суп</b> <span class="small-text">(300гр)</span></p>
-            <p><span class="textcolor">Суп на основе бульона, лука с сыром и гренками </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Суп на основе бульона, лука с сыром и гренками </span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>300 ₽</b></p>
             <div id="controls_луковый суп">
@@ -184,8 +186,8 @@
                             <div class="menu-item">
                 <img src="images/French/профитроли.png" alt="профитроли">
                 <p><b>профитроли</b> <span class="small-text">(5шт)</span></p>
-            <p><span class="textcolor">Кулинарное издели из заварного теста с начинкой в виде крема </span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Кулинарное издели из заварного теста с начинкой в виде крема </span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>220 ₽</b></p>
             <div id="controls_профитроли">
@@ -205,8 +207,8 @@
                             <div class="menu-item">
                 <img src="images/French/рататуй.png" alt="рататуй">
                 <p><b>рататуй</b> <span class="small-text">(300гр)</span></p>
-            <p><span class="textcolor">Овощное блюдо из баклажанов, перца и кабачков</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Овощное блюдо из баклажанов, перца и кабачков</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>260 ₽</b></p>
             <div id="controls_рататуй">
@@ -226,8 +228,8 @@
                             <div class="menu-item">
                 <img src="images/French/тар тар.png" alt="тар тар">
                 <p><b>тар тар</b> <span class="small-text">(2шт)</span></p>
-            <p><span class="textcolor">Сырое мясо нарезанное мелкими кусочками с перепелиным желтком</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Сырое мясо нарезанное мелкими кусочками с перепелиным желтком</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>140 ₽</b></p>
             <div id="controls_тар тар">
@@ -246,8 +248,8 @@
                             <div class="menu-item">
                 <img src="images/French/тарт татен.png" alt="тарт татен">
                 <p><b>тарт татен</b> <span class="small-text">(1шт)</span></p>
-            <p><span class="textcolor">яблочный пирог, в котором яблоки поджариваются в масле и сахаре перед выпеканием пирога</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">яблочный пирог, в котором яблоки поджариваются в масле и сахаре перед выпеканием пирога</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>120 ₽</b></p>
             <div id="controls_тарт татен">
@@ -266,8 +268,8 @@
                             <div class="menu-item">
                 <img src="images/French/тартифлет.png" alt="тартифлет">
                 <p><b>тартифлет</b> <span class="small-text">(200мл)</span></p>
-            <p><span class="textcolor">Блюдо на основе картофеля, сыра, бекона и жаренного лука</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Блюдо на основе картофеля, сыра, бекона и жаренного лука</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>110 ₽</b></p>
             <div id="controls_тартифлет">
@@ -286,8 +288,8 @@
                             <div class="menu-item">
                 <img src="images/French/фуа-гра.png" alt="фуа-гра">
                 <p><b>фуа-гра</b> <span class="small-text">(200мл)</span></p>
-            <p><span class="textcolor">Печень специального выращенного гуся</span></p>
-                                <button class="toggle-description-btn">Читать далее</button>
+            <p><span class="description-collapsible">Печень специального выращенного гуся</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
             <div class="price-container" >
             <p><b>140 ₽</b></p>
             <div id="controls_фуа-гра">
