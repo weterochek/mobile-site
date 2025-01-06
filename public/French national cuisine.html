@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Национальные Блюда</title>
+    <link rel="stylesheet" href="stylee.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <ul class="navbar">
+                <div class="navbar-left">
+                <li><a href="index.html" class="nav-item">Главная</a></li>
+                <li><a href="#menu" class="nav-item">Меню</a></li>
+                <li><a href="#about" class="nav-item">О нас</a></li>
+            </div>
+            <div class="navbar-center">
+                <img src="images/logo.png" alt="Logo" class="navbar-logo">
+              </div>
+              <div class="navbar-right">
+                <li><a href="#contacts" class="nav-item">Контакты</a></li>
+                <li class="cart-container">
+                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                    <div id="cartDropdown" class="cart-dropdown">
+                        <h3>Ваша Корзина</h3>
+                        <div id="cartItems"></div>
+                        <p id="totalAmount"></p>
+                        <button onclick="checkout()">Оформить заказ</button>
+                    </div>
+                </li>
+                <li><a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a></li>
+                <li><a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a></li>
+            </div>
+            </ul>
+        </nav>
+    </header>
+    <div class="menu-header">
+        <section id="menu">
+            <h1 class="subtitle">•    МЕНЮ    •</h1>
+        
+    
+    
+        <h2 id="ru" class="subtitlee">ФРАНЦУЗСКАЯ КУХНЯ</h2>
+        <p>Известна своей изысканностью и разнообразием, сочетая богатые вкусы и уникальные кулинарные техники. Её основа - использование свежих и качественных продуктов, среди которых популярны сыры, мясо, свежие овощи и зелень.
+        </p>
+    </div>
+
+    <section class="popular-dishes full-screen-section">
+        <section class="popular-dishes">
+            <div class="grid-dishes">
+                <div class="card-dish">
+                    <div class="image-container">  
+                            <div class="menu-item">
+                <img src="images/French/беф бургиньон.png" alt="беф бургиньон">
+                <p><b>беф бургиньон </b><span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">традиционное блюдо, готовится из тушёных кусочков говядины в густом винном соусе на говяжьем бульоне </span></p>
+                                <div class="price-container" >
+                <p><b>380 ₽</b></p>
+                <div id="controls_беф бургиньон">
+                    <button class="add-button-size" id="addButton_беф бургиньон" onclick="addToCart('беф бургиньон', 380)">Добавить</button>
+            <button class="quantity-control quantity-button-size" id="removeBtn_беф бургиньон" onclick="decrementItem('беф бургиньон')" style="display: none;">-</button>
+            <span class="quantity-display" id="quantity_беф бургиньон" style="display: none;">1</span>
+            <button class="quantity-control quantity-size-button" id="addBtn_беф бургиньон" onclick="incrementItem('беф бургиньон', 380)" style="display: none;">+</button>
+                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/бланкет из телятины.png" alt="бланкет из телятины">
+                <p><b>бланкет из телятины</b> <span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">мясное блюдо из телятины, белое рагу под белым соусом, приправленным лимоном</span></p>
+                <div class="price-container" >
+                <p><b>390 ₽</b></p>
+                <div id="controls_бланкет из телятины">
+                    <button class="add-button-size" id="addButton_бланкет из телятины" onclick="addToCart('бланкет из телятины', 390)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_бланкет из телятины" onclick="decrementItem('бланкет из телятины')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_бланкет из телятины" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_бланкет из телятины" onclick="incrementItem('бланкет из телятины', 390)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/буйабес.png" alt="буйабес">
+                <p><b>буйабес</b> <span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">суп на основе морепродуктов и белого вина </span></p>
+                <div class="price-container" >
+                <p><b>350 ₽</b></p>
+                <div id="controls_буйабес">
+                    <button class="add-button-size" id="addButton_буйабес" onclick="addToCart('буйабес', 350)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_буйабес" onclick="decrementItem('буйабес')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_буйабес" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_буйабес" onclick="incrementItem('буйабес', 350)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/кок о вен.png" alt="кок о вен">
+                <p><b>кок о вен </b><span class="small-text">(350гр)</span></p>
+                <p><span class="textcolor">Тушеный петух в красном вине </span></p>
+                <div class="price-container" >
+                <p><b>420 ₽</b></p>
+                <div id="controls_кок о вен">
+                    <button class="add-button-size" id="addButton_кок о вен" onclick="addToCart('кок о вен', 420)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_кок о вен" onclick="decrementItem('кок о вен')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_кок о вен" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_кок о вен" onclick="incrementItem('кок о вен', 420)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/крепы.png" alt="крепы">
+                <p><b>крепы</b> <span class="small-text">(350гр)</span></p>
+            <p><span class="textcolor">Блюдо из тонкого пресного теста, готовящееся на сковороде   </span></p>
+            <div class="price-container" >
+            <p><b>370 ₽</b></p>
+            <div id="controls_крепы">
+                <button class="add-button-size" id="addButton_крепы" onclick="addToCart('крепы', 370)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_крепы" onclick="decrementItem('крепы')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_крепы" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_крепы" onclick="incrementItem('крепы', 370)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/луковый суп.png" alt="луковый суп">
+                <p><b>луковый суп</b> <span class="small-text">(300гр)</span></p>
+            <p><span class="textcolor">Суп на основе бульона, лука с сыром и гренками </span></p>
+            <div class="price-container" >
+            <p><b>300 ₽</b></p>
+            <div id="controls_луковый суп">
+                <button class="add-button-size" id="addButton_луковый суп" onclick="addToCart('луковый суп', 300)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_луковый суп" onclick="decrementItem('луковый суп')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_луковый суп" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_луковый суп" onclick="incrementItem('луковый суп', 300)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/профитроли.png" alt="профитроли">
+                <p><b>профитроли</b> <span class="small-text">(5шт)</span></p>
+            <p><span class="textcolor">Кулинарное издели из заварного теста с начинкой в виде крема </span></p>
+            <div class="price-container" >
+            <p><b>220 ₽</b></p>
+            <div id="controls_профитроли">
+                <button class="add-button-size" id="addButton_профитроли" onclick="addToCart('профитроли', 220)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_профитроли" onclick="decrementItem('профитроли')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_профитроли" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_профитроли" onclick="incrementItem('профитроли', 220)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/рататуй.png" alt="рататуй">
+                <p><b>рататуй</b> <span class="small-text">(300гр)</span></p>
+            <p><span class="textcolor">Овощное блюдо из баклажанов, перца и кабачков</span></p>
+            <div class="price-container" >
+            <p><b>260 ₽</b></p>
+            <div id="controls_рататуй">
+                <button class="add-button-size" id="addButton_рататуй" onclick="addToCart('рататуй', 260)">Добавить</button>
+                <button class="quantity-control quantity-button-size"  id="removeBtn_рататуй" onclick="decrementItem('рататуй')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_рататуй" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_рататуй" onclick="incrementItem('рататуй', 260)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/тар тар.png" alt="тар тар">
+                <p><b>тар тар</b> <span class="small-text">(2шт)</span></p>
+            <p><span class="textcolor">Сырое мясо нарезанное мелкими кусочками с перепелиным желтком</span></p>
+            <div class="price-container" >
+            <p><b>140 ₽</b></p>
+            <div id="controls_тар тар">
+                <button class="add-button-size" id="addButton_тар тар" onclick="addToCart('тар тар', 140)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_тар тар" onclick="decrementItem('тар тар')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_тар тар" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_тар тар" onclick="incrementItem('тар тар', 140)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/тарт татен.png" alt="тарт татен">
+                <p><b>тарт татен</b> <span class="small-text">(1шт)</span></p>
+            <p><span class="textcolor">яблочный пирог, в котором яблоки поджариваются в масле и сахаре перед выпеканием пирога</span></p>
+            <div class="price-container" >
+            <p><b>120 ₽</b></p>
+            <div id="controls_тарт татен">
+                <button class="add-button-size" id="addButton_тарт татен" onclick="addToCart('тарт татен', 120)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_тарт татен" onclick="decrementItem('тарт татен')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_тарт татен" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_тарт татен" onclick="incrementItem('тарт татен', 120)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/тартифлет.png" alt="тартифлет">
+                <p><b>тартифлет</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="textcolor">Блюдо на основе картофеля, сыра, бекона и жаренного лука</span></p>
+            <div class="price-container" >
+            <p><b>110 ₽</b></p>
+            <div id="controls_тартифлет">
+                <button class="add-button-size" id="addButton_тартифлет" onclick="addToCart('тартифлет', 110)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_тартифлет" onclick="decrementItem('тартифлет')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_тартифлет" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_тартифлет" onclick="incrementItem('тартифлет', 110)" style="display: none;">+</button>
+            </div>
+            </div>
+                     </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/French/фуа-гра.png" alt="фуа-гра">
+                <p><b>фуа-гра</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="textcolor">Печень специального выращенного гуся</span></p>
+            <div class="price-container" >
+            <p><b>140 ₽</b></p>
+            <div id="controls_фуа-гра">
+                <button class="add-button-size" id="addButton_фуа-гра" onclick="addToCart('фуа-гра', 140)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_фуа-гра" onclick="decrementItem('фуа-гра')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_фуа-гра" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button"  id="addBtn_фуа-гра" onclick="incrementItem('фуа-гра', 140)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+            </div>
+        </section>
+    </section>
+<!-- Всплывающее окно корзины -->
+<div class="cart-container">
+    <div id="cartDropdown" class="cart-dropdown">
+        <h3>Ваша Корзина</h3>
+        <div id="cartItems"></div>
+        <p id="totalAmount"></p>
+        <button onclick="checkout()">Оформить заказ</button>
+    </div>
+    </div>
+        <!-- Footer -->
+    <footer>
+        <p>Контакты | Политика конфиденциальности</p>
+        <p>Национальные Блюда © 2024</p>
+    </footer>
+    <script src="script.js"></script>
+     
+</body>
+</html>
