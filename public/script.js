@@ -1,24 +1,5 @@
 let cart = {};
-// Функция для показа/скрытия выпадающего окна корзины под кнопкой "Корзина"
-// Функция для показа/скрытия выпадающего окна корзины
-window.onload = function() {
-  const userAgent = navigator.userAgent.toLowerCase();
 
-  // Логирование для проверки, что передается в User-Agent
-  console.log("User-Agent: ", userAgent);
-
-  if (userAgent.includes('mobile')) {
-    // Перенаправление на мобильную версию сайта
-    if (!window.location.href.includes('mobile-site.onrender.com')) {
-      window.location.href = "https://mobile-site.onrender.com";
-    }
-  } else {
-    // Перенаправление на десктопную версию сайта
-    if (!window.location.href.includes('makadamia.onrender.com')) {
-      window.location.href = "https://makadamia.onrender.com";
-    }
-  }
-};
 function toggleCart() {
     const cartDropdown = document.getElementById('cartDropdown');
     if (cartDropdown) {
@@ -288,8 +269,13 @@ function calculateBalance() {
 }
 document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');
-    const closeMenu = document.querySelector('.close-menu');
     const navbar = document.querySelector('.navbar');
+    const closeMenu = document.querySelector('.close-menu');
+
+    if (!menuToggle || !navbar || !closeMenu) {
+        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        return;
+    }
 
     // Открытие меню
     menuToggle.addEventListener('click', () => {
@@ -301,9 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
         navbar.classList.remove('active');
     });
 });
-function toggleMenu() {
-    document.querySelector('.menu-content').classList.toggle('active');
-}
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
 
