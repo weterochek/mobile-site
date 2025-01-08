@@ -8,32 +8,33 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #fdfdfd;
+    
 }
 
 /* Header */
 header nav {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: center; /* Выравнивание элементов по вертикали */
+    justify-content: space-between; /* Пространство между элементами */
+    padding: 10px 20px;
     background-color: #fff;
-    padding: 10px 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
+    position: fixed; /* Панель фиксируется */
+    top: 0; /* Привязывается к верхней части экрана */
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Поверх остальных элементов */
 }
 .content {
     position: relative;
     z-index: 1; /* Контент будет ниже панели */
   }
 .navbar-center {
-    position: fixed; /* Фиксируем логотип */
-    left: 50%;
-    top: 10px; /* Отступ от верхней части */
-    transform: translateX(-50%);
+    flex: 1; /* Центр занимает всю доступную ширину */
+    display: flex;
+    justify-content: center; /* Логотип по центру */
+    align-items: center;
     z-index: 1100; /* Логотип будет выше, чем гамбургер-меню */
-    padding: 5px;
 }
 .nav-item {
     position: relative;
@@ -62,23 +63,23 @@ header nav {
 }
 
 .navbar {
-    justify-content: space-between;
-    width: 100%;
-    height: 50px;
-    gap: 27px;
+    display: none; /* Скрываем меню */
     flex-direction: column;
-    justify-content: space-evenly;
     align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1000;
-    box-sizing: border-box;
-    opacity: 0; /* Меню невидимо по умолчанию */
-    visibility: hidden; /* Элемент исключается из потока документа */
-    transition: opacity 0.3s ease, visibility 0.3s ease; /* Плавный переход */
 }
+
 .navbar.active {
-    opacity: 1;
-    visibility: visible; 
+    display: flex; /* Показываем меню */
 }
+
 .navbar-logo {
     height: auto;
     max-height: 35px;
@@ -97,10 +98,9 @@ header nav {
     right: 20px;
     background: none;
     border: none;
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: white;
     cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
 .close-menu:hover {
@@ -215,41 +215,31 @@ footer p {
     margin: 0;
 }
 .menu-toggle {
-    display: none;
-    font-size: 2rem;
+    font-size: 1.5rem;
     background: none;
     border: none;
     cursor: pointer;
-    position: absolute;
-    top: 10px;
-    left: 15px;
+    margin-left: 10px; /* Сдвиг ближе к логотипу */
+    margin-top: -5px; /* Немного выше */
     z-index: 1001;
 }
-
 .menu-content {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
+    text-align: center;
 }
+.menu-content .nav-item {
+    display: block;
+    color: white;
+    font-size: 2rem;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
 
 .menu-content.active {
     display: flex;
 }
 
-.menu-content .nav-item {
-    color: white;
-    font-size: 2rem;
-    margin: 10px 0;
-    text-decoration: none;
-}
 nav {
     display: flex;
     align-items: center;
@@ -260,14 +250,15 @@ nav {
 }
 /* Корзина в правом углу */
 .cart-container {
-    position: absolute;
-    right: 35px;
-    top: 15px;
+    margin-right: 20px; /* Сдвиг ближе к логотипу */
+    display: flex;
+    align-items: center;
 }
 
 .cart-icon {
-    font-size: 24px;
-    color: #333;
+    margin-right: 10px;
+    font-size: 1.5rem;
+    color: #000;
     text-decoration: none;
 }
 
@@ -482,5 +473,19 @@ nav {
 
     .nav-item {
         font-size: 1.2rem;
+    }
+}
+@media (max-width: 768px) {
+    nav {
+        flex-wrap: nowrap;
+    }
+
+    .menu-toggle {
+        margin-right: auto; /* Гамбургер уходит влево */
+    }
+
+    .cart-container {
+        margin-left: 10px; /* Корзина ближе к центру */
+        margin-right: 0;
     }
 }
