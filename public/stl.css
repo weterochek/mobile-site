@@ -1,0 +1,357 @@
+/* Общий стиль */
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+    padding: 20px;
+    margin: 0;
+}
+
+header {
+    text-align: center;
+    padding: 20px 0;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin: 0;
+}
+
+/* Основное содержимое */
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Раздел заказа */
+#orderSummary {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#orderSummary h2 {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+#cartItems {
+    margin-bottom: 15px;
+}
+
+#totalAmount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+/* Раздел информации о клиенте */
+#customerDetails {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#customerDetails h2 {
+    text-align: center;
+    margin-bottom: 20px; /* Добавляет отступ снизу для красоты */
+    font-size: 1.8rem; /* Размер шрифта */
+    color: #333; /* Цвет текста */
+}
+
+form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+form input,
+form textarea {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+form textarea {
+    resize: none;
+    height: 80px;
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    color: white;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+#backToShopping {
+    background-color: #ccc;
+    color: #333;
+}
+
+#backToShopping:hover {
+    background-color: #bbb;
+}
+
+/* Стили для товаров на странице оформления */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-item .item-info {
+    flex-grow: 1;
+    font-size: 1.1rem;
+}
+
+.cart-item .cart-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-item .quantity {
+    font-size: 1rem;
+    font-weight: bold;
+}
+textarea::placeholder {
+    color: gray;
+    font-style: italic;
+}
+/* Адаптивность */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    form input,
+    form textarea {
+        font-size: 0.9rem;
+    }
+
+    form button {
+        font-size: 0.9rem;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    form input,
+    form textarea {
+        font-size: 0.9rem;
+    }
+
+    form button {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-family: Arial, sans-serif;
+        font-size: 14px; /* Уменьшенный шрифт */
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+
+    header {
+        text-align: center;
+        padding: 10px 0;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 0;
+        font-size: 1.5rem;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    /* Адаптация секции "Ваш заказ" */
+    #orderSummary {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    #orderSummary h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        border-bottom: 1px solid #ddd;
+        font-size: 0.9rem; /* Уменьшенный размер текста */
+    }
+
+    .cart-item .item-info {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .cart-item .cart-buttons {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .cart-item .quantity {
+        font-weight: bold;
+        font-size: 1rem;
+    }
+
+    #totalAmount {
+        text-align: right;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #4CAF50;
+        margin-top: 10px;
+    }
+
+    /* Адаптация формы */
+    form {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
+
+    form h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    form label {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 5px;
+    }
+
+    form input,
+    form textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    form textarea {
+        resize: none;
+        height: 80px;
+    }
+
+    form button {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        color: white;
+        background-color: #4CAF50;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+    }
+
+    form button:hover {
+        background-color: #45a049;
+    }
+
+    #backToShopping {
+        background-color: #ccc;
+        color: #333;
+    }
+
+    #backToShopping:hover {
+        background-color: #bbb;
+    }
+
+    /* Общая адаптация */
+    h1,
+    h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    /* Отступы и поля для удобства */
+    section {
+        margin-bottom: 15px;
+    }
+
+    footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 0.9rem;
+        background-color: #333;
+        color: white;
+    }
+}
+/* Адаптация для горизонтальной ориентации */
+@media (orientation: landscape) {
+    form {
+        max-width: 600px; /* Увеличиваем ширину формы */
+        padding: 30px;
+    }
+
+    form input,
+    form textarea {
+        font-size: 1.2rem; /* Увеличиваем размер текста */
+        padding: 12px; /* Добавляем больше пространства внутри полей */
+    }
+
+    form button {
+        padding: 12px;
+        font-size: 1.1rem; /* Делаем кнопки больше */
+    }
+}

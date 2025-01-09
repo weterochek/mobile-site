@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа</title>
+    <link rel="stylesheet" href="stl.css">
+</head>
+<body>
+    <header>
+        <h1>Оформление заказа</h1>
+    </header>
+    <main>
+        <!-- Раздел данных клиента и товаров -->
+        <section id="customerDetails">
+            <h2>Ваш заказ</h2>
+            <form id="checkoutForm">
+                <!-- Поле с информацией о заказанных продуктах -->
+                <div id="orderSummary">
+                    <h3>Вы заказали:</h3>
+                    <div id="cartItems"></div> <!-- Продукты будут отображаться здесь -->
+                    <p id="totalAmount"></p> <!-- Итоговая сумма -->
+                </div>
+
+                <h3>Информация о клиенте</h3>
+                <label for="customerName">Имя:</label>
+                <input type="text" id="customerName" name="customerName" required>
+
+                <label for="customerAddress">Адрес доставки:</label>
+                <input type="text" id="customerAddress" name="customerAddress" required>
+
+                <label for="additionalInfo">Дополнительная информация:</label>
+                <textarea id="additionalInfo" name="additionalInfo" placeholder="(необязательно)"></textarea>
+
+                <button type="button" id="backToShopping">Вернуться к покупкам</button>
+                <button type="submit">Оформить заказ</button>
+            </form>
+        </section>
+    </main>
+    <script src="checkout.js"></script>
+</body>
+</html>
