@@ -326,3 +326,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+// Переход на страницу оформления заказа
+function goToCheckoutPage() {
+    saveCartToLocalStorage();
+    window.location.href = "checkout.html";
+}
