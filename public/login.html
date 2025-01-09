@@ -35,19 +35,6 @@
   </div>
 
 <script src="auth.js"></script>
-<script>
-  // Проверка доступности сервера
-  async function checkServer() {
-      try {
-          const response = await fetch("http://localhost:3000/");
-          if (response.ok) {
-              console.log("Сервер уже запущен.");
-          }
-      } catch (error) {
-          console.log("Сервер не найден, запуск сервера...");
-          fetch("http://localhost:4000/start-server"); // Запускаем вспомогательный сервер
-      }
-  }
 
   checkServer();
 </script>
