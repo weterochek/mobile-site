@@ -343,7 +343,8 @@ nav {
     background-color: white;
     border: 1px solid #ccc;
     padding: 15px;
-    width: 250px;
+    width: 280px;
+    height: 200px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     border-radius: 8px;
