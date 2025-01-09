@@ -339,15 +339,20 @@ nav {
 
 /* Стили для выпадающего окна */
 .cabinet-dropdown {
-    position: fixed; /* Фиксированное положение */
+    position: absolute; /* Позиция относительно родителя */
+    top: 100%; /* Находится под кнопкой */
+    left: 0; /* Прижать к левой стороне */
     background-color: white;
     border: 1px solid #ccc;
     padding: 15px;
-    width: 280px;
+    max-width: calc(100vw - 20px); /* Чтобы вмещался по ширине экрана */
+    max-height: calc(100vh - 20px); /* Чтобы вмещался по высоте экрана */
+    overflow-y: auto; /* Скролл для содержимого, если его слишком много */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     border-radius: 8px;
 }
+
 .cabinet-dropdown h2 {
     padding: 8px; /* Отступы внутри заголовка */
 }
@@ -368,7 +373,6 @@ nav {
     cursor: pointer;
     border-radius: 4px;
 }
-
 
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
