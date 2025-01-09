@@ -328,7 +328,7 @@ nav {
     display: flex;
     align-items: center;
     gap: 5px;
-    width: 100px; /* Задаем фиксированную ширину для кнопок */
+    width: 75px; /* Задаем фиксированную ширину для кнопок */
 }
 
 .cart-item .quantity {
