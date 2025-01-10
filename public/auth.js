@@ -28,7 +28,7 @@ registerForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("registerPassword").value;
 
   try {
-    const response = await fetch("https://mobile-site.onrender.com/register", { // Замените localhost на публичный URL
+    const response = await fetch("https://makadamia.onrender.com/register", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -57,7 +57,7 @@ loginForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const response = await fetch("https://mobile-site.onrender.com/login", { // Замените localhost на публичный URL
+    const response = await fetch("https://makadamia.onrender.com/login", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -77,3 +77,23 @@ loginForm.addEventListener("submit", async (e) => {
     alert("Ошибка авторизации");
   }
 });
+// Проверка авторизации при загрузке страницы
+window.onload = function () {
+  const username = localStorage.getItem("username");
+
+  if (username) {
+    // Если имя пользователя есть в localStorage, перенаправляем на главную страницу
+    window.location.href = "index.html";
+  }
+};
+// Функция выхода
+function logout() {
+  // Удаляем данные из localStorage
+  localStorage.removeItem("username");
+
+  // Перенаправление на страницу логина
+  window.location.href = "login.html";
+}
+
+// Пример использования
+document.getElementById("logoutButton").addEventListener("click", logout);
