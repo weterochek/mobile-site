@@ -216,7 +216,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Открытие личного кабинета
 function openCabinet(username) {
-    closeCabinet(); // Закрыть, если уже открыто
+    if (cabinetIsOpen) {
+        closeCabinet(); // Закрыть, если уже открыто
+        return;
+    }
+
     const authButton = document.getElementById("authButton");
     const rect = authButton.getBoundingClientRect();
 
@@ -232,6 +236,7 @@ function openCabinet(username) {
     `;
     
     document.body.insertAdjacentHTML("beforeend", cabinetContent);
+    cabinetIsOpen = true; // Устанавливаем флаг, что кабинет открыт
 
     // Проверка на выход за границы окна
     const cabinetDropdown = document.getElementById("cabinetDropdown");
@@ -261,6 +266,7 @@ function closeCabinet() {
     if (cabinetDropdown) {
         cabinetDropdown.remove();
     }
+    cabinetIsOpen = false; // Устанавливаем флаг, что кабинет закрыт
     document.removeEventListener("click", closeCabinetOnOutsideClick);
 }
 
