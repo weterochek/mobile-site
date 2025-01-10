@@ -1,21 +1,27 @@
 function showRegister() {
-  document.getElementById("registerForm").classList.add("active");
-  document.getElementById("loginForm").classList.remove("active");
+    // Переключаем видимость форм
+    document.getElementById("registerForm").classList.remove("hidden");
+    document.getElementById("loginForm").classList.add("hidden");
 
-  document.getElementById("toggleRegister").classList.add("active");
-  document.getElementById("toggleLogin").classList.remove("active");
+    // Переключаем активные кнопки
+    document.getElementById("toggleRegister").classList.add("active");
+    document.getElementById("toggleLogin").classList.remove("active");
 }
 
 function showLogin() {
-  document.getElementById("loginForm").classList.add("active");
-  document.getElementById("registerForm").classList.remove("active");
+    // Переключаем видимость форм
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("registerForm").classList.add("hidden");
 
-  document.getElementById("toggleLogin").classList.add("active");
-  document.getElementById("toggleRegister").classList.remove("active");
+    // Переключаем активные кнопки
+    document.getElementById("toggleLogin").classList.add("active");
+    document.getElementById("toggleRegister").classList.remove("active");
 }
 
-// Показ формы авторизации по умолчанию
-showLogin();
+// Устанавливаем начальный вид (форма входа по умолчанию)
+document.addEventListener("DOMContentLoaded", () => {
+    showLogin();
+});
 
 const registerForm = document.getElementById("registerForm").querySelector("form");
 const loginForm = document.getElementById("loginForm").querySelector("form");
