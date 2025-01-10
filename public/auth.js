@@ -77,23 +77,3 @@ loginForm.addEventListener("submit", async (e) => {
     alert("Ошибка авторизации");
   }
 });
-// Проверка авторизации при загрузке страницы
-window.onload = function () {
-  const username = localStorage.getItem("username");
-
-  if (username) {
-    // Если имя пользователя есть в localStorage, перенаправляем на главную страницу
-    window.location.href = "index.html";
-  }
-};
-// Функция выхода
-function logout() {
-  // Удаляем данные из localStorage
-  localStorage.removeItem("username");
-
-  // Перенаправление на страницу логина
-  window.location.href = "login.html";
-}
-
-// Пример использования
-document.getElementById("logoutButton").addEventListener("click", logout);
