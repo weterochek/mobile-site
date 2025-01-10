@@ -126,7 +126,6 @@ function updateCartDisplay() {
         const itemTotal = cart[item].price * cart[item].quantity;
         totalAmount += itemTotal;
 
-        // Обновляем количество товара на карточке
         const quantityDisplay = document.getElementById(`quantity_${item}`);
         if (quantityDisplay) {
             quantityDisplay.textContent = cart[item].quantity;
@@ -147,7 +146,6 @@ function updateCartDisplay() {
 
     document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
 }
-
 // Сохранение корзины в localStorage
 function saveCartToLocalStorage() {
     const username = localStorage.getItem("username");
@@ -229,8 +227,6 @@ function openCabinet(username) {
                 <span onclick="closeCabinet()" style="cursor: pointer; font-size: 0.75em; color: black; padding: 0 5px;">✖</span>
             </h2>
             <p>Пользователь: ${username}</p>
-            <h3>Баланс:</h3>
-            <p id="balanceAmount">${calculateBalance()} ₽</p>
             <button onclick="logout()">Выйти</button>
         </div>
     `;
