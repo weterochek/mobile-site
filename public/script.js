@@ -17,16 +17,24 @@ window.onload = function() {
     }
   }
 };
-// Функция для показа/скрытия выпадающего окна корзины под кнопкой "Корзина"
-document.addEventListener("DOMContentLoaded", function() {
+function toggleCart() {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+// Закрытие корзины при клике на крестик
+document.addEventListener("DOMContentLoaded", function () {
     const cartButton = document.getElementById('cartButton');
     const cartDropdown = document.getElementById('cartDropdown');
-
+    
     // Открытие/закрытие корзины при клике на кнопку
-    cartButton.addEventListener('click', function(event) {
+    cartButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Остановка распространения события клика
-        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+        toggleCart(); // Переключение корзины
     });
+    
     // Закрытие корзины при клике на крестик
     const closeCartButton = document.createElement("span");
     closeCartButton.innerHTML = "✖";
@@ -36,15 +44,22 @@ document.addEventListener("DOMContentLoaded", function() {
     closeCartButton.style.right = "10px";
     closeCartButton.style.fontSize = "1.2em";
     closeCartButton.style.color = "black";
-    closeCartButton.addEventListener("click", function(event) {
-        event.stopPropagation();
-        cartDropdown.style.display = 'none';
+    closeCartButton.addEventListener("click", function (event) {
+        event.stopPropagation(); // Останавливаем событие
+        cartDropdown.style.display = 'none'; // Скрыть корзину
     });
 
     cartDropdown.prepend(closeCartButton); // Добавляем крестик в начало содержимого
 });
 
-// Добавление товара в корзину
+// Закрытие корзины при клике вне корзины (но не на товарах)
+document.addEventListener("click", function (event) {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton") && !event.target.closest(".cart-item")) {
+        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины и её элементов
+    }
+});
+// Функция добавления товара в корзину
 function addToCart(itemName, itemPrice) {
     if (cart[itemName]) {
         cart[itemName].quantity += 1;
@@ -56,7 +71,7 @@ function addToCart(itemName, itemPrice) {
     replaceAddButtonWithControls(itemName);
 }
 
-// Уменьшение количества товара
+// Функции для увеличения/уменьшения количества товаров
 function decrementItem(itemName) {
     if (cart[itemName]) {
         cart[itemName].quantity -= 1;
@@ -69,11 +84,9 @@ function decrementItem(itemName) {
     }
 }
 
-// Увеличение количества товара
 function incrementItem(itemName, itemPrice) {
     addToCart(itemName, itemPrice);
 }
-
 // Преобразование кнопки "Добавить" в контролы "+", "-", и количество
 function replaceAddButtonWithControls(itemName) {
     const addButton = document.getElementById(`addButton_${itemName}`);
@@ -205,10 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Открытие личного кабинета
 function openCabinet(username) {
-    if (cabinetIsOpen) {
-        closeCabinet(); // Закрыть, если уже открыто
-        return;
-    }
+    closeCabinet(); // Закрыть, если уже открыто
     const authButton = document.getElementById("authButton");
     const rect = authButton.getBoundingClientRect();
 
@@ -272,9 +282,50 @@ function calculateBalance() {
     }
     return balance;
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navbar = document.querySelector('.navbar');
+    const closeMenu = document.querySelector('.close-menu');
+
+    if (!menuToggle || !navbar || !closeMenu) {
+        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        return;
+    }
+
+    // Открытие меню
+    menuToggle.addEventListener('click', () => {
+        navbar.classList.add('active');
+    });
+
+    // Закрытие меню
+    closeMenu.addEventListener('click', () => {
+        navbar.classList.remove('active');
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleButtons = document.querySelectorAll(".toggle-description-btn");
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            // Ищем текст внутри родительского элемента
+            const parent = button.closest(".menu-item"); // Находим общий контейнер
+            const description = parent.querySelector(".description-collapsible"); // Находим текст
+
+            if (description) {
+                description.classList.toggle("expanded"); // Переключаем класс "expanded"
+
+                // Меняем текст кнопки
+                button.textContent = description.classList.contains("expanded")
+                    ? "Свернуть"
+                    : "Читать далее";
+            } else {
+                console.error("Описание не найдено!");
+            }
+        });
+    });
+});
 // Переход на страницу оформления заказа
 function goToCheckoutPage() {
     saveCartToLocalStorage();
     window.location.href = "checkout.html";
 }
-
