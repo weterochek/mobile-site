@@ -28,26 +28,24 @@ registerForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("registerPassword").value;
 
   try {
-    const response = await fetch("https://makadamia.onrender.com/register", {
+    const response = await fetch("https://mobile-site.onrender.com/register", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await response.json();
+    const data = await response.text();
+    alert(data);
 
-    if (!response.ok) {
-      throw new Error(data.message || "Ошибка регистрации");
+    if (response.ok) {
+      // Сохранение имени пользователя в localStorage после регистрации
+      localStorage.setItem("username", username);
+      // Перенаправление на index.html после успешной регистрации
+      window.location.href = "index.html";
     }
-
-    alert(data.message || "Регистрация успешна");
-
-    // Сохранение имени пользователя и редирект
-    localStorage.setItem("username", username);
-    window.location.href = "index.html";
   } catch (error) {
     console.error("Ошибка регистрации:", error);
-    alert(error.message || "Ошибка регистрации");
+    alert("Ошибка регистрации");
   }
 });
 
@@ -59,26 +57,23 @@ loginForm.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
 
   try {
-    const response = await fetch("https://makadamia.onrender.com/login", {
+    const response = await fetch("https://mobile-site.onrender.com/login", { // Замените localhost на публичный URL
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await response.json();
+    const data = await response.text();
+    alert(data);
 
-    if (!response.ok) {
-      throw new Error(data.message || "Ошибка авторизации");
+    if (response.ok) {
+      // Сохранение имени пользователя в localStorage после авторизации
+      localStorage.setItem("username", username);
+      // Перенаправление на index.html после успешной авторизации
+      window.location.href = "index.html";
     }
-
-    alert(data.message || "Авторизация успешна");
-
-    // Сохранение токена и редирект
-    localStorage.setItem("token", data.token); // Сохраняем токен
-    localStorage.setItem("username", username);
-    window.location.href = "index.html";
   } catch (error) {
     console.error("Ошибка авторизации:", error);
-    alert(error.message || "Ошибка авторизации");
+    alert("Ошибка авторизации");
   }
 });
