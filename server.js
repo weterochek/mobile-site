@@ -44,49 +44,53 @@ const User = mongoose.model("User", userSchema);
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
+  const schema = Joi.object({
+    username: Joi.string().min(3).max(30).required(),
+    password: Joi.string().min(8).required(),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   const { username, password } = req.body;
-  
+
   try {
+    console.log("Регистрация пользователя:", req.body);
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ message: 'Пользователь с таким именем уже существует' });
     }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const hashedPassword = await bcrypt.hash(password, 12); // Увеличено количество раундов
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
-    
+
     res.status(201).json({ message: 'Пользователь успешно зарегистрирован' });
   } catch (err) {
-    console.error(err);
+    console.error("Ошибка регистрации:", err);
     res.status(500).json({ message: 'Ошибка регистрации пользователя', error: err.message });
   }
 });
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  
-  try {
+    const { username, password } = req.body;
+
+    console.log("Попытка входа пользователя:", { username });
+
+    // Находим пользователя в базе данных
     const user = await User.findOne({ username });
-    
     if (!user) {
-      return res.status(401).json({ message: 'Неверное имя пользователя или пароль' });
+        return res.status(401).json({ message: 'Неверные имя пользователя или пароль' });
     }
-    
+
+    // Проверяем зашифрованный пароль
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Неверное имя пользователя или пароль' });
+        return res.status(401).json({ message: 'Неверные имя пользователя или пароль' });
     }
-    
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ token });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Ошибка входа', error: err.message });
-  }
-});
-
 // Обработка корневого маршрута
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
