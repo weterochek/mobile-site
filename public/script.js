@@ -192,6 +192,7 @@ function loadCartFromLocalStorage() {
     }
 }
 
+// Дополнительные функции, такие как авторизация, остаются без изменений
 
 
 // Обработка кнопки авторизации
@@ -228,8 +229,6 @@ function openCabinet(username) {
                 <span onclick="closeCabinet()" style="cursor: pointer; font-size: 0.75em; color: black; padding: 0 5px;">✖</span>
             </h2>
             <p>Пользователь: ${username}</p>
-            <h3>Баланс:</h3>
-            <p id="balanceAmount">${calculateBalance()} ₽</p>
             <button onclick="logout()">Выйти</button>
         </div>
     `;
@@ -325,6 +324,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+// Переход на страницу оформления заказа
 function goToCheckoutPage() {
     saveCartToLocalStorage();
     window.location.href = "checkout.html";
