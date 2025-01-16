@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makadamia</title>
+    <link rel="stylesheet" href="stylee.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav>
+            <button class="menu-toggle">☰</button>
+            <div class="navbar-center">
+                <a href="index.html"><img src="images/logo.png" alt="Logo" class="navbar-logo"></a>
+            </div>
+            <ul class="navbar">
+                <div class="menu-content">
+                    <button class="close-menu">✕</button>
+                    <a href="index.html" class="nav-item">Главная</a>
+                    <a href="#menu" class="nav-item">Меню</a>
+                    <a href="#about" class="nav-item">О нас</a>
+                    <a href="#contacts" class="nav-item">Контакты</a>
+                    <a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+                    <a href="#cabinet" class="nav-item"id="logoutButton" onclick="logout()" style="display: none;">Выход</a>
+                </div>
+            </ul>
+            <div class="cart-container">
+                <a href="#cart" id="cartButton" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="menu-header">
+        <section id="menu">
+            <h1 class="subtitle">•    МЕНЮ    •</h1>
+        
+    
+    
+        <h2 id="ru" class="subtitlee">ИСПАНСКАЯ КУХНЯ</h2>
+        <p>Национальная кухня Испании, сложившаяся на основе многообразия кулинарных традиций её регионов, обусловленного географическим положением, климатом и культурными особенностями.
+        </p>
+        </section>
+    </div>
+
+    <section class="popular-dishes full-screen-section">
+        <section class="popular-dishes">
+            <div class="grid-dishes">
+                <div class="card-dish">
+                    <div class="image-container">  
+                            <div class="menu-item">
+                <img src="images/Spain/гаспачо.png" alt="Гаспачо">
+                <p><b>Гаспачо </b><span class="small-text">(280гр)</span></p>
+                <p><span class="description-collapsible">Суп пюре из пернетертых помидоров, перцев и огурцов</span></p>
+                <button class="toggle-description-btn">Читать далее</button>
+                                <div class="price-container" >
+                <p><b>460 ₽</b></p>
+                <div id="controls_Гаспачо">
+                    <button class="add-button-size" id="addButton_Гаспачо" onclick="addToCart('Гаспачо', 460)">Добавить</button>
+            <button class="quantity-control quantity-button-size" id="removeBtn_Гаспачо" onclick="decrementItem('Гаспачо')" style="display: none;">-</button>
+            <span class="quantity-display" id="quantity_Гаспачо" style="display: none;">1</span>
+            <button class="quantity-control quantity-size-button" id="addBtn_Гаспачо" onclick="incrementItem('Гаспачо', 460)" style="display: none;">+</button>
+                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/паэлья.png" alt="Паэлья">
+                <p><b>Паэлья</b> <span class="small-text">(300гр)</span></p>
+                <p><span class="description-collapsible">Зажарка морепродуктов с рисом</span></p>
+                <button class="toggle-description-btn">Читать далее</button>
+                <div class="price-container" >
+                <p><b>540 ₽</b></p>
+                <div id="controls_Паэлья">
+                    <button class="add-button-size" id="addButton_Паэлья" onclick="addToCart('Паэлья', 540)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Паэлья" onclick="decrementItem('Паэлья')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Паэлья" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Паэлья" onclick="incrementItem('Паэлья', 540)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/косидо.png" alt="Косидо">
+                <p><b>Косидо</b> <span class="small-text">(320гр)</span></p>
+                <p><span class="description-collapsible">Национальный суп, основу которого составляет рубленая свежая капуста</span></p>
+                <button class="toggle-description-btn">Читать далее</button>
+                <div class="price-container" >
+                <p><b>430 ₽</b></p>
+                <div id="controls_Косидо">
+                    <button class="add-button-size" id="addButton_Косидо" onclick="addToCart('Косидо', 430)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Косидо" onclick="decrementItem('Косидо')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Косидо" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Косидо" onclick="incrementItem('Косидо', 430)" style="display: none;">+</button>
+                </div>
+                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/мигас.png" alt="Мигас">
+                <p><b>Мигас </b><span class="small-text">(300гр)</span></p>
+                <p><span class="description-collapsible">Блюдо на основе омлета, жаренного хлеба, стручкового перца, ребрышек</span></p>
+                <button class="toggle-description-btn">Читать далее</button>          
+                            </div>
+                <div class="price-container" >
+                <p><b>420 ₽</b></p>
+                <div id="controls_Мигас">
+                    <button class="add-button-size" id="addButton_Мигас" onclick="addToCart('Мигас', 420)">Добавить</button>
+                    <button class="quantity-control quantity-button-size" id="removeBtn_Мигас" onclick="decrementItem('Мигас')" style="display: none;">-</button>
+                    <span class="quantity-display" id="quantity_Мигас" style="display: none;">1</span>
+                    <button class="quantity-control quantity-size-button" id="addBtn_Мигас" onclick="incrementItem('Мигас', 420)" style="display: none;">+</button>
+                </div>
+                </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/Писто.png" alt="Писто">
+                <p><b>Писто</b> <span class="small-text">(340гр)</span></p>
+            <p><span class="description-collapsible">Жаренное множество овощей, подается с яичницей и хлебом</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>420 ₽</b></p>
+            <div id="controls_Писто">
+                <button class="add-button-size" id="addButton_Писто" onclick="addToCart('Писто', 420)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Писто" onclick="decrementItem('Писто')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Писто" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Писто" onclick="incrementItem('Писто', 420)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/пиль пиль.png" alt="Треска Пиль Пиль ">
+                <p><b>Треска Пиль Пиль </b> <span class="small-text">(190гр)</span></p>
+            <p><span class="description-collapsible">Вареная треска в оливковом масле</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>360 ₽</b></p>
+            <div id="controls_Треска Пиль Пиль ">
+                <button class="add-button-size" id="addButton_Треска Пиль Пиль " onclick="addToCart('Треска Пиль Пиль ', 360)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Треска Пиль Пиль " onclick="decrementItem('Треска Пиль Пиль ')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Треска Пиль Пиль " style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Треска Пиль Пиль " onclick="incrementItem('Треска Пиль Пиль ', 360)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/тако.png" alt="Тако">
+                <p><b>Тако</b> <span class="small-text">(210гр)</span></p>
+            <p><span class="description-collapsible">Тортилья с начинкой мяса, овощей и острого соуса</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>280 ₽</b></p>
+            <div id="controls_Тако">
+                <button class="add-button-size" id="addButton_Тако" onclick="addToCart('Тако', 280)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Тако" onclick="decrementItem('Тако')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Тако" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Тако" onclick="incrementItem('Тако', 280)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/эмпанда.png" alt="Эмпанда">
+                <p><b>Эмпанда</b> <span class="small-text">(2шт)</span></p>
+            <p><span class="description-collapsible">Пирожок с мясом жаренный во фритюре</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>330 ₽</b></p>
+            <div id="controls_Эмпанда">
+                <button class="add-button-size" id="addButton_Эмпанда" onclick="addToCart('Эмпанда', 330)">Добавить</button>
+                <button class="quantity-control quantity-button-size"  id="removeBtn_Эмпанда" onclick="decrementItem('Эмпанда')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Эмпанда" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Эмпанда" onclick="incrementItem('Эмпанда', 330)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/папас арргудас.png" alt="Папас арргадас ">
+                <p><b>Папас арргадас </b> <span class="small-text">(170гр)</span></p>
+            <p><span class="description-collapsible">Картофель вареный на пару соленой воды, подается с двумя соусами</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>270 ₽</b></p>
+            <div id="controls_Папас арргадас ">
+                <button class="add-button-size" id="addButton_Папас арргадас " onclick="addToCart('Папас арргадас ', 270)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Папас арргадас " onclick="decrementItem('Папас арргадас ')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Папас арргадас " style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Папас арргадас " onclick="incrementItem('Папас арргадас ', 270)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/кальсотада.png" alt="Кальсотада">
+                <p><b>Кальсотада</b> <span class="small-text">(200гр)</span></p>
+            <p><span class="description-collapsible">Особый сорт лука жаренный на углях</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>250 ₽</b></p>
+            <div id="controls_Кальсотада">
+                <button class="add-button-size" id="addButton_Кальсотада" onclick="addToCart('Кальсотада', 250)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Кальсотада" onclick="decrementItem('Кальсотада')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Кальсотада" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Кальсотада" onclick="incrementItem('Кальсотада', 250)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/сангрия.png" alt="Сангрия">
+                <p><b>Сангрия</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="description-collapsible">Национальный алкогольный напиток на основе вина, с добавлением фруктов, сахара</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>270 ₽</b></p>
+            <div id="controls_Сангрия">
+                <button class="add-button-size" id="addButton_Сангрия" onclick="addToCart('Сангрия', 270)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Сангрия" onclick="decrementItem('Сангрия')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Сангрия" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button" id="addBtn_Сангрия" onclick="incrementItem('Сангрия', 270)" style="display: none;">+</button>
+            </div>
+            </div>
+                     </div>
+                        </div>
+                    </div>
+            
+                    <div class="card-dish">
+                        <div class="image-container">
+                            <div class="menu-item">
+                <img src="images/Spain/тинто де верано.png" alt="Тинто де верано">
+                <p><b>Тинто де верано</b> <span class="small-text">(200мл)</span></p>
+            <p><span class="description-collapsible">Винный холодный коктель с цитрусовыми фруктами</span></p>
+            <button class="toggle-description-btn">Читать далее</button>
+            <div class="price-container" >
+            <p><b>270 ₽</b></p>
+            <div id="controls_Тинто де верано">
+                <button class="add-button-size" id="addButton_Тинто де верано" onclick="addToCart('Тинто де верано', 270)">Добавить</button>
+                <button class="quantity-control quantity-button-size" id="removeBtn_Тинто де верано" onclick="decrementItem('Тинто де верано')" style="display: none;">-</button>
+                <span class="quantity-display" id="quantity_Тинто де верано" style="display: none;">1</span>
+                <button class="quantity-control quantity-size-button"  id="addBtn_Тинто де верано" onclick="incrementItem('Тинто де верано', 270)" style="display: none;">+</button>
+            </div>
+            </div>
+                            </div>
+                        </div>
+                    </div>
+            
+            
+            </div>
+        </section>
+    </section>
+<!-- Всплывающее окно корзины -->
+<div class="cart-container">
+    <div id="cartDropdown" class="cart-dropdown">
+        <h3>Ваша Корзина</h3>
+        <div id="cartItems"></div>
+        <p id="totalAmount"></p>
+        <button onclick="checkout()">Оформить заказ</button>
+    </div>
+    </div>
+        <!-- Footer -->
+    <footer>
+        <p>Контакты | Политика конфиденциальности</p>
+        <p>Национальные Блюда © 2024</p>
+    </footer>
+    <script src="script.js"></script>
+     
+</body>
+</html>
+
