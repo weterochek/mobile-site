@@ -198,15 +198,15 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: 'Неверные данные' });
-  }
-  const { accessToken, refreshToken } = generateTokens(user);
-  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
-  res.json({ accessToken });
-});
+   const { username, password } = req.body;
+   const user = await User.findOne({ username });
+   if (!user || !(await bcrypt.compare(password, user.password))) {
+     return res.status(401).json({ message: 'Неверные данные' });
+   }
+   const { accessToken, refreshToken } = generateTokens(user);
+   res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
+   res.json({ accessToken });
+ });
 
 app.post('/refresh', (req, res) => {
   const refreshToken = req.cookies.refreshToken;
