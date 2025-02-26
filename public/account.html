@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<link rel="apple-touch-icon" sizes="180x180" href="images/орех180.png"> 
+<link rel="icon" sizes="32x32" href="images/орех32.png" type="image/png"> 
+<link rel="icon" sizes="16x16" href="images/орех16.png" type="image/png"> 
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Личный кабинет</title>
+  <link rel="stylesheet" href="styless.css" />
+</head>
+<body>
+<header>
+    <nav>
+            <ul class="navbar">
+                <div class="navbar-left">
+                <li><a href="index.html" class="nav-item">Главная</a></li>
+                <li><a href="#menu" class="nav-item">Меню</a></li>
+                <li><a href="" class="nav-item">О нас</a></li>
+            </div>
+            <div class="navbar-center">
+                <a href="index.html"><img src="images/logo.png" alt="Logo" class="navbar-logo"></a>
+              </div>
+          <div class="navbar-right">
+            <li><a href="#contacts" class="nav-item">Контакты</a></li>
+            <li class="cart-container">
+                <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+                </div>
+            </li>
+            <a href="#cabinet" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+            <a id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
+        </div>
+        </ul>
+    </nav>
+</header>
+
+<div class="account-container">
+    <h2>Личный кабинет</h2>
+    <p>Пользователь: <span id="usernameDisplay">Загрузка...</span></p>
+    <label>Имя: <input id="nameInput" type="text" disabled><button onclick="editField('name')">Редактировать</button></label>
+    <label>Город: <input id="cityInput" type="text" disabled><button onclick="editField('city')">Редактировать</button></label>
+    <button onclick="logout()">Выйти</button> <!-- Кнопка выхода -->
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
