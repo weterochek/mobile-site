@@ -40,14 +40,6 @@ body {
     text-decoration: none;
 }
 
-.navbar-center .navbar-logo {
-    max-height: 35px; /* Увеличить логотип при необходимости */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-}
-}
 .cart-icon:hover {
     color: #ff6600;
 }
@@ -111,7 +103,13 @@ body {
 .navbar-center .navbar-logo {
     max-height: 35px; /* Увеличить логотип при необходимости */
 }
-
+.navbar-center {
+    flex: 1; /* Центр занимает всю доступную ширину */
+    display: flex;
+    justify-content: center; /* Логотип по центру */
+    align-items: center;
+    z-index: 1100; /* Логотип будет выше, чем гамбургер-меню */
+}
 .navbar {
     display: none; /* Скрываем меню */
     flex-direction: column;
