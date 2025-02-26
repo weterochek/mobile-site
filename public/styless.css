@@ -122,6 +122,41 @@ body {
     padding: 10px 15px; /* Универсальные отступы */
     font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
 }
+.menu-toggle {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px; /* Сдвиг ближе к логотипу */
+    margin-top: -5px; /* Немного выше */
+    z-index: 1001;
+}
+.menu-content {
+    width: 100%;
+    text-align: center;
+}
+.menu-content .nav-item {
+    display: block;
+    color: white;
+    font-size: 2rem;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+
+.menu-content.active {
+    display: flex;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #ccc;
+}
+/* Корзина в правом углу */
 .cart-container {
     margin-right: 20px; /* Сдвиг ближе к логотипу */
     display: flex;
@@ -159,37 +194,23 @@ body {
     font-size: 18px;
     margin-bottom: 10px;
 }
-.menu-toggle {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px; /* Сдвиг ближе к логотипу */
-    margin-top: -5px; /* Немного выше */
-    z-index: 1001;
-}
-.menu-content {
-    width: 100%;
-    text-align: center;
-}
-.menu-content .nav-item {
-    display: block;
-    color: white;
-    font-size: 2rem;
-    text-decoration: none;
-    margin: 15px 0;
-}
-
-
-.menu-content.active {
-    display: flex;
-}
-
 
 /* Показать всплывающее окно при наведении */
 .cart-container:hover .cart-dropdown {
     display: block;
 }
+/* Стиль кнопок "+" и "-" */
+.quantity-control {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+/* Стиль отображения количества товара */
 .quantity-display {
     font-size: 16px;
     margin: 0 10px;
@@ -265,122 +286,80 @@ body {
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
 }
-.close-menu {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    font-size: 2.5rem;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
+@media (max-width: 768px) {
+    header nav {
+        padding: 10px;
+    }
+    .menu-toggle {
+        display: block;
+    }
+    .text-overlay {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+    .navbar-logo {
+        max-height: 35px; /* Уменьшение размера логотипа */
+    }
 
-.close-menu:hover {
-    transform: rotate(15deg) scale(1.1);
-    color: #ccc;
-}
-.cart-dropdown {
-    position: absolute;
-    top: 100%; /* Отображение прямо под кнопкой */
-    left: 50%; /* Центрирование относительно кнопки */
-    transform: translateX(-50%);
-    background-color: #fff;
-    padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 350px;
-    display: none; /* Скрыто изначально */
-    border-radius: 8px;
-    z-index: 1000;
-}
-.cart-dropdown h3 {
-    margin-top: 0;
-}
+    .menu-toggle {
+        font-size: 1.8rem;
+    }
 
-.cart-item {
-
+    .nav-item {
+        font-size: 1.5rem;
+    }
 
 }
-.menu-toggle {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px; /* Сдвиг ближе к логотипу */
-    margin-top: -5px; /* Немного выше */
-    z-index: 1001;
-}
-.menu-content {
-    width: 100%;
-    text-align: center;
-}
-.menu-content .nav-item {
-    display: block;
-    color: white;
-    font-size: 2rem;
-    text-decoration: none;
-    margin: 15px 0;
+
+@media (max-width: 480px) {
+    header nav {
+        justify-content: space-between;
+        padding: 5px;
+    }
+    .menu-toggle {
+        font-size: 1.8rem;
+    }
+    .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+    .text-overlay {
+        font-size: 0.7rem;
+        padding: 6px;
+    }
+    .navbar-logo {
+        max-height: 30px;
+    }
+
+    .nav-item {
+        font-size: 1.2rem;
+    }
 }
 
-
-.menu-content.active {
-    display: flex;
+/* Принудительное расположение в два ряда для экранов до 480px */
+@media (max-width: 480px) {
+    .grid-dishes {
+        grid-template-columns: 1fr 1fr; /* Два столбца */
+        gap: 1rem; /* Меньший зазор */
+    }
+    .card-dish p {
+        font-size: 12px;
+    }
+    
+    .card-dish b {
+        font-size: 11px;
+    }
 }
+@media (max-width: 768px) {
+    nav {
+        flex-wrap: nowrap;
+    }
 
-.cart-dropdown button {
-    background-color: #9C9C9C;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 5px 5px 0 0;
+    .menu-toggle {
+        margin-right: auto; /* Гамбургер уходит влево */
+    }
+
+    .cart-container {
+        margin-left: 10px; /* Корзина ближе к центру */
+        margin-right: 0;
+    }
 }
-/* Стиль основной кнопки "Добавить" */
-
-/* Стиль кнопок "+" и "-" */
-.quantity-control {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #333;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-block;
-}
-
-/* Стиль отображения количества товара */
-.quantity-display {
-    font-size: 16px;
-    margin: 0 10px;
-    display: inline-block;
-    color: #333;
-}
-
-/* Стили для кнопок + и - в корзине */
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-}
-
-.cart-item .item-info {
-    flex-grow: 1;
-    padding-right: 10px;
-    text-align: left; /* Выравнивание текста по левому краю */
-}
-
-.cart-item .cart-buttons {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    width: 100px; /* Задаем фиксированную ширину для кнопок */
-}
-
-.cart-item .quantity {
-    padding: 0 5px;
-    min-width: 30px; /* Задаем минимальную ширину для количества */
-    text-align: center; /* Центрируем текст количества */
-}  
