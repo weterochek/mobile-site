@@ -33,7 +33,17 @@ body {
   .account-info p {
     font-size: 18px;
 }
-  
+  .cart-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+    color: #000;
+    text-decoration: none;
+}
+
+
+.cart-icon:hover {
+    color: #ff6600;
+}
   .account-info button {
     background-color: #4caf50;
     color: white;
@@ -121,6 +131,17 @@ body {
 .navbar li a {
     padding: 10px 15px; /* Универсальные отступы */
     font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
+}
+.close-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 .menu-toggle {
     font-size: 1.5rem;
@@ -286,6 +307,7 @@ nav {
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
 }
+/* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
         padding: 10px;
