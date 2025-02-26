@@ -159,6 +159,32 @@ body {
     font-size: 18px;
     margin-bottom: 10px;
 }
+.menu-toggle {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px; /* Сдвиг ближе к логотипу */
+    margin-top: -5px; /* Немного выше */
+    z-index: 1001;
+}
+.menu-content {
+    width: 100%;
+    text-align: center;
+}
+.menu-content .nav-item {
+    display: block;
+    color: white;
+    font-size: 2rem;
+    text-decoration: none;
+    margin: 15px 0;
+}
+
+
+.menu-content.active {
+    display: flex;
+}
+
 
 /* Показать всплывающее окно при наведении */
 .cart-container:hover .cart-dropdown {
