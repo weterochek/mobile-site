@@ -27,7 +27,7 @@ registerForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("registerPassword").value;
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/register", {
+        const response = await fetch("https://mobile-site.onrender.com/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
@@ -55,7 +55,7 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("loginPassword").value;
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/login", {
+        const response = await fetch("https://mobile-site.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
@@ -118,7 +118,7 @@ async function addToCart(productId, quantity) {
 // Функция обновления токена
 async function refreshAccessToken() {
     try {
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
+        const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
             credentials: "include",
         });
@@ -138,7 +138,7 @@ async function refreshAccessToken() {
     }
 }
 function logout() {
-    fetch("https://makadamia.onrender.com/logout", { method: "POST", credentials: "include" })
+    fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
         .then(() => {
             localStorage.removeItem("token"); // Удаляем токен
             localStorage.removeItem("cart");  // Удаляем корзину
