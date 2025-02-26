@@ -65,7 +65,6 @@ body {
 }
 .navbar-center {
     flex: 1; /* Центр занимает всю доступную ширину */
-    display: flex;
     justify-content: center; /* Логотип по центру */
     align-items: center;
     z-index: 1100; /* Логотип будет выше, чем гамбургер-меню */
