@@ -216,36 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadCartFromLocalStorage(); // Загрузка корзины при загрузке страницы
 });
 
-// Открытие личного кабинета
-function openCabinet(username) {
-    closeCabinet(); // Закрыть, если уже открыто
-    const authButton = document.getElementById("authButton");
-    const rect = authButton.getBoundingClientRect();
-
-    const cabinetContent = `
-        <div class="cabinet-dropdown" id="cabinetDropdown" style="top: ${rect.bottom}px; left: ${rect.left}px;">
-            <h2 style="display: flex; justify-content: space-between; align-items: center; font-size: 1.2em;">
-                Личный кабинет 
-                <span onclick="closeCabinet()" style="cursor: pointer; font-size: 0.75em; color: black; padding: 0 5px;">✖</span>
-            </h2>
-            <p>Пользователь: ${username}</p>
-            <button onclick="logout()">Выйти</button>
-        </div>
-    `;
-    
-    document.body.insertAdjacentHTML("beforeend", cabinetContent);
-
-    // Проверка на выход за границы окна
-    const cabinetDropdown = document.getElementById("cabinetDropdown");
-    const cabinetRect = cabinetDropdown.getBoundingClientRect();
-
-    if (cabinetRect.right > window.innerWidth) {
-        cabinetDropdown.style.left = `${window.innerWidth - cabinetRect.width}px`;
-    }
-
-    // Закрытие окна при клике вне его
-    document.addEventListener("click", closeCabinetOnOutsideClick);
-}
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem('token'); // Получаем токен из localStorage
     if (!token) {
@@ -314,7 +284,64 @@ function handleAuthClick() {
     } else {
         window.location.href = 'login.html'; // Если нет, перенаправляем на страницу входа
     }
-}ument.addEventListener("DOMContentLoaded", () => {
+}
+// Функция выхода из аккаунта
+function logout() {
+    saveCartToLocalStorage(); // Сохраняем корзину текущего пользователя перед выходом
+    localStorage.removeItem("username"); // Удаляем данные пользователя
+    alert("Вы вышли из аккаунта.");
+    closeCabinet(); // Закрываем личный кабинет
+    const authButton = document.getElementById("authButton");
+    authButton.textContent = "Вход"; // Меняем текст кнопки на "Вход"
+    authButton.onclick = () => { window.location.href = "login.html"; };
+}
+
+// Закрытие личного кабинета
+function closeCabinet() {
+    const cabinetDropdown = document.getElementById("cabinetDropdown");
+    if (cabinetDropdown) {
+        cabinetDropdown.remove();
+    }
+    document.removeEventListener("click", closeCabinetOnOutsideClick);
+}
+
+// Закрытие при клике вне окна
+function closeCabinetOnOutsideClick(event) {
+    const cabinetDropdown = document.getElementById("cabinetDropdown");
+    if (cabinetDropdown && !cabinetDropdown.contains(event.target) && !event.target.closest("#authButton")) {
+        closeCabinet();
+    }
+}
+
+// Расчет баланса на основе корзины
+function calculateBalance() {
+    let balance = 0;
+    for (const item in cart) {
+        balance += cart[item].price * cart[item].quantity;
+    }
+    return balance;
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navbar = document.querySelector('.navbar');
+    const closeMenu = document.querySelector('.close-menu');
+
+    if (!menuToggle || !navbar || !closeMenu) {
+        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        return;
+    }
+
+    // Открытие меню
+    menuToggle.addEventListener('click', () => {
+        navbar.classList.add('active');
+    });
+
+    // Закрытие меню
+    closeMenu.addEventListener('click', () => {
+        navbar.classList.remove('active');
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
 
     toggleButtons.forEach((button) => {
