@@ -198,16 +198,27 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-   const { username, password } = req.body;
-   const user = await User.findOne({ username });
-   if (!user || !(await bcrypt.compare(password, user.password))) {
-     return res.status(401).json({ message: 'Неверные данные' });
-   }
-   const { accessToken, refreshToken } = generateTokens(user);
-   res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
-   res.json({ accessToken });
- });
+  try {
+    console.log("Запрос на логин:", req.body);
 
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+
+    console.log("Найден пользователь:", user);
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: 'Неверные данные' });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
+    res.json({ accessToken });
+
+  } catch (err) {
+    console.error("Ошибка в /login:", err);
+    res.status(500).json({ message: "Ошибка сервера", error: err.message });
+  }
+});
 app.post('/refresh', (req, res) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: 'Не авторизован' });
