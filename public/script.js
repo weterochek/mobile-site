@@ -246,25 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(() => console.log("Ошибка загрузки профиля"));
 });
-// Обработка кнопки авторизации
 document.addEventListener("DOMContentLoaded", () => {
-    loadCartFromLocalStorage();
-
-    const authButton = document.getElementById("authButton");
-    const username = localStorage.getItem("username");
-
-    if (username) {
-        authButton.textContent = "Личный кабинет";
-        authButton.removeAttribute("onclick");
-        authButton.addEventListener("click", () => openCabinet(username));
-    } else {
-        authButton.textContent = "Вход";
-        authButton.addEventListener("click", () => {
-            window.location.href = "login.html";
-        });
+    const cabinetButton = document.getElementById("cabinetButton");
+    if (cabinetButton) {
+        cabinetButton.addEventListener("click", openCabinet);
     }
-
-    loadCartFromLocalStorage(); // Загрузка корзины при загрузке страницы
 });
 
 document.addEventListener("DOMContentLoaded", () => {
