@@ -218,7 +218,7 @@ function editField(field) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("https://makadamia.onrender.com/account", {
+    fetch("https://mobile-site.onrender.com/account", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
     .then(res => res.json())
