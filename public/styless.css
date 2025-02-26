@@ -46,17 +46,22 @@ body {
   .account-info button:hover {
     background-color: #45a049;
 }
-  header nav {
+ header nav {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+    align-items: center; /* Выравнивание элементов по вертикали */
+    justify-content: space-between; /* Пространство между элементами */
+    padding: 10px 20px;
     background-color: #fff;
-    padding: 10px 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    z-index: 1000;
+    position: fixed; /* Панель фиксируется */
+    top: 0; /* Привязывается к верхней части экрана */
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Поверх остальных элементов */
+}
+.small-text{
+    font-size: 0.8em;
+    color: gray;
 }
 .navbar-center {
     flex: 1; /* Центр занимает всю доступную ширину */
@@ -118,7 +123,123 @@ body {
     padding: 10px 15px; /* Универсальные отступы */
     font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
 }
+.cart-container {
+    margin-right: 20px; /* Сдвиг ближе к логотипу */
+    display: flex;
+    align-items: center;
+}
 
+.cart-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+    color: #000;
+    text-decoration: none;
+}
+
+
+.cart-icon:hover {
+    color: #ff6600;
+}
+
+.cart-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    z-index: 10;
+    padding: 15px;
+}
+
+.cart-dropdown h3 {
+    margin: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Показать всплывающее окно при наведении */
+.cart-container:hover .cart-dropdown {
+    display: block;
+}
+.quantity-display {
+    font-size: 16px;
+    margin: 0 10px;
+    display: inline-block;
+    color: #333;
+}
+
+/* Стили для кнопок + и - в корзине */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.cart-item .item-info {
+    flex-grow: 1;
+    padding-right: 10px;
+    text-align: left; /* Выравнивание текста по левому краю */
+    font-size: 0.85em;
+}
+
+.cart-item .cart-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 75px; /* Задаем фиксированную ширину для кнопок */
+}
+
+.cart-item .quantity {
+    padding: 0 5px;
+    min-width: 30px; /* Задаем минимальную ширину для количества */
+    text-align: center; /* Центрируем текст количества */
+}
+
+/* Стили для выпадающего окна */
+.cabinet-dropdown {
+    position: fixed; /* Позиция относительно родителя */
+    top: 100%; /* Находится под кнопкой */
+    left: 0; /* Прижать к левой стороне */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    max-width: calc(100vw - 20px); /* Чтобы вмещался по ширине экрана */
+    max-height: calc(100vh - 20px); /* Чтобы вмещался по высоте экрана */
+    overflow-y: auto; /* Скролл для содержимого, если его слишком много */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.cabinet-dropdown h2 {
+    padding: 8px; /* Отступы внутри заголовка */
+}
+
+.cabinet-dropdown span {
+    margin-left: auto; /* Сдвиг крестика вправо */
+}
+
+.cabinet-dropdown h2, .cabinet-dropdown h3, .cabinet-dropdown p {
+    margin: 0 0 10px;
+}
+
+.cabinet-dropdown button {
+    background-color: #8D917A;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#cartModal h3, #cartModal button {
+    margin-bottom: 10px;
+}
 .close-menu {
     position: absolute;
     top: 20px;
