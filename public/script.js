@@ -1,4 +1,4 @@
-dlet cart = {};
+let cart = [];
 window.onload = function() {
   const userAgent = navigator.userAgent.toLowerCase();
 
