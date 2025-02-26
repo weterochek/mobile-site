@@ -40,7 +40,9 @@ body {
     text-decoration: none;
 }
 
-
+.navbar-center .navbar-logo {
+    max-height: 35px; /* Увеличить логотип при необходимости */
+}
 .cart-icon:hover {
     color: #ff6600;
 }
