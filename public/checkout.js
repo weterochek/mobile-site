@@ -72,52 +72,106 @@ function saveCartToLocalStorage() {
     localStorage.setItem(`cart_${username}`, JSON.stringify(cart));
 }
 
-// Обработчик для кнопок на странице
+// Загрузка данных пользователя
+async function loadUserData() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Вы не авторизованы! Пожалуйста, войдите в аккаунт.");
+        window.location.href = "login.html";
+        return;
+    }
+    try {
+        const response = await fetch("https://makadamia.onrender.com/account", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        if (!response.ok) {
+            throw new Error("Ошибка при загрузке данных профиля");
+        }
+        const userData = await response.json();
+        document.getElementById("customerName").value = userData.name || "";
+        document.getElementById("customerAddress").value = userData.city || "";
+    } catch (error) {
+        console.error("Ошибка загрузки данных профиля:", error);
+        alert("Не удалось загрузить данные профиля.");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    loadCartFromLocalStorage(); // Загружаем данные корзины
-    renderCheckoutCart(); // Отображаем корзину
+    loadCartFromLocalStorage();
+    renderCheckoutCart();
+    loadUserData();
 
     // Кнопка "Вернуться к покупкам"
     const backToShoppingButton = document.getElementById("backToShopping");
     if (backToShoppingButton) {
         backToShoppingButton.addEventListener("click", function () {
             saveCartToLocalStorage();
-            window.location.href = "index.html"; // Возврат на главную страницу
+            window.location.href = "index.html";
         });
     }
 
     // Кнопка "Оформить заказ"
     const checkoutForm = document.getElementById("checkoutForm");
     if (checkoutForm) {
-        checkoutForm.addEventListener("submit", function (e) {
+        checkoutForm.addEventListener("submit", async function (e) {
             e.preventDefault();
-            alert("Ваш заказ успешно оформлен!");
-            cart = {}; // Очищаем корзину
-            saveCartToLocalStorage();
-            window.location.href = "index.html"; // Перенаправление на главную
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("Вы не авторизованы!");
+                return;
+            }
+            const orderData = {
+                name: document.getElementById("customerName").value,
+                address: document.getElementById("customerAddress").value,
+                additionalInfo: document.getElementById("additionalInfo").value
+            };
+
+            console.log("Отправка данных заказа:", orderData); // Логирование данных перед отправкой
+
+            try {
+                const response = await fetch("https://makadamia.onrender.com/order", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json(); // Получаем ошибку с сервера
+                    console.error("Ошибка при оформлении заказа:", errorData);
+                    alert("Ошибка при оформлении заказа: " + (errorData.message || "Неизвестная ошибка"));
+                    return;
+                }
+
+                alert("Заказ успешно оформлен!");
+                cart = {};
+                saveCartToLocalStorage();
+                window.location.href = "thankyou.html";
+            } catch (error) {
+                console.error("Ошибка отправки заказа:", error);
+                alert("Ошибка при оформлении заказа.");
+            }
         });
     }
-});
-document.addEventListener("DOMContentLoaded", () => {
-    const additionalInfoField = document.getElementById("additionalInfo");
 
-    // Обработчик для поля "Дополнительная информация"
+    const additionalInfoField = document.getElementById("additionalInfo");
     additionalInfoField.addEventListener("input", function () {
-        // Если пользователь удалил весь текст, возвращаем "(необязательно)"
         if (!this.value.trim()) {
             this.placeholder = "(необязательно)";
         }
     });
-
     additionalInfoField.addEventListener("focus", function () {
-        // Если пользователь начинает писать, убираем placeholder
         if (this.placeholder === "(необязательно)") {
             this.placeholder = "";
         }
     });
-
     additionalInfoField.addEventListener("blur", function () {
-        // Если пользователь уходит с поля и текст пустой, возвращаем placeholder
         if (!this.value.trim()) {
             this.placeholder = "(необязательно)";
         }
