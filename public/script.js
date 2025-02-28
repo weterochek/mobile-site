@@ -191,6 +191,114 @@ function loadCartFromLocalStorage() {
         updateCartDisplay();
     }
 }
+async function fetchWithAuth(url, options = {}) {
+    let token = localStorage.getItem("token");
+
+    if (!token || isTokenExpired(token)) {
+        console.log("🔄 Токен истёк, обновляем...");
+        token = await refreshAccessToken();
+        if (!token) return; // Если не удалось обновить токен — выходим
+    }
+
+    let response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+    });
+
+    if (response.status === 401) {
+        console.warn("🚨 Ошибка 401: Пробуем обновить токен.");
+        token = await refreshAccessToken();
+        if (!token) return response; // Если не удалось обновить — выходим
+
+        response = await fetch(url, {
+            ...options,
+            headers: { Authorization: `Bearer ${token}` },
+            credentials: "include",
+        });
+    }
+
+    return response;
+}
+function getTokenExp(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.exp;
+    } catch (e) {
+        return null;
+    }
+}
+
+
+function startTokenRefresh() {
+    setInterval(async () => {
+        const token = localStorage.getItem("token");
+        if (!token || isTokenExpired(token)) {
+            console.log("🔄 Токен устарел, обновляем...");
+            await refreshAccessToken();
+        }
+    }, 5 * 60 * 1000); // Проверка каждые 5 минут
+}
+
+// Запускаем обновление при загрузке страницы
+startTokenRefresh();
+
+async function refreshAccessToken() {
+    try {
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
+            method: "POST",
+            credentials: "include",
+        });
+
+        if (!response.ok) {
+            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
+            logout();
+            return null;
+        }
+
+        data = await response.json(); // Обновляем глобальную переменную
+        console.log("Ответ сервера:", data);
+
+        if (data.accessToken) {
+            localStorage.setItem("token", data.accessToken);
+            console.log("✅ Новый accessToken получен и сохранён.");
+            return data.accessToken;
+        } else {
+            console.error("❌ Сервер не вернул accessToken!");
+            logout();
+            return null;
+        }
+    } catch (error) {
+        console.error("❌ Ошибка при обновлении токена:", error);
+        logout();
+        return null;
+    }
+}
+
+
+
+function isTokenExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем токен
+        return (Date.now() / 1000) >= payload.exp; // Проверяем срок действия
+    } catch (e) {
+        return true; // Если ошибка — считаем токен недействительным
+    }
+}
+
+
+// Запускаем проверку токена раз в минуту
+setInterval(() => {
+    if (isTokenExpired()) {
+        console.log("🔄 Токен истёк, обновляем...");
+        refreshAccessToken().then(newToken => {
+            console.log("✅ Новый токен после автообновления:", newToken);
+        }).catch(err => console.error("❌ Ошибка обновления:", err));
+    }
+}, 60000); // 1 раз в минуту
 
 function editField(field) {
     const input = document.getElementById(field + "Input");
