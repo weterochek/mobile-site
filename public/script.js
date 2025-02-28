@@ -247,37 +247,22 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
-    try {
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
-            method: "POST",
-            credentials: "include",
-        });
+    const res = await fetch("https://makadamia.onrender.com/refresh", {
+        method: "POST",
+        credentials: "include",
+    });
 
-        if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
-            logout();
-            return null;
-        }
-
-        data = await response.json(); // Обновляем глобальную переменную
-        console.log("Ответ сервера:", data);
-
-        if (data.accessToken) {
-            localStorage.setItem("token", data.accessToken);
-            console.log("✅ Новый accessToken получен и сохранён.");
-            return data.accessToken;
-        } else {
-            console.error("❌ Сервер не вернул accessToken!");
-            logout();
-            return null;
-        }
-    } catch (error) {
-        console.error("❌ Ошибка при обновлении токена:", error);
-        logout();
-        return null;
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("accessToken", data.accessToken);
+        console.log("Токен успешно обновлён");
+    } else {
+        console.error("Ошибка обновления токена, требуется повторный вход");
+        // Очистка локального хранилища и редирект на страницу входа
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login.html"; // Или своя страница входа
     }
 }
-
 
 
 function isTokenExpired(token) {
@@ -308,7 +293,7 @@ function editField(field) {
         input.disabled = false;
         input.focus();
     } else {
-        fetch("https://mobile-site.onrender.com/account", {
+        fetch("https://makadamia.onrender.com/account", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -326,7 +311,7 @@ function editField(field) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("https://mobile-site.onrender.com/account", {
+    fetch("https://makadamia.onrender.com/account", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
     .then(res => res.json())
