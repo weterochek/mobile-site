@@ -308,7 +308,7 @@ function editField(field) {
         input.disabled = false;
         input.focus();
     } else {
-        fetch("https://makadamia.onrender.com/account", {
+        fetch("https://mobile-site.onrender.com/account", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
