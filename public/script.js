@@ -1,4 +1,4 @@
-let cart = {};
+let cart = [];
 window.onload = function() {
   const userAgent = navigator.userAgent.toLowerCase();
 
@@ -17,17 +17,24 @@ window.onload = function() {
     }
   }
 };
-console.log("Отправка запроса на /refresh");
-// Функция для показа/скрытия выпадающего окна корзины под кнопкой "Корзина"
-document.addEventListener("DOMContentLoaded", function() {
+function toggleCart() {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+    }
+}
+
+// Закрытие корзины при клике на крестик
+document.addEventListener("DOMContentLoaded", function () {
     const cartButton = document.getElementById('cartButton');
     const cartDropdown = document.getElementById('cartDropdown');
-
+    
     // Открытие/закрытие корзины при клике на кнопку
-    cartButton.addEventListener('click', function(event) {
+    cartButton.addEventListener('click', function (event) {
         event.stopPropagation(); // Остановка распространения события клика
-        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+        toggleCart(); // Переключение корзины
     });
+    
     // Закрытие корзины при клике на крестик
     const closeCartButton = document.createElement("span");
     closeCartButton.innerHTML = "✖";
@@ -37,15 +44,22 @@ document.addEventListener("DOMContentLoaded", function() {
     closeCartButton.style.right = "10px";
     closeCartButton.style.fontSize = "1.2em";
     closeCartButton.style.color = "black";
-    closeCartButton.addEventListener("click", function(event) {
-        event.stopPropagation();
-        cartDropdown.style.display = 'none';
+    closeCartButton.addEventListener("click", function (event) {
+        event.stopPropagation(); // Останавливаем событие
+        cartDropdown.style.display = 'none'; // Скрыть корзину
     });
 
     cartDropdown.prepend(closeCartButton); // Добавляем крестик в начало содержимого
 });
 
-// Добавление товара в корзину
+// Закрытие корзины при клике вне корзины (но не на товарах)
+document.addEventListener("click", function (event) {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton") && !event.target.closest(".cart-item")) {
+        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины и её элементов
+    }
+});
+// Функция добавления товара в корзину
 function addToCart(itemName, itemPrice) {
     if (cart[itemName]) {
         cart[itemName].quantity += 1;
@@ -57,7 +71,7 @@ function addToCart(itemName, itemPrice) {
     replaceAddButtonWithControls(itemName);
 }
 
-// Уменьшение количества товара
+// Функции для увеличения/уменьшения количества товаров
 function decrementItem(itemName) {
     if (cart[itemName]) {
         cart[itemName].quantity -= 1;
@@ -70,11 +84,9 @@ function decrementItem(itemName) {
     }
 }
 
-// Увеличение количества товара
 function incrementItem(itemName, itemPrice) {
     addToCart(itemName, itemPrice);
 }
-
 // Преобразование кнопки "Добавить" в контролы "+", "-", и количество
 function replaceAddButtonWithControls(itemName) {
     const addButton = document.getElementById(`addButton_${itemName}`);
@@ -185,7 +197,11 @@ async function fetchWithAuth(url, options = {}) {
     if (!token || isTokenExpired(token)) {
         console.log("🔄 Токен истёк, обновляем...");
         token = await refreshAccessToken();
-        if (!token) return; // Если не удалось обновить токен — выходим
+        if (!token) {
+            console.error("❌ Не удалось обновить токен, разлогиниваемся.");
+            logout();
+            return null;
+        }
     }
 
     let response = await fetch(url, {
@@ -211,6 +227,7 @@ async function fetchWithAuth(url, options = {}) {
 
     return response;
 }
+
 function getTokenExp(token) {
     try {
         const payload = JSON.parse(atob(token.split(".")[1]));
@@ -247,8 +264,7 @@ async function refreshAccessToken() {
             return null;
         }
 
-        data = await response.json(); // Обновляем глобальную переменную
-        console.log("Ответ сервера:", data);
+        const data = await response.json(); // ❗️Объявляем локальную переменную
 
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
@@ -265,7 +281,6 @@ async function refreshAccessToken() {
         return null;
     }
 }
-
 
 
 function isTokenExpired(token) {
@@ -287,7 +302,6 @@ setInterval(() => {
         }).catch(err => console.error("❌ Ошибка обновления:", err));
     }
 }, 60000); // 1 раз в минуту
-
 
 function editField(field) {
     const input = document.getElementById(field + "Input");
@@ -462,10 +476,6 @@ async function updateAccount(newUsername, newPassword) {
   const data = await response.json();
   console.log("Ответ от сервера:", data);
 }
-function logout() {
-    localStorage.removeItem('token'); // Удаляем токен
-    window.location.href = 'index.html'; // Перенаправляем на главную
-}
 function handleAuthClick() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -473,4 +483,67 @@ function handleAuthClick() {
     } else {
         window.location.href = 'login.html'; // Если нет, перенаправляем на страницу входа
     }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navbar = document.querySelector('.navbar');
+    const closeMenu = document.querySelector('.close-menu');
+
+    if (!menuToggle || !navbar || !closeMenu) {
+        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        return;
+    }
+
+    // Открытие меню
+    menuToggle.addEventListener('click', () => {
+        navbar.classList.add('active');
+    });
+
+    // Закрытие меню
+    closeMenu.addEventListener('click', () => {
+        navbar.classList.remove('active');
+    });
+});
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleButtons = document.querySelectorAll(".toggle-description-btn");
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            // Ищем текст внутри родительского элемента
+            const parent = button.closest(".menu-item"); // Находим общий контейнер
+            const description = parent.querySelector(".description-collapsible"); // Находим текст
+
+            if (description) {
+                description.classList.toggle("expanded"); // Переключаем класс "expanded"
+
+                // Меняем текст кнопки
+                button.textContent = description.classList.contains("expanded")
+                    ? "Свернуть"
+                    : "Читать далее";
+            } else {
+                console.error("Описание не найдено!");
+            }
+        });
+    });
+});
+async function updateAccount(newUsername, newPassword) {
+  const token = localStorage.getItem("accessToken");
+
+  const response = await fetch("https://makadamia.onrender.com/account", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
+    },
+    body: JSON.stringify({ username: newUsername, password: newPassword }),
+  });
+
+  const data = await response.json();
+  console.log("Ответ от сервера:", data);
+}
+
+// Переход на страницу оформления заказа
+function goToCheckoutPage() {
+    saveCartToLocalStorage();
+    window.location.href = "checkout.html";
 }
