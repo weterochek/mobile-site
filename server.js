@@ -50,22 +50,17 @@ mongoose.connect(mongoURI, {
 app.use(express.json());
 const authMiddleware = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
-    console.log(req.headers.authorization);
-    if (!token) {
-        console.warn("Ошибка 401: Токен отсутствует в заголовках");
-        return res.status(401).json({ message: "Токен не предоставлен" });
-    }
+    if (!token) return res.status(401).json({ message: "Токен не предоставлен" });
 
     try {
-        console.log("Проверяем токен:", token); // Лог для отладки
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     } catch (err) {
-        console.warn("Ошибка 401: Недействительный токен", err.message);
         return res.status(401).json({ message: "Недействительный токен" });
     }
 };
+
 async function fetchWithAuth(url, options = {}) {
     let accessToken = localStorage.getItem("accessToken");
 
@@ -295,28 +290,7 @@ app.post('/refresh', async (req, res) => {
     });
 });
 
-async function refreshAccessToken() {
-    try {
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
-            method: "POST",
-            credentials: "include", // Важно, чтобы cookies передавались!
-        });
 
-        if (!response.ok) {
-            console.warn("Не удалось обновить токен, требуется повторный вход.");
-            logout();
-            return null;
-        }
-
-        const data = await response.json();
-        localStorage.setItem("token", data.accessToken); // Сохраняем новый токен
-        return data.accessToken;
-    } catch (error) {
-        console.error("Ошибка при обновлении токена:", error);
-        logout();
-        return null;
-    }
-}
 const autoRefreshToken = () => {
     setInterval(async () => {
         console.log("🔄 Автообновление токена...");
