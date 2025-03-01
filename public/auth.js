@@ -47,7 +47,6 @@ registerForm.addEventListener("submit", async (e) => {
 });
 
 // Обработчик входа
-const loginForm = document.querySelector("#loginForm form");
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -55,27 +54,20 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("loginPassword").value;
 
     try {
-        const response = await fetch("https://mobile-site.onrender.com/login", {
+        const response = await fetch("https://makadamia.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
-            credentials: "include",
+            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО, чтобы получить refreshToken
         });
 
         const data = await response.json();
         if (response.ok) {
-            // Сохраняем токен в localStorage
-localStorage.setItem("token", data.accessToken);
-localStorage.setItem("username", username);
+            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("username", username);
+            console.log("✅ Успешный вход!");
 
-// Передаём токен второму сайту
-localStorage.setItem("sharedAccessToken", data.accessToken);
-
-// Сообщаем второму сайту о новом токене
-window.localStorage.setItem("sharedAccessTokenUpdate", Date.now());
-
-alert("Вы успешно вошли в систему!");
-window.location.href = "/index.html";
+            window.location.href = "/index.html";
         } else {
             alert(data.message || "Ошибка входа.");
         }
@@ -86,30 +78,51 @@ window.location.href = "/index.html";
 });
 
 // Функция обновления токена
-async function refreshAccessToken() {
-    console.log("Попытка обновления токена...");
+registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById("registerUsername").value;
+    const password = document.getElementById("registerPassword").value;
+
     try {
-        const response = await fetch("https://mobile-site.onrender.com/refresh", {
+        const response = await fetch("https://makadamia.onrender.com/register", {
             method: "POST",
-            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+            credentials: "include", // 🔹 Нужно для получения refreshToken
         });
 
         const data = await response.json();
+
         if (response.ok) {
-            console.log("Токен успешно обновлён:", data.accessToken);
-            localStorage.setItem("token", data.accessToken);
-            return data.accessToken;
+            console.log("✅ Регистрация успешна, авторизуем пользователя...");
+
+            // 🔹 Автоматически логиним пользователя после регистрации
+            const loginResponse = await fetch("https://makadamia.onrender.com/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+                credentials: "include",
+            });
+
+            const loginData = await loginResponse.json();
+            if (loginResponse.ok) {
+                localStorage.setItem("token", loginData.accessToken);
+                localStorage.setItem("username", username);
+                console.log("✅ Автоматический вход выполнен!");
+
+                window.location.href = "/index.html"; // 🔹 Перенаправляем на главную
+            } else {
+                alert(loginData.message || "Ошибка автоматического входа.");
+            }
         } else {
-            console.log("Ошибка при обновлении токена:", data);
-            logout();
-            return null;
+            alert(data.message || "Ошибка регистрации.");
         }
     } catch (error) {
-        console.error("Ошибка запроса на обновление токена:", error);
-        logout();
-        return null;
+        console.error("Ошибка регистрации:", error);
+        alert("Произошла ошибка. Попробуйте снова.");
     }
-}
+});
 
 // Автообновление токена каждые 5 минут
 setInterval(refreshAccessToken, 5 * 60 * 1000);
