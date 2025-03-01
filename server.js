@@ -103,20 +103,25 @@ function isTokenExpired(token) {
     }
 }
 async function refreshAccessToken() {
+    const refreshUrl = window.location.origin.includes("mobile-site.onrender.com")
+        ? "https://mobile-site.onrender.com/refresh"
+        : "https://makadamia.onrender.com/refresh";
+
+    console.log("🔄 Попытка обновления токена по URL:", refreshUrl);
+
     try {
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
+        const response = await fetch(refreshUrl, {
             method: "POST",
-            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО, чтобы передать refreshToken
+            credentials: "include", // Передаёт куки
         });
 
         if (!response.ok) {
-            console.warn("Не удалось обновить токен, требуется повторный вход.");
+            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
             logout();
             return null;
         }
 
         const data = await response.json();
-        
         if (!data.accessToken) {
             console.error("❌ Сервер не вернул accessToken!");
             logout();
@@ -124,14 +129,15 @@ async function refreshAccessToken() {
         }
 
         localStorage.setItem("token", data.accessToken);
-        console.log("✅ Новый accessToken получен и сохранён.");
+        console.log("✅ Новый accessToken получен:", data.accessToken);
         return data.accessToken;
     } catch (error) {
-        console.error("Ошибка при обновлении токена:", error);
+        console.error("❌ Ошибка при обновлении токена:", error);
         logout();
         return null;
     }
 }
+
 
 const autoRefreshToken = () => {
     setInterval(async () => {
