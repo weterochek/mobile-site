@@ -252,12 +252,12 @@ app.post('/refresh', async (req, res) => {
         console.log("🔄 Новый refreshToken:", newRefreshToken);
 
         // Отправляем новый refreshToken в куках
-        res.cookie("refreshToken", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "Strict",
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-        });
+res.cookie("refreshToken", newRefreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Включаем secure только в проде
+    sameSite: "Lax",  // Разрешает кросс-доменные запросы
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+});
 
         res.json({ accessToken });
     });
@@ -284,6 +284,12 @@ async function refreshAccessToken() {
         return null;
     }
 }
+const autoRefreshToken = () => {
+    setInterval(async () => {
+        console.log("🔄 Автообновление токена...");
+        await refreshAccessToken();
+    }, 25 * 60 * 1000); // Обновление за 25 минут до истечения токена
+};
 app.post('/logout', authMiddleware, (req, res) => {
     res.clearCookie('refreshToken', {
         httpOnly: true,
