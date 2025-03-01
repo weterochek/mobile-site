@@ -199,18 +199,17 @@ const User = mongoose.model("User", userSchema);
 
 // Мидлвар для проверки токена
 
-function generateTokens(user) {
-    const issuedAt = Math.floor(Date.now() / 1000); // Добавляем время генерации токена
-
+function generateTokens(user, site) {
+    const issuedAt = Math.floor(Date.now() / 1000);
     const accessToken = jwt.sign(
-        { id: user._id, username: user.username, iat: issuedAt }, 
-        JWT_SECRET, 
+        { id: user._id, username: user.username, iat: issuedAt },
+        JWT_SECRET,
         { expiresIn: "30m" }
     );
 
     const refreshToken = jwt.sign(
-        { id: user._id, username: user.username, iat: issuedAt }, 
-        REFRESH_SECRET, 
+        { id: user._id, username: user.username, site, iat: issuedAt },
+        REFRESH_SECRET,
         { expiresIn: "7d" }
     );
 
@@ -251,48 +250,81 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ message: 'Неверные данные' });
-  }
-  const { accessToken, refreshToken } = generateTokens(user);
-  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
-  res.json({ accessToken });
+    const { username, password } = req.body;
+    const origin = req.headers.origin;
+
+    const user = await User.findOne({ username });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ message: 'Неверные данные' });
+    }
+
+    let cookieName;
+    if (origin === "https://makadamia.onrender.com") {
+        cookieName = "refreshTokenDesktop";
+    } else if (origin === "https://mobile-site.onrender.com") {
+        cookieName = "refreshTokenMobile";
+    } else {
+        return res.status(403).json({ message: "Недопустимый источник запроса" });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user, origin);
+
+    res.cookie(cookieName, refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({ accessToken });
 });
+
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена получен.");
-    console.log("🍪 Cookies:", req.cookies);
 
-    const refreshToken = req.cookies.refreshToken;
+    const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
+    const refreshTokenMobile = req.cookies.refreshTokenMobile;
+    const origin = req.headers.origin;
+
+    let refreshToken;
+    let cookieName;
+
+    if (origin === "https://makadamia.onrender.com") {
+        refreshToken = refreshTokenDesktop;
+        cookieName = "refreshTokenDesktop";
+    } else if (origin === "https://mobile-site.onrender.com") {
+        refreshToken = refreshTokenMobile;
+        cookieName = "refreshTokenMobile";
+    } else {
+        return res.status(403).json({ message: "Недопустимый источник запроса" });
+    }
+
     if (!refreshToken) {
         console.warn("❌ Нет refresh-токена, отправляем 401.");
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err) {
+        if (err || decodedUser.site !== origin) {
             console.warn("❌ Недействительный refresh-токен, отправляем 403.");
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
-        // Ищем пользователя в базе данных
         const user = await User.findById(decodedUser.id);
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
-        console.log("✅ Refresh-токен действителен, создаём новые токены.");
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
 
-        console.log("🔄 Новый refreshToken:", newRefreshToken);
+        console.log(`🔄 Новый ${cookieName}:`, newRefreshToken);
 
-        // Отправляем новый refreshToken в куках
-        res.cookie("refreshToken", newRefreshToken, {
+        res.cookie(cookieName, newRefreshToken, {
             httpOnly: true,
             secure: true,
-            sameSite: "Strict",
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+            sameSite: "None",
+            maxAge: 30 * 24 * 60 * 60 * 1000,
         });
 
         res.json({ accessToken });
@@ -301,15 +333,28 @@ app.post('/refresh', async (req, res) => {
 
 
 
+
 app.post('/logout', authMiddleware, (req, res) => {
-    res.clearCookie('refreshToken', {
+    const origin = req.headers.origin;
+
+    let cookieName;
+    if (origin === "https://makadamia.onrender.com") {
+        cookieName = "refreshTokenDesktop";
+    } else if (origin === "https://mobile-site.onrender.com") {
+        cookieName = "refreshTokenMobile";
+    } else {
+        return res.status(403).json({ message: "Недопустимый источник запроса" });
+    }
+
+    res.clearCookie(cookieName, {
         httpOnly: true,
         secure: true,
-        sameSite: 'Strict'
+        sameSite: 'None'
     });
 
     res.json({ message: 'Вы вышли из системы' });
 });
+
 
 // Обновление токена
 app.post('/refresh-token', (req, res) => {
