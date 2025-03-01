@@ -250,6 +250,35 @@ function startTokenRefresh() {
 
 // Запускаем обновление при загрузке страницы
 startTokenRefresh();
+const refreshAccessToken = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+        console.warn("Нет refresh-токена, требуется вход.");
+        return null;
+    }
+
+    try {
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ refreshToken }) // ✅ Передача refresh-токена
+        });
+
+        if (!response.ok) {
+            throw new Error("Ошибка обновления токена");
+        }
+
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken);
+        return data.accessToken;
+    } catch (error) {
+        console.error("Ошибка обновления токена:", error);
+        return null;
+    }
+};
+
 
 async function refreshAccessToken() {
     try {
