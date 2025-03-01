@@ -247,10 +247,11 @@ function startTokenRefresh() {
         const token = localStorage.getItem("token");
         if (!token || isTokenExpired(token)) {
             console.log("🔄 Токен устарел, обновляем...");
-            await ();
+            await refreshAccessToken(); // ✅ Теперь вызываем правильную функцию
         }
     }, 5 * 60 * 1000); // Проверка каждые 5 минут
 }
+
 
 // Запускаем обновление при загрузке страницы
 startTokenRefresh();
