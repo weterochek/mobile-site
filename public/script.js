@@ -316,6 +316,28 @@ function editField(field) {
         .catch(error => console.log("Ошибка обновления профиля:", error));
     }
 }
+document.addEventListener("DOMContentLoaded", function() {
+    const cartButton = document.getElementById('cartButton');
+    const cartDropdown = document.getElementById('cartDropdown');
+
+    if (!cartButton || !cartDropdown) {
+        console.error("Ошибка: кнопка или выпадающее меню не найдены!");
+        return;
+    }
+
+    cartButton.addEventListener('click', function(event) {
+        event.stopPropagation();
+        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    document.addEventListener("click", function() {
+        cartDropdown.style.display = 'none'; // Закрываем меню при клике вне его
+    });
+
+    cartDropdown.addEventListener("click", function(event) {
+        event.stopPropagation(); // Чтобы клик внутри корзины не закрывал её
+    });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://makadamia.onrender.com/account", {
