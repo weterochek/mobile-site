@@ -252,7 +252,8 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
-    console.log("🔄 Попытка обновления токена...");
+    console.log("🔄 Попытка обновления токена..."); // 👈 Проверяем, вызывается ли функция
+
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
@@ -266,7 +267,7 @@ async function refreshAccessToken() {
         }
 
         const data = await response.json();
-        console.log("✅ Новый accessToken:", data.accessToken);
+        console.log("✅ Новый accessToken:", data.accessToken); // 👈 Проверяем, получаем ли токен
 
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
@@ -282,6 +283,7 @@ async function refreshAccessToken() {
         return null;
     }
 }
+
 
 
 
