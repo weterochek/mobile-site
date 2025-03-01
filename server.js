@@ -252,10 +252,10 @@ app.post('/refresh', async (req, res) => {
         console.log("🔄 Новый refreshToken:", newRefreshToken);
 
         // Отправляем новый refreshToken в куках
-res.cookie("refreshToken", newRefreshToken, {
+res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Включаем secure только в проде
-    sameSite: "Lax",  // Разрешает кросс-доменные запросы
+    secure: process.env.NODE_ENV === "production" ? true : false, // ✅ Secure включаем только в продакшене
+    sameSite: "Lax",
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
 });
 
