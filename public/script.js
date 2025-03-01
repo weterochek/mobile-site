@@ -294,13 +294,10 @@ function isTokenExpired(token) {
 
 
 // Запускаем проверку токена раз в минуту
-setInterval(() => {
-    const token = localStorage.getItem("token");
-    if (!token || isTokenExpired(token)) {  // ✅ Теперь передаём токен
-        console.log("🔄 Токен истёк, обновляем...");
-        refreshAccessToken();
-    }
-}, 60000);
+setInterval(async () => {
+    console.log("🔄 Автообновление токена...");
+    await refreshAccessToken();
+}, 25 * 60 * 1000); // Обновление раз в 25 минут
 
 function editField(field) {
     const input = document.getElementById(field + "Input");
