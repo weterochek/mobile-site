@@ -197,7 +197,11 @@ async function fetchWithAuth(url, options = {}) {
     if (!token || isTokenExpired(token)) {
         console.log("🔄 Токен истёк, обновляем...");
         token = await refreshAccessToken();
-        if (!token) return; // Если не удалось обновить токен — выходим
+        if (!token) {
+            console.error("❌ Не удалось обновить токен, разлогиниваемся.");
+            logout();
+            return null;
+        }
     }
 
     let response = await fetch(url, {
@@ -223,6 +227,7 @@ async function fetchWithAuth(url, options = {}) {
 
     return response;
 }
+
 function getTokenExp(token) {
     try {
         const payload = JSON.parse(atob(token.split(".")[1]));
@@ -247,20 +252,33 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
-    const res = await fetch("https://makadamia.onrender.com/refresh", {
-        method: "POST",
-        credentials: "include",
-    });
+    try {
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
+            method: "POST",
+            credentials: "include",
+        });
 
-    if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("accessToken", data.accessToken);
-        console.log("Токен успешно обновлён");
-    } else {
-        console.error("Ошибка обновления токена, требуется повторный вход");
-        // Очистка локального хранилища и редирект на страницу входа
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login.html"; // Или своя страница входа
+        if (!response.ok) {
+            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
+            logout();
+            return null;
+        }
+
+        const data = await response.json(); // ❗️Объявляем локальную переменную
+
+        if (data.accessToken) {
+            localStorage.setItem("token", data.accessToken);
+            console.log("✅ Новый accessToken получен и сохранён.");
+            return data.accessToken;
+        } else {
+            console.error("❌ Сервер не вернул accessToken!");
+            logout();
+            return null;
+        }
+    } catch (error) {
+        console.error("❌ Ошибка при обновлении токена:", error);
+        logout();
+        return null;
     }
 }
 
@@ -457,10 +475,6 @@ async function updateAccount(newUsername, newPassword) {
 
   const data = await response.json();
   console.log("Ответ от сервера:", data);
-}
-function logout() {
-    localStorage.removeItem('token'); // Удаляем токен
-    window.location.href = 'index.html'; // Перенаправляем на главную
 }
 function handleAuthClick() {
     const token = localStorage.getItem('token');
