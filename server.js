@@ -97,6 +97,7 @@ async function fetchWithAuth(url, options = {}) {
 
     return res;
 }
+
 // Функция проверки срока жизни токена
 function isTokenExpired(token) {
     try {
@@ -107,24 +108,34 @@ function isTokenExpired(token) {
     }
 }
 async function refreshAccessToken() {
-    const res = await fetch("https://makadamia.onrender.com/refresh", {
-        method: "POST",
-        credentials: "include",
-    });
+    try {
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
+            method: "POST",
+            credentials: "include", // Передача refresh-токена в cookies
+        });
 
-    if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem("accessToken", data.accessToken);
-        console.log("Токен успешно обновлён");
-    } else {
-        console.error("Ошибка обновления токена, требуется повторный вход");
-        // Очистка локального хранилища и редирект на страницу входа
-        localStorage.removeItem("accessToken");
-        window.location.href = "/login.html"; // Или своя страница входа
+        if (!response.ok) {
+            console.warn("Не удалось обновить токен, требуется повторный вход.");
+            logout();
+            return null;
+        }
+
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken); // Сохраняем новый access-токен
+        return data.accessToken;
+    } catch (error) {
+        console.error("Ошибка при обновлении токена:", error);
+        logout();
+        return null;
     }
 }
-
-
+const autoRefreshToken = () => {
+    setInterval(async () => {
+        console.log("🔄 Автообновление токена...");
+        await refreshAccessToken();
+    }, 25 * 60 * 1000); // Обновление за 25 минут до истечения токена
+};
+autoRefreshToken();
 // Перенаправление HTTP на HTTPS
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production") {
