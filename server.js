@@ -106,7 +106,7 @@ async function refreshAccessToken() {
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include", // Передача refresh-токена в cookies
+            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО, чтобы передать refreshToken
         });
 
         if (!response.ok) {
@@ -116,7 +116,15 @@ async function refreshAccessToken() {
         }
 
         const data = await response.json();
-        localStorage.setItem("accessToken", data.accessToken); // Сохраняем новый access-токен
+        
+        if (!data.accessToken) {
+            console.error("❌ Сервер не вернул accessToken!");
+            logout();
+            return null;
+        }
+
+        localStorage.setItem("token", data.accessToken);
+        console.log("✅ Новый accessToken получен и сохранён.");
         return data.accessToken;
     } catch (error) {
         console.error("Ошибка при обновлении токена:", error);
@@ -124,6 +132,7 @@ async function refreshAccessToken() {
         return null;
     }
 }
+
 const autoRefreshToken = () => {
     setInterval(async () => {
         console.log("🔄 Автообновление токена...");
