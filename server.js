@@ -21,15 +21,14 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.warn(`🚫 Блокируем CORS-запрос от: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  optionsSuccessStatus: 200, // Фикс для preflight-запросов
 };
+
 // Используем CORS с настройками
 app.use(cors(corsOptions));
 app.use(cookieParser());
