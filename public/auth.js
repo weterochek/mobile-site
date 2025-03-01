@@ -19,32 +19,7 @@ function showLogin() {
 showLogin();
 
 // Обработчик регистрации
-const registerForm = document.querySelector("#registerForm form");
-registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    const username = document.getElementById("registerUsername").value;
-    const password = document.getElementById("registerPassword").value;
-
-    try {
-        const response = await fetch("https://mobile-site.onrender.com/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert("Регистрация прошла успешно! Вы можете войти.");
-            showLogin();
-        } else {
-            alert(data.message || "Ошибка регистрации.");
-        }
-    } catch (error) {
-        console.error("Ошибка регистрации:", error);
-        alert("Произошла ошибка. Попробуйте снова.");
-    }
-});
 
 // Обработчик входа
 loginForm.addEventListener("submit", async (e) => {
