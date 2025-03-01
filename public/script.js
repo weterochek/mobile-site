@@ -160,6 +160,15 @@ function resetAddToCartButtons() {
         revertControlsToAddButton(itemName);
     }
 }
+
+// Загрузка корзины из localStorage при загрузке страницы
+document.addEventListener("DOMContentLoaded", () => {
+    loadCartFromLocalStorage();
+    const cartModal = document.getElementById("cartModal");
+    if (cartModal) cartModal.style.display = "none";
+});
+
+// Функция загрузки корзины
 function loadCartFromLocalStorage() {
     const username = localStorage.getItem("username");
     if (username) {
@@ -170,25 +179,13 @@ function loadCartFromLocalStorage() {
         updateCartDisplay();
     }
 }
-// Загрузка корзины из localStorage при загрузке страницы
-document.addEventListener("DOMContentLoaded", () => {
-    loadCartFromLocalStorage();
-    const cartModal = document.getElementById("cartModal");
-    if (cartModal) cartModal.style.display = "none";
-});
-
-// Функция загрузки корзины
 async function fetchWithAuth(url, options = {}) {
     let token = localStorage.getItem("token");
 
     if (!token || isTokenExpired(token)) {
         console.log("🔄 Токен истёк, обновляем...");
         token = await refreshAccessToken();
-        if (!token) {
-            console.error("❌ Не удалось обновить токен, разлогиниваемся.");
-            logout();
-            return null;
-        }
+        if (!token) return; // Если не удалось обновить токен — выходим
     }
 
     let response = await fetch(url, {
@@ -316,28 +313,6 @@ function editField(field) {
         .catch(error => console.log("Ошибка обновления профиля:", error));
     }
 }
-document.addEventListener("DOMContentLoaded", function() {
-    const cartButton = document.getElementById('cartButton');
-    const cartDropdown = document.getElementById('cartDropdown');
-
-    if (!cartButton || !cartDropdown) {
-        console.error("Ошибка: кнопка или выпадающее меню не найдены!");
-        return;
-    }
-
-    cartButton.addEventListener('click', function(event) {
-        event.stopPropagation();
-        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
-    });
-
-    document.addEventListener("click", function() {
-        cartDropdown.style.display = 'none'; // Закрываем меню при клике вне его
-    });
-
-    cartDropdown.addEventListener("click", function(event) {
-        event.stopPropagation(); // Чтобы клик внутри корзины не закрывал её
-    });
-});
 
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://makadamia.onrender.com/account", {
