@@ -195,7 +195,7 @@ async function fetchWithAuth(url, options = {}) {
     try {
         let token = localStorage.getItem("token");
         if (!token || isTokenExpired(token)) {
-            token = await ();
+            token = await refreshAccessToken(); // ✅ Теперь вызываем функцию
             if (!token) {
                 console.error("❌ Ошибка авторизации, выход из системы.");
                 logout();
@@ -214,7 +214,7 @@ async function fetchWithAuth(url, options = {}) {
 
         if (response.status === 401) {
             console.warn("🔄 Повторная авторизация...");
-            token = await ();
+            token = await refreshAccessToken(); // ✅ Повторный вызов при 401
             if (!token) return response;
 
             return await fetch(url, {
