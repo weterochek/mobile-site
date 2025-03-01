@@ -175,10 +175,39 @@ function updateCartDisplay() {
 // Сохранение корзины в localStorage
 function saveCartToLocalStorage() {
     const username = localStorage.getItem("username");
+
     if (username) {
-        localStorage.setItem(`cart_${username}`, JSON.stringify(cart));
+        localStorage.setItem(`cart_${username}`, JSON.stringify(cart)); // Сохраняем для пользователя
+    } else {
+        localStorage.setItem("cart_guest", JSON.stringify(cart)); // Сохраняем для гостя
     }
 }
+function mergeGuestCart() {
+    const username = localStorage.getItem("username");
+
+    if (!username) return; // Если пользователь не вошел, ничего не делаем
+
+    const guestCart = JSON.parse(localStorage.getItem("cart_guest"));
+    if (!guestCart) return; // Если корзины гостя нет, просто продолжаем
+
+    const userCart = JSON.parse(localStorage.getItem(`cart_${username}`)) || {};
+
+    // Объединяем корзины (если товар уже есть — увеличиваем количество)
+    for (const item in guestCart) {
+        if (userCart[item]) {
+            userCart[item].quantity += guestCart[item].quantity;
+        } else {
+            userCart[item] = guestCart[item];
+        }
+    }
+
+    // Сохраняем объединенную корзину в localStorage и очищаем корзину гостя
+    localStorage.setItem(`cart_${username}`, JSON.stringify(userCart));
+    localStorage.removeItem("cart_guest");
+
+    console.log("✅ Гостевая корзина объединена с пользовательской");
+}
+
 
 // Оформление заказа
 function checkout() {
@@ -207,13 +236,22 @@ document.addEventListener("DOMContentLoaded", () => {
 // Функция загрузки корзины
 function loadCartFromLocalStorage() {
     const username = localStorage.getItem("username");
+
     if (username) {
+        // Загружаем корзину пользователя
         const storedCart = JSON.parse(localStorage.getItem(`cart_${username}`));
         if (storedCart) {
             cart = storedCart;
         }
-        updateCartDisplay();
+    } else {
+        // Если пользователь не авторизован, загружаем корзину для гостя
+        const guestCart = JSON.parse(localStorage.getItem("cart_guest"));
+        if (guestCart) {
+            cart = guestCart;
+        }
     }
+
+    updateCartDisplay(); // Обновляем UI корзины
 }
 async function fetchWithAuth(url, options = {}) {
     let token = localStorage.getItem("token");
