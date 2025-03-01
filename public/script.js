@@ -193,40 +193,32 @@ function loadCartFromLocalStorage() {
 }
 async function fetchWithAuth(url, options = {}) {
     let token = localStorage.getItem("token");
+    console.log("📡 Запрос с авторизацией:", url);
 
-    if (!token || isTokenExpired(token)) {
-        console.log("🔄 Токен истёк, обновляем...");
-        token = await refreshAccessToken();
-        if (!token) {
-            console.error("❌ Ошибка авторизации, выход из системы.");
-            logout();
-            return null;
-        }
-    }
-
-    const response = await fetch(url, {
+    let response = await fetch(url, {
         ...options,
+        credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО!
         headers: {
             ...options.headers,
             Authorization: `Bearer ${token}`,
         },
-        credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО для передачи refreshToken
     });
 
     if (response.status === 401) {
-        console.warn("🔄 Повторная авторизация...");
+        console.warn("🔄 Токен недействителен, пробуем обновить...");
         token = await refreshAccessToken();
         if (!token) return response;
 
         return await fetch(url, {
             ...options,
-            headers: { Authorization: `Bearer ${token}` },
             credentials: "include",
+            headers: { ...options.headers, Authorization: `Bearer ${token}` },
         });
     }
 
     return response;
 }
+
 
 
 
@@ -300,6 +292,7 @@ function isTokenExpired(token) {
 // Запускаем проверку токена раз в минуту
 setInterval(() => {
     if (isTokenExpired()) {
+      console.log("⏳ Проверяем обновление токена...");
         console.log("🔄 Токен истёк, обновляем...");
         refreshAccessToken().then(newToken => {
             console.log("✅ Новый токен после автообновления:", newToken);
