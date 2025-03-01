@@ -277,10 +277,11 @@ app.post('/login', async (req, res) => {
 
     res.cookie(cookieName, refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        domain: ".onrender.com",
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+            secure: true,
+            sameSite: "None",
+            domain: ".onrender.com",
+            path: "/",
+            maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     res.json({ accessToken });
