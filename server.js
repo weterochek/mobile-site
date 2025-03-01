@@ -295,7 +295,8 @@ app.post('/login', async (req, res) => {
             sameSite: "None",
             domain: ".onrender.com",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000,
+            partitioned: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     res.json({ accessToken });
@@ -347,7 +348,8 @@ app.post('/refresh', async (req, res) => {
             secure: true,
             sameSite: "None",
             domain: ".onrender.com",
-            path: "/",
+            partitioned: true,
+            path: "/"
         });
 
         res.json({ accessToken });
