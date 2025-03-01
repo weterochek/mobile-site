@@ -324,17 +324,16 @@ function editField(field) {
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    fetch("https://makadamia.onrender.com/account", {
+document.addEventListener("DOMContentLoaded", async () => {
+    await refreshAccessToken(); // ✅ Сначала обновляем токен
+
+    const response = await fetch("https://makadamia.onrender.com/account", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-       await refreshAccessToken(); // Проверяем токен сразу при загрузке
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.name) document.getElementById("nameInput").value = data.name;
-        if (data.city) document.getElementById("cityInput").value = data.city;
-    })
-    .catch(() => console.log("Ошибка загрузки профиля"));
+    });
+
+    const data = await response.json();
+    if (data.name) document.getElementById("nameInput").value = data.name;
+    if (data.city) document.getElementById("cityInput").value = data.city;
 });
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Страница загружена");
@@ -458,17 +457,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('usernameDisplay').innerText = "Ошибка загрузки";
     });
 });
-async function updateAccount(newUsername, newPassword) {
-  const token = localStorage.getItem("accessToken");
-
-  const response = await fetch("https://makadamia.onrender.com/account", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
-    },
-    body: JSON.stringify({ username: newUsername, password: newPassword }),
-  });
 
   const data = await response.json();
   console.log("Ответ от сервера:", data);
@@ -482,7 +470,7 @@ function handleAuthClick() {
     }
 }
 document.addEventListener("DOMContentLoaded", async () => {
-    await refreshAccessToken(); // Убедись, что `refreshAccessToken` объявлен корректно
+    await refreshAccessToken(); // ✅ Работает внутри `async` функции
 
     const menuToggle = document.querySelector('.menu-toggle');
     const navbar = document.querySelector('.navbar');
@@ -501,6 +489,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         navbar.classList.remove('active');
     });
 });
+
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
 
