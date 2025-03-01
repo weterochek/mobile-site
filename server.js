@@ -339,6 +339,9 @@ app.get('/account', authMiddleware, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
+      res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+        res.set("Pragma", "no-cache");
+        res.set("Expires", "0");
         res.json({ username: user.username, name: user.name, city: user.city });
     } catch (error) {
         res.status(500).json({ message: "Ошибка сервера" });
