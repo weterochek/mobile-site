@@ -195,7 +195,7 @@ async function fetchWithAuth(url, options = {}) {
     try {
         let token = localStorage.getItem("token");
         if (!token || isTokenExpired(token)) {
-            token = await refreshAccessToken();
+            token = await ();
             if (!token) {
                 console.error("❌ Ошибка авторизации, выход из системы.");
                 logout();
@@ -214,7 +214,7 @@ async function fetchWithAuth(url, options = {}) {
 
         if (response.status === 401) {
             console.warn("🔄 Повторная авторизация...");
-            token = await refreshAccessToken();
+            token = await ();
             if (!token) return response;
 
             return await fetch(url, {
@@ -247,7 +247,7 @@ function startTokenRefresh() {
         const token = localStorage.getItem("token");
         if (!token || isTokenExpired(token)) {
             console.log("🔄 Токен устарел, обновляем...");
-            await refreshAccessToken();
+            await ();
         }
     }, 5 * 60 * 1000); // Проверка каждые 5 минут
 }
@@ -256,30 +256,24 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
+    console.log("🔄 Попытка обновления токена...");
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include", // Отправка куки refreshToken
+            credentials: "include", // 🔹 Передаёт куки!
         });
 
         if (!response.ok) {
-            console.warn(`❌ Ошибка обновления токена (${response.status}): требуется повторный вход.`);
-            logout();
-            return null;
-        }
-
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            console.error("❌ Сервер не вернул JSON, возможна проблема с CORS или сервером.");
+            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
             logout();
             return null;
         }
 
         const data = await response.json();
-        
+        console.log("✅ Новый accessToken:", data.accessToken);
+
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
-            console.log("✅ Новый accessToken получен и сохранён:", data.accessToken);
             return data.accessToken;
         } else {
             console.error("❌ Сервер не вернул accessToken!");
