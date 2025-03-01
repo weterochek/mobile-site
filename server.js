@@ -103,9 +103,9 @@ function isTokenExpired(token) {
     }
 }
 async function refreshAccessToken() {
-    const refreshUrl = window.location.origin.includes("mobile-site.onrender.com")
-        ? "https://mobile-site.onrender.com/refresh"
-        : "https://makadamia.onrender.com/refresh";
+    const refreshUrl = process.env.MOBILE_SITE_URL.includes("mobile-site.onrender.com")
+  ? process.env.MOBILE_SITE_URL + "/refresh"
+  : process.env.DESKTOP_SITE_URL + "/refresh";
 
     console.log("🔄 Попытка обновления токена по URL:", refreshUrl);
 
