@@ -192,41 +192,45 @@ function loadCartFromLocalStorage() {
     }
 }
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
-
-    if (!token || isTokenExpired(token)) {
-        console.log("🔄 Токен истёк, обновляем...");
-        token = await refreshAccessToken();
-        if (!token) {
-            console.error("❌ Не удалось обновить токен, разлогиниваемся.");
-            logout();
-            return null;
+    try {
+        let token = localStorage.getItem("token");
+        if (!token || isTokenExpired(token)) {
+            token = await refreshAccessToken();
+            if (!token) {
+                console.error("❌ Ошибка авторизации, выход из системы.");
+                logout();
+                return null;
+            }
         }
-    }
 
-    let response = await fetch(url, {
-        ...options,
-        headers: {
-            ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-    });
-
-    if (response.status === 401) {
-        console.warn("🚨 Ошибка 401: Пробуем обновить токен.");
-        token = await refreshAccessToken();
-        if (!token) return response; // Если не удалось обновить — выходим
-
-        response = await fetch(url, {
+        const response = await fetch(url, {
             ...options,
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${token}`,
+            },
             credentials: "include",
         });
-    }
 
-    return response;
+        if (response.status === 401) {
+            console.warn("🔄 Повторная авторизация...");
+            token = await refreshAccessToken();
+            if (!token) return response;
+
+            return await fetch(url, {
+                ...options,
+                headers: { Authorization: `Bearer ${token}` },
+                credentials: "include",
+            });
+        }
+
+        return response;
+    } catch (error) {
+        console.error("Ошибка запроса:", error);
+        return null;
+    }
 }
+
 
 function getTokenExp(token) {
     try {
