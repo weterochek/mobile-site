@@ -94,12 +94,18 @@ function replaceAddButtonWithControls(itemName) {
     const addButtonControl = document.getElementById(`addBtn_${itemName}`);
     const quantityDisplay = document.getElementById(`quantity_${itemName}`);
 
+    if (!addButton || !removeButton || !addButtonControl || !quantityDisplay) {
+        console.warn(`❌ Ошибка: Не найдены элементы для ${itemName}`);
+        return;
+    }
+
     addButton.style.display = "none";
     removeButton.style.display = "inline-block";
     addButtonControl.style.display = "inline-block";
     quantityDisplay.style.display = "inline-block";
-    quantityDisplay.textContent = cart[itemName].quantity; // Устанавливаем начальное количество
+    quantityDisplay.textContent = cart[itemName].quantity;
 }
+
 
 // Возвращение кнопки "Добавить" вместо контролов, если товара нет в корзине
 function revertControlsToAddButton(itemName) {
