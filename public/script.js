@@ -192,44 +192,42 @@ function loadCartFromLocalStorage() {
     }
 }
 async function fetchWithAuth(url, options = {}) {
-    try {
-        let token = localStorage.getItem("token");
-        if (!token || isTokenExpired(token)) {
-            token = await refreshAccessToken(); // ✅ Теперь вызываем функцию
-            if (!token) {
-                console.error("❌ Ошибка авторизации, выход из системы.");
-                logout();
-                return null;
-            }
-        }
+    let token = localStorage.getItem("token");
 
-        const response = await fetch(url, {
+    if (!token || isTokenExpired(token)) {
+        console.log("🔄 Токен истёк, обновляем...");
+        token = await refreshAccessToken();
+        if (!token) {
+            console.error("❌ Ошибка авторизации, выход из системы.");
+            logout();
+            return null;
+        }
+    }
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+        },
+        credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО для передачи refreshToken
+    });
+
+    if (response.status === 401) {
+        console.warn("🔄 Повторная авторизация...");
+        token = await refreshAccessToken();
+        if (!token) return response;
+
+        return await fetch(url, {
             ...options,
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
             credentials: "include",
         });
-
-        if (response.status === 401) {
-            console.warn("🔄 Повторная авторизация...");
-            token = await refreshAccessToken(); // ✅ Повторный вызов при 401
-            if (!token) return response;
-
-            return await fetch(url, {
-                ...options,
-                headers: { Authorization: `Bearer ${token}` },
-                credentials: "include",
-            });
-        }
-
-        return response;
-    } catch (error) {
-        console.error("Ошибка запроса:", error);
-        return null;
     }
+
+    return response;
 }
+
 
 
 function getTokenExp(token) {
@@ -247,13 +245,10 @@ function startTokenRefresh() {
         const token = localStorage.getItem("token");
         if (!token || isTokenExpired(token)) {
             console.log("🔄 Токен устарел, обновляем...");
-            await refreshAccessToken(); // ✅ Теперь вызываем правильную функцию
+            await refreshAccessToken();
         }
     }, 5 * 60 * 1000); // Проверка каждые 5 минут
 }
-
-
-// Запускаем обновление при загрузке страницы
 startTokenRefresh();
 
 async function refreshAccessToken() {
