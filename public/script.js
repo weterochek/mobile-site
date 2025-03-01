@@ -380,31 +380,39 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 // Проверка состояния авторизации
 function checkAuthStatus() {
-    const token = localStorage.getItem('token'); // Проверяем наличие токена
-    const username = localStorage.getItem('username'); // Получаем имя пользователя
-    const authButton = document.getElementById('authButton'); // Кнопка "Вход"
-    const cabinetButton = document.getElementById('cabinetButton'); // Кнопка "Личный кабинет"
-    const logoutButton = document.getElementById('logoutButton'); // Кнопка "Выход"
+    const token = localStorage.getItem("token"); // Проверяем наличие токена
+    const username = localStorage.getItem("username"); // Получаем имя пользователя
+    const authButton = document.getElementById("authButton"); // Кнопка "Вход"
+    const cabinetButton = document.getElementById("cabinetButton"); // Кнопка "Личный кабинет"
+    const logoutButton = document.getElementById("logoutButton"); // Кнопка "Выход"
 
     if (token && username) {
-        // Если токен и имя пользователя существуют
-        authButton.style.display = 'none'; // Скрываем кнопку "Вход"
-        cabinetButton.style.display = 'inline-block'; // Показываем "Личный кабинет"
+        authButton.style.display = "none"; // Скрываем кнопку "Вход"
+        cabinetButton.style.display = "inline-block"; // Показываем "Личный кабинет"
 
         // Логика для отображения кнопки "Выход" только на странице кабинета
-        if (window.location.pathname === '/account.html' && logoutButton) {
-            logoutButton.style.display = 'inline-block';
+        if (window.location.pathname === "/account.html" && logoutButton) {
+            logoutButton.style.display = "inline-block";
         }
     } else {
-        // Если токена или имени пользователя нет
-        authButton.style.display = 'inline-block'; // Показываем кнопку "Вход"
-        cabinetButton.style.display = 'none'; // Скрываем "Личный кабинет"
+        authButton.style.display = "inline-block"; // Показываем кнопку "Вход"
+        cabinetButton.style.display = "none"; // Скрываем "Личный кабинет"
 
         if (logoutButton) {
-            logoutButton.style.display = 'none'; // Скрываем кнопку "Выход"
+            logoutButton.style.display = "none"; // Скрываем кнопку "Выход"
         }
     }
 }
+
+// ✅ **Добавляем задержку перед проверкой статуса**
+setTimeout(checkAuthStatus, 500);
+
+// ✅ **Обновление кнопок при изменении токена**
+window.addEventListener("storage", (event) => {
+    if (event.key === "token") {
+        checkAuthStatus();
+    }
+});
 
 function handleAuthClick() {
     window.location.href = '/login.html'; // Переход на страницу входа
