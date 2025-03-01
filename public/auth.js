@@ -21,7 +21,7 @@ showLogin();
 // Обработчик регистрации
 const registerForm = document.querySelector("#registerForm form");
 registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Останавливаем отправку формы по умолчанию
+    e.preventDefault();
 
     const username = document.getElementById("registerUsername").value;
     const password = document.getElementById("registerPassword").value;
@@ -36,7 +36,7 @@ registerForm.addEventListener("submit", async (e) => {
         const data = await response.json();
         if (response.ok) {
             alert("Регистрация прошла успешно! Вы можете войти.");
-            showLogin(); // Переключаемся на форму входа
+            showLogin();
         } else {
             alert(data.message || "Ошибка регистрации.");
         }
@@ -59,14 +59,13 @@ loginForm.addEventListener("submit", async (e) => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
-            credentials: "include", // Включаем куки
+            credentials: "include",
         });
 
         const data = await response.json();
         if (response.ok) {
             localStorage.setItem("token", data.accessToken);
             localStorage.setItem("username", username);
-
             alert("Вы успешно вошли в систему!");
             window.location.href = "/index.html";
         } else {
@@ -77,6 +76,79 @@ loginForm.addEventListener("submit", async (e) => {
         alert("Произошла ошибка. Попробуйте снова.");
     }
 });
+
+// Функция обновления токена
+async function refreshAccessToken() {
+    console.log("Попытка обновления токена...");
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/refresh", {
+            method: "POST",
+            credentials: "include",
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            console.log("Токен успешно обновлён:", data.accessToken);
+            localStorage.setItem("token", data.accessToken);
+            return data.accessToken;
+        } else {
+            console.log("Ошибка при обновлении токена:", data);
+            logout();
+            return null;
+        }
+    } catch (error) {
+        console.error("Ошибка запроса на обновление токена:", error);
+        logout();
+        return null;
+    }
+}
+
+// Автообновление токена каждые 5 минут
+setInterval(refreshAccessToken, 5 * 60 * 1000);
+
+// Функция выхода
+function logout() {
+    fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
+        .then(() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("cart");
+            sessionStorage.clear();
+
+            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0;";
+
+            window.location.href = "/login.html";
+        })
+        .catch((error) => console.error("Ошибка выхода:", error));
+}
+
+// Функция запроса с авторизацией
+async function fetchWithAuth(url, options = {}) {
+    let token = localStorage.getItem("token");
+
+    let response = await fetch(url, {
+        ...options,
+        credentials: "include", // Включаем куки
+        headers: {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (response.status === 401) {
+        token = await refreshAccessToken();
+        if (!token) return response;
+
+        response = await fetch(url, {
+            ...options,
+            credentials: "include",
+            headers: { ...options.headers, Authorization: `Bearer ${token}` },
+        });
+    }
+
+    return response;
+}
+
+// Функция добавления товара в корзину
 async function addToCart(productId, quantity) {
     const token = localStorage.getItem("token");
 
@@ -87,12 +159,9 @@ async function addToCart(productId, quantity) {
     }
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/cart/add", {
+        const response = await fetchWithAuth("https://makadamia.onrender.com/cart/add", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ productId, quantity }),
         });
 
@@ -100,7 +169,7 @@ async function addToCart(productId, quantity) {
 
         if (response.status === 401) {
             alert("Вы не авторизованы! Войдите, чтобы добавить товар.");
-            localStorage.removeItem("token"); // Очищаем токен, если он недействителен
+            localStorage.removeItem("token");
             window.location.href = "/login.html";
             return;
         }
@@ -115,65 +184,3 @@ async function addToCart(productId, quantity) {
         alert("Произошла ошибка. Попробуйте снова.");
     }
 }
-// Функция обновления токена
-async function refreshAccessToken() {
-    try {
-        const response = await fetch("https://mobile-site.onrender.com/refresh", {
-            method: "POST",
-            credentials: "include",
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem("token", data.accessToken);
-            return data.accessToken;
-        } else {
-            logout(); // Если refreshToken недействителен, выходим из аккаунта
-            return null;
-        }
-    } catch (error) {
-        console.error("Ошибка обновления токена:", error);
-        logout(); // Если произошла ошибка, выходим
-        return null;
-    }
-}
-function logout() {
-    fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
-        .then(() => {
-            localStorage.removeItem("token"); // Удаляем токен
-            localStorage.removeItem("cart");  // Удаляем корзину
-            sessionStorage.clear(); // Очищаем сессию
-
-            // Очищаем refreshToken
-            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0;";
-
-            window.location.href = "/login.html"; // Перенаправляем на страницу входа
-        })
-        .catch((error) => console.error("Ошибка выхода:", error));
-}
-
-// Функция запроса с авторизацией
-async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
-
-    let response = await fetch(url, {
-        ...options,
-        headers: {
-            ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (response.status === 401) {
-        token = await refreshAccessToken();
-        if (!token) return response;
-
-        response = await fetch(url, {
-            ...options,
-            headers: { ...options.headers, Authorization: `Bearer ${token}` },
-        });
-    }
-
-    return response;
-}
-
