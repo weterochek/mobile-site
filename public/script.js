@@ -259,20 +259,27 @@ async function refreshAccessToken() {
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include",
+            credentials: "include", // Отправка куки refreshToken
         });
 
         if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
+            console.warn(`❌ Ошибка обновления токена (${response.status}): требуется повторный вход.`);
             logout();
             return null;
         }
 
-        const data = await response.json(); // ❗️Объявляем локальную переменную
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error("❌ Сервер не вернул JSON, возможна проблема с CORS или сервером.");
+            logout();
+            return null;
+        }
 
+        const data = await response.json();
+        
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
-            console.log("✅ Новый accessToken получен и сохранён.");
+            console.log("✅ Новый accessToken получен и сохранён:", data.accessToken);
             return data.accessToken;
         } else {
             console.error("❌ Сервер не вернул accessToken!");
@@ -285,6 +292,7 @@ async function refreshAccessToken() {
         return null;
     }
 }
+
 
 
 function isTokenExpired(token) {
