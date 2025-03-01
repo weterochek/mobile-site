@@ -481,7 +481,9 @@ function handleAuthClick() {
         window.location.href = 'login.html'; // Если нет, перенаправляем на страницу входа
     }
 }
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    await refreshAccessToken(); // Убедись, что `refreshAccessToken` объявлен корректно
+
     const menuToggle = document.querySelector('.menu-toggle');
     const navbar = document.querySelector('.navbar');
     const closeMenu = document.querySelector('.close-menu');
@@ -491,12 +493,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Открытие меню
     menuToggle.addEventListener('click', () => {
         navbar.classList.add('active');
     });
 
-    // Закрытие меню
     closeMenu.addEventListener('click', () => {
         navbar.classList.remove('active');
     });
