@@ -225,7 +225,7 @@ function generateTokens(user, site) {
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
   const schema = Joi.object({
-    username: Joi.string().min(3).max(30).required(),
+    username: Joi.string().trim().min(3).max(30).required(),
     password: Joi.string().min(8).required(),
   });
 
@@ -237,22 +237,37 @@ app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    console.log("Регистрация пользователя:", req.body);
+    console.log("Регистрация пользователя:", username);
+
+    // Проверяем наличие пользователя
     const existingUser = await User.findOne({ username });
     if (existingUser) {
+      console.warn(`Пользователь "${username}" уже существует.`);
       return res.status(409).json({ message: 'Пользователь с таким именем уже существует' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12); // Увеличено количество раундов
+    // Хэшируем пароль
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ username, password: hashedPassword });
+
+    // Пробуем сохранить пользователя
     await newUser.save();
 
-    res.status(201).json({ message: 'Пользователь успешно зарегистрирован' });
+    console.log(`Пользователь "${username}" успешно зарегистрирован.`);
+    return res.status(201).json({ message: 'Пользователь успешно зарегистрирован' });
+
   } catch (err) {
     console.error("Ошибка регистрации:", err);
-    res.status(500).json({ message: 'Ошибка регистрации пользователя', error: err.message });
+
+    // Проверка на дублирование (если не проверило выше)
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Такой пользователь уже существует' });
+    }
+
+    return res.status(500).json({ message: 'Ошибка регистрации пользователя', error: err.message });
   }
 });
+
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
