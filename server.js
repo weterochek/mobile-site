@@ -15,6 +15,7 @@ const allowedOrigins = [
   'https://mobile-site.onrender.com',
   'http://localhost:3000', // Для локальной разработки
 ];
+require("dotenv").config();
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -66,35 +67,64 @@ const authMiddleware = (req, res, next) => {
     }
 };
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
+    let accessToken = localStorage.getItem("accessToken");
 
-    if (!token) {
-        console.warn("Нет токена, перенаправляем на вход.");
-        logout();
-        return;
+    if (!accessToken || isTokenExpired(accessToken)) {
+        console.log("Токен устарел, обновляем...");
+        accessToken = await refreshAccessToken();
     }
 
-    let response = await fetch(url, {
+    const res = await fetch(url, {
         ...options,
         headers: {
             ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
+            Authorization: `Bearer ${accessToken}`
+        }
     });
 
-    if (response.status === 401) {
-        console.warn("Ошибка 401: Токен истёк, пробуем обновить.");
-        token = await refreshAccessToken();
-        if (!token) return response;
+    if (res.status === 401) {
+        console.log("Ошибка 401: Токен недействителен, пробуем обновить...");
+        accessToken = await refreshAccessToken();
 
-        response = await fetch(url, {
+        return fetch(url, {
             ...options,
-            headers: { ...options.headers, Authorization: `Bearer ${token}` },
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${accessToken}`
+            }
         });
     }
 
-    return response;
+    return res;
 }
+// Функция проверки срока жизни токена
+function isTokenExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем токен
+        return payload.exp * 1000 < Date.now(); // Если exp в прошлом — токен истёк
+    } catch (e) {
+        return true; // Если ошибка — токен недействителен
+    }
+}
+async function refreshAccessToken() {
+    const res = await fetch("https://makadamia.onrender.com/refresh", {
+        method: "POST",
+        credentials: "include",
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem("accessToken", data.accessToken);
+        console.log("Токен успешно обновлён");
+    } else {
+        console.error("Ошибка обновления токена, требуется повторный вход");
+        // Очистка локального хранилища и редирект на страницу входа
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login.html"; // Или своя страница входа
+    }
+}
+
+
 // Перенаправление HTTP на HTTPS
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production") {
@@ -155,20 +185,23 @@ const User = mongoose.model("User", userSchema);
 // Мидлвар для проверки токена
 
 function generateTokens(user) {
+    const issuedAt = Math.floor(Date.now() / 1000); // Добавляем время генерации токена
+
     const accessToken = jwt.sign(
-        { id: user._id, username: user.username }, 
+        { id: user._id, username: user.username, iat: issuedAt }, 
         JWT_SECRET, 
         { expiresIn: "30m" }
     );
 
     const refreshToken = jwt.sign(
-        { id: user._id, username: user.username }, 
+        { id: user._id, username: user.username, iat: issuedAt }, 
         REFRESH_SECRET, 
         { expiresIn: "7d" }
     );
 
     return { accessToken, refreshToken };
 }
+
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
   const schema = Joi.object({
@@ -203,26 +236,14 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-  try {
-    console.log("Запрос на логин:", req.body);
-
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-
-    console.log("Найден пользователь:", user);
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Неверные данные' });
-    }
-
-    const { accessToken, refreshToken } = generateTokens(user);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
-    res.json({ accessToken });
-
-  } catch (err) {
-    console.error("Ошибка в /login:", err);
-    res.status(500).json({ message: "Ошибка сервера", error: err.message });
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return res.status(401).json({ message: 'Неверные данные' });
   }
+  const { accessToken, refreshToken } = generateTokens(user);
+  res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', maxAge: 30 * 24 * 60 * 60 * 1000 });
+  res.json({ accessToken });
 });
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена получен.");
@@ -252,16 +273,17 @@ app.post('/refresh', async (req, res) => {
         console.log("🔄 Новый refreshToken:", newRefreshToken);
 
         // Отправляем новый refreshToken в куках
-res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production" ? true : false, // ✅ Secure включаем только в продакшене
-    sameSite: "Lax",
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-});
+        res.cookie("refreshToken", newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "Strict",
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+        });
 
         res.json({ accessToken });
     });
 });
+
 async function refreshAccessToken() {
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
