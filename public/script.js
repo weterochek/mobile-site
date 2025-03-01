@@ -252,6 +252,12 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
+    if (!document.cookie.includes("refreshToken")) {
+        console.warn("❌ Refresh-токен отсутствует, разлогиниваем пользователя.");
+        logout();
+        return null;
+    }
+
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
@@ -259,28 +265,22 @@ async function refreshAccessToken() {
         });
 
         if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
+            console.warn("Не удалось обновить токен, требуется повторный вход.");
             logout();
             return null;
         }
 
-        const data = await response.json(); // ❗️Объявляем локальную переменную
-
-        if (data.accessToken) {
-            localStorage.setItem("token", data.accessToken);
-            console.log("✅ Новый accessToken получен и сохранён.");
-            return data.accessToken;
-        } else {
-            console.error("❌ Сервер не вернул accessToken!");
-            logout();
-            return null;
-        }
+        const data = await response.json();
+        localStorage.setItem("token", data.accessToken);
+        console.log("✅ Новый accessToken получен.");
+        return data.accessToken;
     } catch (error) {
-        console.error("❌ Ошибка при обновлении токена:", error);
+        console.error("Ошибка при обновлении токена:", error);
         logout();
         return null;
     }
 }
+
 
 
 function isTokenExpired(token) {
@@ -295,13 +295,12 @@ function isTokenExpired(token) {
 
 // Запускаем проверку токена раз в минуту
 setInterval(() => {
-    if (isTokenExpired()) {
+    const token = localStorage.getItem("token");
+    if (!token || isTokenExpired(token)) {  // ✅ Теперь передаём токен
         console.log("🔄 Токен истёк, обновляем...");
-        refreshAccessToken().then(newToken => {
-            console.log("✅ Новый токен после автообновления:", newToken);
-        }).catch(err => console.error("❌ Ошибка обновления:", err));
+        refreshAccessToken();
     }
-}, 60000); // 1 раз в минуту
+}, 60000);
 
 function editField(field) {
     const input = document.getElementById(field + "Input");
@@ -331,6 +330,7 @@ function editField(field) {
 document.addEventListener("DOMContentLoaded", () => {
     fetch("https://makadamia.onrender.com/account", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+       await refreshAccessToken(); // Проверяем токен сразу при загрузке
     })
     .then(res => res.json())
     .then(data => {
