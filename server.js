@@ -291,12 +291,7 @@ app.post('/refresh', async (req, res) => {
 });
 
 
-const autoRefreshToken = () => {
-    setInterval(async () => {
-        console.log("🔄 Автообновление токена...");
-        await refreshAccessToken();
-    }, 25 * 60 * 1000); // Обновление за 25 минут до истечения токена
-};
+
 app.post('/logout', authMiddleware, (req, res) => {
     res.clearCookie('refreshToken', {
         httpOnly: true,
