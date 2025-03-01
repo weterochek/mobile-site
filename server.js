@@ -149,7 +149,6 @@ autoRefreshToken();
 // Перенаправление HTTP на HTTPS
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production") {
-        console.log("Проверка протокола:", req.headers["x-forwarded-proto"]);
         if (req.headers["x-forwarded-proto"] !== "https") {
             console.log("🔄 Перенаправление на HTTPS...");
             return res.redirect(`https://${req.headers.host}${req.url}`);
