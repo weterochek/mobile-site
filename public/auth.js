@@ -64,10 +64,18 @@ loginForm.addEventListener("submit", async (e) => {
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", data.accessToken);
-            localStorage.setItem("username", username);
-            alert("Вы успешно вошли в систему!");
-            window.location.href = "/index.html";
+            // Сохраняем токен в localStorage
+localStorage.setItem("token", data.accessToken);
+localStorage.setItem("username", username);
+
+// Передаём токен второму сайту
+localStorage.setItem("sharedAccessToken", data.accessToken);
+
+// Сообщаем второму сайту о новом токене
+window.localStorage.setItem("sharedAccessTokenUpdate", Date.now());
+
+alert("Вы успешно вошли в систему!");
+window.location.href = "/index.html";
         } else {
             alert(data.message || "Ошибка входа.");
         }
