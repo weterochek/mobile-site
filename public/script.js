@@ -603,6 +603,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.querySelector('.menu-toggle');
     const navbar = document.querySelector('.navbar');
     const closeMenu = document.querySelector('.close-menu');
+    const menuLinks = document.querySelectorAll('.navbar a'); // Все ссылки в меню
+    const body = document.body; // Для блокировки прокрутки
 
     if (!menuToggle || !navbar || !closeMenu) {
         console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
@@ -612,13 +614,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Открытие меню
     menuToggle.addEventListener('click', () => {
         navbar.classList.add('active');
+        body.classList.add('no-scroll'); // Блокируем прокрутку
     });
 
     // Закрытие меню
-    closeMenu.addEventListener('click', () => {
+    function closeNavMenu() {
         navbar.classList.remove('active');
+        body.classList.remove('no-scroll'); // Разблокируем прокрутку
+    }
+
+    closeMenu.addEventListener('click', closeNavMenu);
+
+    // Закрытие меню при клике на любую ссылку
+    menuLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            const target = event.target.getAttribute("href"); // Проверяем, куда ведет ссылка
+            if (target === "#" || target === window.location.pathname) {
+                closeNavMenu();
+            }
+        });
     });
 });
+
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
 
