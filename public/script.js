@@ -309,14 +309,14 @@ async function refreshAccessToken() {
     console.log("🔄 Попытка обновления токена..."); // 👈 Проверяем, вызывается ли функция
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
+        const response = await fetch("/refresh", { // 👈 Используем относительный путь
             method: "POST",
             credentials: "include", // 🔹 Передаёт куки!
         });
 
         if (!response.ok) {
             console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
-            logout();
+            handleLogout(); // 👈 Вызываем обработчик выхода
             return null;
         }
 
@@ -328,14 +328,25 @@ async function refreshAccessToken() {
             return data.accessToken;
         } else {
             console.error("❌ Сервер не вернул accessToken!");
-            logout();
+            handleLogout();
             return null;
         }
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
-        logout();
+        handleLogout();
         return null;
     }
+}
+
+// ✅ Добавляем обработчик выхода (если `logout()` не определён)
+function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("cart_guest"); // Очищаем корзину гостя
+    sessionStorage.clear();
+    document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    window.location.href = "/";
 }
 
 
