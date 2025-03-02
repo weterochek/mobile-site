@@ -459,13 +459,36 @@ function handleAuthClick() {
 
 
 // Логика для выхода
-function logout() {
-    localStorage.removeItem('token'); // Удаляем токен
-    localStorage.removeItem('username'); // Удаляем имя пользователя
-    cart = {}; // Очищаем корзину
-    checkAuthStatus(); // Обновляем интерфейс
-    window.location.href = '/'; // Переход на главную страницу
+async function logout() {
+    try {
+        // Отправляем запрос на сервер для удаления refreshToken
+        const response = await fetch("/logout", {
+            method: "POST",
+            credentials: "include" // Передаёт куки
+        });
+
+        if (!response.ok) {
+            console.error("❌ Ошибка при выходе с сервера");
+        }
+
+        // Очищаем данные из localStorage и sessionStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("cart_guest"); // Очищаем корзину гостя
+        sessionStorage.clear();
+
+        // Очищаем куки вручную (если сервер не удалил)
+        document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+        checkAuthStatus(); // Обновляем UI
+
+        window.location.href = "/"; // Перенаправляем на главную страницу
+    } catch (error) {
+        console.error("Ошибка при выходе:", error);
+    }
 }
+
 // Переход на страницу личного кабинета
 function openCabinet() {
     const token = localStorage.getItem('token');
