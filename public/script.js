@@ -108,11 +108,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Очищение корзины
     if (clearCartButton) {
-        clearCartButton.addEventListener('click', () => {
-            localStorage.removeItem('cart'); // Удаляем корзину из localStorage
-            updateCartDisplay(); // Обновляем отображение корзины
-        });
-    }
+    clearCartButton.addEventListener('click', () => {
+        const username = localStorage.getItem("username");
+        if (username) {
+            localStorage.removeItem(`cart_${username}`); // Удаляем корзину для текущего пользователя
+        }
+        localStorage.removeItem('cart'); // Если корзина также хранится под этим ключом
+        updateCartDisplay(); // Обновляем корзину на странице
+        cartTotal.textContent = 'Итого: 0 ₽';
+    });
+}
 
     // Инициализируем корзину при загрузке страницы
     updateCartDisplay();
