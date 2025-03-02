@@ -143,24 +143,6 @@ async function refreshAccessToken(req, res) {
     });
 }
 
-
-const autoRefreshToken = () => {
-    setInterval(async () => {
-        console.log("🔄 Автообновление токена...");
-        await refreshAccessToken();
-    }, 25 * 60 * 1000); // Обновление за 25 минут до истечения токена
-};
-autoRefreshToken();
-// Перенаправление HTTP на HTTPS
-app.use((req, res, next) => {
-    if (process.env.NODE_ENV === "production") {
-        if (req.headers["x-forwarded-proto"] !== "https") {
-            console.log("🔄 Перенаправление на HTTPS...");
-            return res.redirect(`https://${req.headers.host}${req.url}`);
-        }
-    }
-    next();
-});
 const Cart = require("./models/Cart"); // Подключаем модель
 
 app.post('/cart/add', authMiddleware, async (req, res) => {
