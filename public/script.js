@@ -417,12 +417,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 // Проверка состояния авторизации
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+// ✅ Функция для сохранения username в localStorage
+function saveUserInfo() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        const decoded = parseJwt(token);
+        if (decoded && decoded.username) {
+            localStorage.setItem('username', decoded.username);
+        }
+    }
+}
+
+// ✅ Функция проверки авторизации
 function checkAuthStatus() {
+    saveUserInfo(); // Сначала сохраняем username
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    const authButton = document.getElementById('authButton');
-    const cabinetButton = document.getElementById('cabinetButton');
-    const logoutButton = document.getElementById('logoutButton');
+    const authButton = document.getElementById('authButton'); // Кнопка "Вход"
+    const cabinetButton = document.getElementById('cabinetButton'); // Кнопка "Личный кабинет"
+    const logoutButton = document.getElementById('logoutButton'); // Кнопка "Выход"
 
     console.log("Токен:", token);
     console.log("Имя пользователя:", username);
@@ -432,6 +453,7 @@ function checkAuthStatus() {
         if (authButton) authButton.style.display = 'none';
         if (cabinetButton) cabinetButton.style.display = 'inline-block';
 
+        // Показываем "Выход" только на странице кабинета
         if (window.location.pathname === '/account.html' && logoutButton) {
             logoutButton.style.display = 'inline-block';
         }
@@ -442,9 +464,11 @@ function checkAuthStatus() {
     }
 }
 
+// ✅ Запускаем проверку при загрузке страницы
 document.addEventListener("DOMContentLoaded", checkAuthStatus);
+
+// ✅ Следим за изменениями в localStorage (например, когда токен обновится)
 window.addEventListener("storage", checkAuthStatus);
-document.addEventListener("click", checkAuthStatus);
 
 // Логика для выхода
 async function logout() {
