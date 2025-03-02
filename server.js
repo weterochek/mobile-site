@@ -102,35 +102,43 @@ function isTokenExpired(token) {
         return true; // Если ошибка — токен недействителен
     }
 }
-async function refreshAccessToken(req) { // Добавляем req как аргумент
-    const origin = req.headers.origin || "https://makadamia.onrender.com"; // Запасное значение
-    console.log("🔄 Попытка обновления токена по URL:", origin + "/refresh");
+async function refreshAccessToken(req, res) { 
+    console.log("🔄 Сервер: Попытка обновления токена...");
 
-    try {
-        const response = await fetch(origin + "/refresh", {
-            method: "POST",
-            credentials: "include",
+    const refreshToken = req.cookies.refreshTokenDesktop || req.cookies.refreshTokenMobile;
+    if (!refreshToken) {
+        console.warn("❌ Нет refresh-токена, отправляем 401.");
+        return res.status(401).json({ message: "Не авторизован" });
+    }
+
+    jwt.verify(refreshToken, process.env.REFRESH_SECRET, async (err, decoded) => {
+        if (err) {
+            console.warn("❌ Недействительный refresh-токен.");
+            return res.status(403).json({ message: "Недействительный refresh-токен" });
+        }
+
+        const user = await User.findById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ message: "Пользователь не найден" });
+        }
+
+        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, decoded.site);
+
+        // Обновляем refresh-токен в куках
+        const cookieName = decoded.site.includes("mobile") ? "refreshTokenMobile" : "refreshTokenDesktop";
+        res.cookie(cookieName, newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            domain: ".onrender.com",
+            partitioned: true,
+            path: "/"
         });
 
-        if (!response.ok) {
-            console.warn(`❌ Ошибка обновления токена (${response.status})`);
-            return null;
-        }
-
-        const data = await response.json();
-        if (!data.accessToken) {
-            console.error("❌ Сервер не вернул accessToken!");
-            return null;
-        }
-
-        console.log("✅ Новый accessToken получен.");
-        return data.accessToken;
-    } catch (error) {
-        console.error("❌ Ошибка при обновлении токена:", error);
-        return null;
-    }
+        res.json({ accessToken });
+    });
 }
-
 
 const autoRefreshToken = () => {
     setInterval(async () => {
