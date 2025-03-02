@@ -627,14 +627,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Закрытие меню при клике на любую ссылку
     menuLinks.forEach(link => {
-        link.addEventListener('click', (event) => {
-            const target = event.target.getAttribute("href"); // Проверяем, куда ведет ссылка
-            if (target === "#" || target === window.location.pathname) {
-                closeNavMenu();
-            }
+        link.addEventListener('click', () => {
+            closeNavMenu();
         });
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
