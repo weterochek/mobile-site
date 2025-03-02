@@ -61,7 +61,11 @@ header nav {
 .navbar-center .navbar-logo {
     max-height: 35px; /* Увеличить логотип при необходимости */
 }
-
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; /* Фикс для мобильных */
+    touch-action: none; /* Запрещает свайпы */
+}
 .navbar {
     display: none; /* Скрываем меню */
     flex-direction: column;
