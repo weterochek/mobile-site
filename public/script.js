@@ -306,37 +306,38 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
-    console.log("🔄 Попытка обновления токена..."); // 👈 Проверяем, вызывается ли функция
+    console.log("🔄 Попытка обновления токена...");
 
     try {
-        const response = await fetch("/refresh", { // 👈 Используем относительный путь
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include", // 🔹 Передаёт куки!
+            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО!
         });
 
         if (!response.ok) {
             console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
-            handleLogout(); // 👈 Вызываем обработчик выхода
+            logout();
             return null;
         }
 
         const data = await response.json();
-        console.log("✅ Новый accessToken:", data.accessToken); // 👈 Проверяем, получаем ли токен
+        console.log("✅ Новый accessToken:", data.accessToken);
 
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
             return data.accessToken;
         } else {
             console.error("❌ Сервер не вернул accessToken!");
-            handleLogout();
+            logout();
             return null;
         }
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
-        handleLogout();
+        logout();
         return null;
     }
 }
+
 
 // ✅ Добавляем обработчик выхода (если `logout()` не определён)
 function handleLogout() {
