@@ -306,31 +306,39 @@ function loadCartFromLocalStorage() {
     updateCartDisplay(); // Обновляем UI корзины
 }
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
-    console.log("📡 Запрос с авторизацией:", url);
+    let accessToken = localStorage.getItem("token");
 
-    let response = await fetch(url, {
+    if (!accessToken || isTokenExpired(accessToken)) {
+        console.log("🔄 Токен устарел, обновляем...");
+        accessToken = await refreshAccessToken();
+        if (!accessToken) return null;
+    }
+
+    let res = await fetch(url, {
         ...options,
-        credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО!
+        credentials: "include", // ✅ Передаём cookies
         headers: {
             ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
+            Authorization: `Bearer ${accessToken}` // ✅ Правильный синтаксис
+        }
     });
 
-    if (response.status === 401) {
-        console.warn("🔄 Токен недействителен, пробуем обновить...");
-        token = await refreshAccessToken();
-        if (!token) return response;
+    if (res.status === 401) {
+        console.warn("🔄 Токен истёк, пробуем обновить...");
+        accessToken = await refreshAccessToken();
+        if (!accessToken) return res; // Если не получилось обновить, возвращаем ответ
 
-        return await fetch(url, {
+        return fetch(url, {
             ...options,
             credentials: "include",
-            headers: { ...options.headers, Authorization: `Bearer ${token}` },
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${accessToken}`
+            }
         });
     }
 
-    return response;
+    return res;
 }
 
 
