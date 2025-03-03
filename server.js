@@ -290,8 +290,6 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/refresh', async (req, res) => {
-    console.log("🔄 Запрос на обновление токена получен.");
-
     const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
     const refreshTokenMobile = req.cookies.refreshTokenMobile;
     const origin = req.headers.origin;
@@ -315,7 +313,7 @@ app.post('/refresh', async (req, res) => {
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err || decodedUser.site !== origin) {
+        if (err) {
             console.warn("❌ Недействительный refresh-токен, отправляем 403.");
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
@@ -325,18 +323,15 @@ app.post('/refresh', async (req, res) => {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
-        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
-
-        console.log(`🔄 Новый ${cookieName}:`, newRefreshToken);
 
         res.cookie(cookieName, newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
             domain: ".onrender.com",
-            partitioned: true,
-            path: "/"
+            path: "/",
+            maxAge: 30 * 24 * 60 * 60 * 1000,
         });
 
         res.json({ accessToken });
