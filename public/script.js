@@ -306,39 +306,28 @@ function loadCartFromLocalStorage() {
     updateCartDisplay(); // Обновляем UI корзины
 }
 async function fetchWithAuth(url, options = {}) {
-    let accessToken = localStorage.getItem("token");
+    let token = localStorage.getItem("token");
 
-    if (!accessToken || isTokenExpired(accessToken)) {
-        console.log("🔄 Токен устарел, обновляем...");
-        accessToken = await refreshAccessToken();
-        if (!accessToken) return null;
-    }
-
-    let res = await fetch(url, {
+    let response = await fetch(url, {
         ...options,
-        credentials: "include", // ✅ Передаём cookies
         headers: {
             ...options.headers,
-            Authorization: `Bearer ${accessToken}` // ✅ Правильный синтаксис
-        }
+            Authorization: `Bearer ${token}`,
+        },
     });
 
-    if (res.status === 401) {
-        console.warn("🔄 Токен истёк, пробуем обновить...");
-        accessToken = await refreshAccessToken();
-        if (!accessToken) return res; // Если не получилось обновить, возвращаем ответ
+    if (response.status === 401) {
+        console.log("🔄 Токен истёк, обновляем...");
+        token = await refreshAccessToken();
+        if (!token) return response;
 
-        return fetch(url, {
+        response = await fetch(url, {
             ...options,
-            credentials: "include",
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${accessToken}`
-            }
+            headers: { ...options.headers, Authorization: `Bearer ${token}` },
         });
     }
 
-    return res;
+    return response;
 }
 
 
@@ -543,36 +532,20 @@ document.addEventListener("DOMContentLoaded", checkAuthStatus);
 window.addEventListener("storage", checkAuthStatus);
 
 // Логика для выхода
-async function logout() {
-    try {
-        // Отправляем запрос на сервер для удаления refreshToken
-        const response = await fetch("/logout", {
-            method: "POST",
-            credentials: "include" // Передаёт куки
-        });
+function logout() {
+    fetch("https://makadamia.onrender.com/logout", { method: "POST", credentials: "include" })
+        .then(() => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("cart");
+            sessionStorage.clear();
 
-        if (!response.ok) {
-            console.error("❌ Ошибка при выходе с сервера");
-        }
+            document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 
-        // Очищаем данные из localStorage и sessionStorage
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
-        localStorage.removeItem("cart_guest"); // Очищаем корзину гостя
-        sessionStorage.clear();
-
-        // Очищаем куки вручную (если сервер не удалил)
-        document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-        document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-
-        checkAuthStatus(); // Обновляем UI
-
-        window.location.href = "/"; // Перенаправляем на главную страницу
-    } catch (error) {
-        console.error("Ошибка при выходе:", error);
-    }
+            window.location.href = "/login.html";
+        })
+        .catch((error) => console.error("Ошибка выхода:", error));
 }
-
 // Переход на страницу личного кабинета
 function openCabinet() {
     const token = localStorage.getItem('token');
