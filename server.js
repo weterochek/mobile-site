@@ -196,13 +196,13 @@ function generateTokens(user, site) {
     const accessToken = jwt.sign(
         { id: user._id, username: user.username, iat: issuedAt },
         JWT_SECRET,
-        { expiresIn: "30m" }
+        { expiresIn: "30m" } // Access-токен живёт 30 минут
     );
 
     const refreshToken = jwt.sign(
         { id: user._id, username: user.username, site, iat: issuedAt },
         REFRESH_SECRET,
-        { expiresIn: "7d" }
+        { expiresIn: "7d" } // Refresh-токен живёт 7 дней
     );
 
     return { accessToken, refreshToken };
@@ -290,6 +290,8 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/refresh', async (req, res) => {
+    console.log("🔄 Запрос на обновление токена получен.");
+
     const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
     const refreshTokenMobile = req.cookies.refreshTokenMobile;
     const origin = req.headers.origin;
@@ -313,7 +315,7 @@ app.post('/refresh', async (req, res) => {
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err) {
+        if (err || decodedUser.site !== origin) {
             console.warn("❌ Недействительный refresh-токен, отправляем 403.");
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
@@ -323,7 +325,10 @@ app.post('/refresh', async (req, res) => {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
+        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
+
+        console.log(`🔄 Новый ${cookieName}:`, newRefreshToken);
 
         res.cookie(cookieName, newRefreshToken, {
             httpOnly: true,
@@ -331,14 +336,12 @@ app.post('/refresh', async (req, res) => {
             sameSite: "None",
             domain: ".onrender.com",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
         });
 
         res.json({ accessToken });
     });
 });
-
-
 
 
 app.post('/logout', authMiddleware, (req, res) => {
