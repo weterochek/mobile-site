@@ -276,15 +276,14 @@ app.post('/login', async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user, origin);
 
-    res.cookie(cookieName, refreshToken, {
-        httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            domain: ".onrender.com",
-            path: "/",
-            partitioned: true,
-            maxAge: 30 * 24 * 60 * 60 * 1000
-    });
+res.cookie(cookieName, refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+});
 
     res.json({ accessToken });
 });
@@ -331,13 +330,13 @@ app.post('/refresh', async (req, res) => {
         console.log(`🔄 Новый ${cookieName}:`, newRefreshToken);
 
         res.cookie(cookieName, newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            domain: ".onrender.com",
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
-        });
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+});
 
         res.json({ accessToken });
     });
