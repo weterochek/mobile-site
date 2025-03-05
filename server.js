@@ -265,16 +265,16 @@ app.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-    let cookieName;
-    if (origin === "https://makadamia.onrender.com") {
-        cookieName = "refreshTokenDesktop";
-    } else if (origin === "https://mobile-site.onrender.com") {
-        cookieName = "refreshTokenMobile";
-    } else {
-        return res.status(403).json({ message: "Недопустимый источник запроса" });
-    }
+let cookieName;
+if (origin === "https://makadamia.onrender.com") {
+    cookieName = "refreshTokenDesktop";
+} else if (origin === "https://mobile-site.onrender.com") {
+    cookieName = "refreshTokenMobile";
+} else {
+    return res.status(403).json({ message: "Недопустимый источник запроса" });
+}
 
-    const { accessToken, refreshToken } = generateTokens(user, origin);
+const { accessToken, refreshToken } = generateTokens(user, origin);
 
 res.cookie(cookieName, refreshToken, {
     httpOnly: true,
@@ -291,27 +291,22 @@ res.cookie(cookieName, refreshToken, {
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена получен.");
 
-    const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
-    const refreshTokenMobile = req.cookies.refreshTokenMobile;
-    const origin = req.headers.origin;
+   const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
+const refreshTokenMobile = req.cookies.refreshTokenMobile;
+const origin = req.headers.origin;
 
-    let refreshToken;
-    let cookieName;
+let refreshToken;
+if (origin === "https://makadamia.onrender.com") {
+    refreshToken = refreshTokenDesktop;
+} else if (origin === "https://mobile-site.onrender.com") {
+    refreshToken = refreshTokenMobile;
+} else {
+    return res.status(403).json({ message: "Недопустимый источник запроса" });
+}
 
-    if (origin === "https://makadamia.onrender.com") {
-        refreshToken = refreshTokenDesktop;
-        cookieName = "refreshTokenDesktop";
-    } else if (origin === "https://mobile-site.onrender.com") {
-        refreshToken = refreshTokenMobile;
-        cookieName = "refreshTokenMobile";
-    } else {
-        return res.status(403).json({ message: "Недопустимый источник запроса" });
-    }
-
-    if (!refreshToken) {
-        console.warn("❌ Нет refresh-токена, отправляем 401.");
-        return res.status(401).json({ message: "Не авторизован" });
-    }
+if (!refreshToken) {
+    return res.status(401).json({ message: "Не авторизован" });
+}
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
         if (err || decodedUser.site !== origin) {
