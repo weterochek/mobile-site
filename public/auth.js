@@ -98,10 +98,45 @@ registerForm.addEventListener("submit", async (e) => {
         alert("Произошла ошибка. Попробуйте снова.");
     }
 });
+async function refreshAccessToken() {
+    try {
+        const response = await fetch("https://makadamia.onrender.com/refresh", {
+            method: "POST",
+            credentials: "include",
+        });
 
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", data.accessToken);
+            return data.accessToken;
+        } else {
+            console.warn("Ошибка обновления токена, требуется повторный вход.");
+            logout();
+            return null;
+        }
+    } catch (error) {
+        console.error("Ошибка при обновлении токена:", error);
+        logout();
+        return null;
+    }
+}
 // Автообновление токена каждые 5 минут
-setInterval(refreshAccessToken, 5 * 60 * 1000);
+setInterval(async () => {
+    const token = localStorage.getItem("token");
 
+    if (!token || isTokenExpired(token)) {
+        console.log("🔄 Токен устарел, обновляем...");
+        await refreshAccessToken();
+    }
+}, 5 * 60 * 1000); // Проверка каждые 5 минут
+function isTokenExpired(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return (Date.now() / 1000) >= payload.exp;
+    } catch (e) {
+        return true;
+    }
+}
 // Функция выхода
 function logout() {
     fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
