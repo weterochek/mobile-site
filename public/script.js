@@ -1,69 +1,60 @@
 let cart = {};
-window.onload = function() {
-  const userAgent = navigator.userAgent.toLowerCase();
 
-  // Логирование для проверки, что передается в User-Agent
-  console.log("User-Agent: ", userAgent);
+window.onload = function () {
+    const userAgent = navigator.userAgent.toLowerCase();
 
-  if (userAgent.includes('mobile')) {
-    // Перенаправление на мобильную версию сайта
-    if (!window.location.href.includes('mobile-site.onrender.com')) {
-      window.location.href = "https://mobile-site.onrender.com";
+    console.log("User-Agent: ", userAgent);
+
+    if (userAgent.includes("mobile")) {
+        if (!window.location.href.includes("mobile-site.onrender.com")) {
+            window.location.href = "https://mobile-site.onrender.com";
+        }
+    } else {
+        if (!window.location.href.includes("makadamia.onrender.com")) {
+            window.location.href = "https://makadamia.onrender.com";
+        }
     }
-  } else {
-    // Перенаправление на десктопную версию сайта
-    if (!window.location.href.includes('makadamia.onrender.com')) {
-      window.location.href = "https://makadamia.onrender.com";
-    }
-  }
 };
-function toggleCart() {
-    const cartDropdown = document.getElementById('cartDropdown');
-    if (cartDropdown) {
-        cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
-    }
-}
 
-// Закрытие корзины при клике на крестик
-document.addEventListener("DOMContentLoaded", async function() {
+console.log("Отправка запроса на /refresh");
+console.log("Токен перед запросом:", localStorage.getItem("token"));
+
+document.addEventListener("DOMContentLoaded", async function () {
     const token = localStorage.getItem("token");
 
-    if (!token || isTokenExpired(token)) {  // Проверяем, есть ли токен и не истёк ли он
+    if (!token || isTokenExpired(token)) {
         console.log("🔄 Обновляем токен при входе на сайт...");
-        await refreshAccessToken();  // Запрашиваем новый accessToken
+        await refreshAccessToken();
     }
 
-    const cartButton = document.getElementById('cartButton');
-    const cartDropdown = document.getElementById('cartDropdown');
+    const cartButton = document.getElementById("cartButton");
+    const cartDropdown = document.getElementById("cartDropdown");
 
-    // Открытие/закрытие корзины при клике на кнопку
-    if (cartButton && cartDropdown) {  // Проверяем, что элементы существуют
-        cartButton.addEventListener('click', function(event) {
-            event.stopPropagation(); // Остановка распространения события клика
-            cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
+    if (cartButton && cartDropdown) {
+        cartButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            cartDropdown.style.display = cartDropdown.style.display === "block" ? "none" : "block";
         });
+
+        // Закрытие корзины при клике на крестик
+        const closeCartButton = document.createElement("span");
+        closeCartButton.innerHTML = "✖";
+        closeCartButton.style.cursor = "pointer";
+        closeCartButton.style.position = "absolute";
+        closeCartButton.style.top = "10px";
+        closeCartButton.style.right = "10px";
+        closeCartButton.style.fontSize = "1.2em";
+        closeCartButton.style.color = "black";
+        closeCartButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            cartDropdown.style.display = "none";
+        });
+
+        cartDropdown.prepend(closeCartButton);
     } else {
         console.warn("❌ cartButton или cartDropdown не найдены!");
     }
 });
-    
-    // Закрытие корзины при клике на крестик
-    const closeCartButton = document.createElement("span");
-    closeCartButton.innerHTML = "✖";
-    closeCartButton.style.cursor = "pointer";
-    closeCartButton.style.position = "absolute";
-    closeCartButton.style.top = "10px";
-    closeCartButton.style.right = "10px";
-    closeCartButton.style.fontSize = "1.2em";
-    closeCartButton.style.color = "black";
-    closeCartButton.addEventListener("click", function (event) {
-        event.stopPropagation(); // Останавливаем событие
-        cartDropdown.style.display = 'none'; // Скрыть корзину
-    });
-
-    cartDropdown.prepend(closeCartButton); // Добавляем крестик в начало содержимого
-});
-
 // Закрытие корзины при клике вне корзины (но не на товарах)
 document.addEventListener("click", function (event) {
     const cartDropdown = document.getElementById('cartDropdown');
