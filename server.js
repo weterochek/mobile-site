@@ -137,6 +137,7 @@ async function refreshAccessToken(req, res) {
             sameSite: "None",
             domain: ".onrender.com",
             path: "/",
+            partitioned: true
         });
 
         res.json({ accessToken });
@@ -282,7 +283,8 @@ res.cookie(cookieName, refreshToken, {
     sameSite: "None",
     domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
     path: "/",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    partitioned: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000
 });
 
     res.json({ accessToken });
@@ -330,7 +332,8 @@ if (!refreshToken) {
     sameSite: "None",
     domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
     path: "/",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    partitioned: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000
 });
 
         res.json({ accessToken });
