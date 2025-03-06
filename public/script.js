@@ -692,7 +692,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+document.addEventListener("DOMContentLoaded", function () {
+    if (!localStorage.getItem("cookiesAccepted")) {
+        showCookieBanner();
+    }
+});
 
+function showCookieBanner() {
+    const banner = document.createElement("div");
+    banner.innerHTML = `
+        <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
+            <p>Мы используем cookies для улучшения работы сайта, так как без них с аккаунта вас выкинет через минуту. <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById("acceptCookies").addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        banner.remove();
+    });
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
