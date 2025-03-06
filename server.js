@@ -265,6 +265,7 @@ app.post('/register', async (req, res) => {
 
 
 // Авторизация пользователя
+// Авторизация пользователя
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
     const origin = req.headers.origin;
@@ -278,20 +279,22 @@ app.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-    // Генерируем accessToken и refreshToken
-    const { accessToken, refreshToken } = generateTokens(user, origin);
+    // Генерируем токены
+    const { accessToken, refreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
-    // Устанавливаем refreshTokenMobile в cookie
-    res.cookie("refreshTokenMobile", refreshToken, { // ✅ Используем refreshToken
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
-});
+    // ✅ Устанавливаем refreshTokenMobile в cookie
+    res.cookie("refreshTokenMobile", refreshToken, { 
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        domain: "mobile-site.onrender.com",
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+    });
 
     res.json({ accessToken });
 });
+
 
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена для мобильной версии");
