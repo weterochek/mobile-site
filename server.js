@@ -258,46 +258,45 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
-  console.log(`🔹 Устанавливаем refreshTokenMobile для ${user.username} с сайтом: ${origin}`);
     const { username, password } = req.body;
     const origin = req.headers.origin;
-    
-    const user = await User.findOne({ username });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-        return res.status(401).json({ message: 'Неверные данные' });
-    }
 
     if (origin !== "https://mobile-site.onrender.com") {
         return res.status(403).json({ message: "Недопустимый источник запроса" });
     }
 
+    const user = await User.findOne({ username });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        return res.status(401).json({ message: 'Неверные данные' });
+    }
+
+    // Генерируем accessToken и refreshToken
     const { accessToken, refreshToken } = generateTokens(user, origin);
 
+    // Устанавливаем refreshTokenMobile в cookie
     res.cookie("refreshTokenMobile", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        domain: "mobile-site.onrender.com",  // ✅ Исправлено, чтобы не было конфликтов
+        domain: "mobile-site.onrender.com",
         path: "/",
-        partitioned: true,
-        maxAge: 30 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
     });
 
     res.json({ accessToken });
 });
 
-
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена для мобильной версии");
 
-    const refreshToken = req.cookies.refreshTokenMobile;  // ✅ Берём только mobile версию
+    const refreshToken = req.cookies.refreshTokenMobile;
     if (!refreshToken) {
         console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err) {
+        if (err || decodedUser.site !== "https://mobile-site.onrender.com") {
             console.warn("❌ Недействительный refresh-токен, отправляем 403.");
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
@@ -306,18 +305,18 @@ app.post('/refresh', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
-        console.log("🔍 Отправляем запрос на refresh. Cookies:", document.cookie);
-        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
 
-        res.cookie("refreshTokenMobile", newRefreshToken, {  // ✅ Записываем в мобильный токен
+        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+
+        // Обновляем refreshTokenMobile в cookie
+        res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            domain: "mobile-site.onrender.com",  // ✅ Исправлено
+            domain: "mobile-site.onrender.com",
             path: "/",
-            partitioned: true,
-            maxAge: 30 * 24 * 60 * 60 * 1000
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
         });
 
         res.json({ accessToken });
