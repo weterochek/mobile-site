@@ -23,6 +23,26 @@ function toggleCart() {
         cartDropdown.style.display = cartDropdown.style.display === 'block' ? 'none' : 'block';
     }
 }
+document.addEventListener("DOMContentLoaded", function () {
+    if (!localStorage.getItem("cookiesAccepted")) {
+        showCookieBanner();
+    }
+});
+
+function showCookieBanner() {
+    const banner = document.createElement("div");
+    banner.innerHTML = `
+        <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
+            <p>Мы используем cookies для улучшения работы сайта, так как для постоянного поддержания аккаунта нужен токен, без него будет очень быстро выкидывать. <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    document.getElementById("acceptCookies").addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        banner.remove();
+    });
+}
 
 // Закрытие корзины при клике на крестик
 document.addEventListener("DOMContentLoaded", function () {
@@ -355,20 +375,27 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
-    console.log("🔄 Попытка обновления токена...");
-
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО!
+            credentials: "include",
         });
 
         if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
+            console.warn("Не удалось обновить токен, требуется повторный вход.");
             logout();
             return null;
         }
 
+        const data = await response.json();
+        localStorage.setItem("token", data.accessToken); 
+        return data.accessToken;
+    } catch (error) {
+        console.error("Ошибка при обновлении токена:", error);
+        logout();
+        return null;
+    }
+}
         const data = await response.json();
         console.log("✅ Новый accessToken:", data.accessToken);
 
