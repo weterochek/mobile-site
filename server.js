@@ -266,52 +266,37 @@ app.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-let cookieName;
-if (origin === "https://makadamia.onrender.com") {
-    cookieName = "refreshTokenDesktop";
-} else if (origin === "https://mobile-site.onrender.com") {
-    cookieName = "refreshTokenMobile";
-} else {
-    return res.status(403).json({ message: "Недопустимый источник запроса" });
-}
+    if (origin !== "https://mobile-site.onrender.com") {
+        return res.status(403).json({ message: "Недопустимый источник запроса" });
+    }
 
-const { accessToken, refreshToken } = generateTokens(user, origin);
+    const { accessToken, refreshToken } = generateTokens(user, origin);
 
-res.cookie(cookieName, refreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
-    path: "/",
-    partitioned: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000
-});
+    res.cookie("refreshTokenMobile", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        domain: "mobile-site.onrender.com",  // ✅ Исправлено, чтобы не было конфликтов
+        path: "/",
+        partitioned: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000
+    });
 
     res.json({ accessToken });
 });
 
+
 app.post('/refresh', async (req, res) => {
-    console.log("🔄 Запрос на обновление токена получен.");
+    console.log("🔄 Запрос на обновление токена для мобильной версии");
 
-   const refreshTokenDesktop = req.cookies.refreshTokenDesktop;
-const refreshTokenMobile = req.cookies.refreshTokenMobile;
-const origin = req.headers.origin;
-
-let refreshToken;
-if (origin === "https://makadamia.onrender.com") {
-    refreshToken = refreshTokenDesktop;
-} else if (origin === "https://mobile-site.onrender.com") {
-    refreshToken = refreshTokenMobile;
-} else {
-    return res.status(403).json({ message: "Недопустимый источник запроса" });
-}
-
-if (!refreshToken) {
-    return res.status(401).json({ message: "Не авторизован" });
-}
+    const refreshToken = req.cookies.refreshTokenMobile;  // ✅ Берём только mobile версию
+    if (!refreshToken) {
+        console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
+        return res.status(401).json({ message: "Не авторизован" });
+    }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err || decodedUser.site !== origin) {
+        if (err) {
             console.warn("❌ Недействительный refresh-токен, отправляем 403.");
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
@@ -324,17 +309,15 @@ if (!refreshToken) {
         console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
 
-        console.log(`🔄 Новый ${cookieName}:`, newRefreshToken);
-
-        res.cookie(cookieName, newRefreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    domain: origin.includes("mobile-site.onrender.com") ? "mobile-site.onrender.com" : "makadamia.onrender.com",
-    path: "/",
-    partitioned: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000
-});
+        res.cookie("refreshTokenMobile", newRefreshToken, {  // ✅ Записываем в мобильный токен
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            domain: "mobile-site.onrender.com",  // ✅ Исправлено
+            path: "/",
+            partitioned: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000
+        });
 
         res.json({ accessToken });
     });
@@ -342,27 +325,17 @@ if (!refreshToken) {
 
 
 app.post('/logout', authMiddleware, (req, res) => {
-    const origin = req.headers.origin;
-
-    let cookieName;
-    if (origin === "https://makadamia.onrender.com") {
-        cookieName = "refreshTokenDesktop";
-    } else if (origin === "https://mobile-site.onrender.com") {
-        cookieName = "refreshTokenMobile";
-    } else {
-        return res.status(403).json({ message: "Недопустимый источник запроса" });
-    }
-
-    res.clearCookie(cookieName, {
+    res.clearCookie("refreshTokenMobile", {
         httpOnly: true,
         secure: true,
         sameSite: 'None',
-        domain: ".onrender.com",
+        domain: "mobile-site.onrender.com",  // ✅ Убедимся, что удаляется правильный cookie
         path: "/"
     });
 
     res.json({ message: 'Вы вышли из системы' });
 });
+
 
 
 // Обновление токена
