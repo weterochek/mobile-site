@@ -359,22 +359,31 @@ function getTokenExp(token) {
 
 
 async function refreshAccessToken() {
-    const refreshUrl = window.location.origin + "/refresh"; // ✅ Используем текущий сервер
+    console.log("🔄 Запрос на обновление токена...");
+
+    const isMobile = window.location.href.includes("mobile-site.onrender.com");
+    const refreshUrl = isMobile 
+        ? "https://mobile-site.onrender.com/refresh"  // 📌 Если мобильная версия, отправляем запрос на мобильный сервер
+        : "https://makadamia.onrender.com/refresh";   // 📌 Если ПК-версия, отправляем на десктопный сервер
 
     try {
-        const response = await fetch(refreshUrl, { // Теперь сервер определяется автоматически
+        const response = await fetch(refreshUrl, {
             method: "POST",
             credentials: "include"
         });
 
         if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена:", response.status);
-            logout(); // Выход из системы при неудаче
+            console.warn(`❌ Ошибка обновления токена (${response.status})`);
             return null;
         }
 
         const data = await response.json();
-        localStorage.setItem("token", data.accessToken);
+        console.log("✅ Новый токен получен:", data.accessToken);
+
+        if (data.accessToken) {
+            localStorage.setItem("token", data.accessToken);
+        }
+
         return data.accessToken;
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
