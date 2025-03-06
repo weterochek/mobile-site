@@ -10,7 +10,48 @@ body {
     background-color: #fdfdfd;
     
 }
+#cookie-banner {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+    max-width: 500px;
+    z-index: 1000;
+}
 
+#cookie-banner p {
+    margin: 0;
+    font-size: 14px;
+    flex: 1;
+}
+
+#cookie-banner a {
+    color: #ffcc00;
+    text-decoration: underline;
+}
+
+#accept-cookies {
+    background: #ffcc00;
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 15px;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+#accept-cookies:hover {
+    background: #e6b800;
+}
 /* Header */
 header nav {
     display: flex;
