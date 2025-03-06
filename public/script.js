@@ -377,9 +377,6 @@ async function refreshAccessToken() {
         return null;
     }
 }
-        const data = await response.json();
-        console.log("✅ Новый accessToken:", data.accessToken);
-
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
             return data.accessToken;
