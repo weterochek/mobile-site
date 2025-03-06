@@ -24,7 +24,6 @@ function toggleCart() {
     }
 }
 
-
 // Закрытие корзины при клике на крестик
 document.addEventListener("DOMContentLoaded", function () {
     const cartButton = document.getElementById('cartButton');
@@ -307,28 +306,39 @@ function loadCartFromLocalStorage() {
     updateCartDisplay(); // Обновляем UI корзины
 }
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
+    let accessToken = localStorage.getItem("token");
 
-    let response = await fetch(url, {
+    if (!accessToken || isTokenExpired(accessToken)) {
+        console.log("🔄 Токен устарел, обновляем...");
+        accessToken = await refreshAccessToken();
+        if (!accessToken) return null;
+    }
+
+    let res = await fetch(url, {
         ...options,
+        credentials: "include", // ✅ Передаём cookies
         headers: {
             ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
+            Authorization: `Bearer ${accessToken}` // ✅ Правильный синтаксис
+        }
     });
 
-    if (response.status === 401) {
-        console.log("🔄 Токен истёк, обновляем...");
-        token = await refreshAccessToken();
-        if (!token) return response;
+    if (res.status === 401) {
+        console.warn("🔄 Токен истёк, пробуем обновить...");
+        accessToken = await refreshAccessToken();
+        if (!accessToken) return res; // Если не получилось обновить, возвращаем ответ
 
-        response = await fetch(url, {
+        return fetch(url, {
             ...options,
-            headers: { ...options.headers, Authorization: `Bearer ${token}` },
+            credentials: "include",
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${accessToken}`
+            }
         });
     }
 
-    return response;
+    return res;
 }
 
 
@@ -356,27 +366,23 @@ function startTokenRefresh() {
 startTokenRefresh();
 
 async function refreshAccessToken() {
+    console.log("🔄 Попытка обновления токена...");
+
     try {
         const response = await fetch("https://makadamia.onrender.com/refresh", {
             method: "POST",
-            credentials: "include",
+            credentials: "include", // 🔹 ОБЯЗАТЕЛЬНО!
         });
 
         if (!response.ok) {
-            console.warn("Не удалось обновить токен, требуется повторный вход.");
+            console.warn("❌ Ошибка обновления токена, требуется повторный вход.");
             logout();
             return null;
         }
 
         const data = await response.json();
-        localStorage.setItem("token", data.accessToken); 
-        return data.accessToken;
-    } catch (error) {
-        console.error("Ошибка при обновлении токена:", error);
-        logout();
-        return null;
-    }
-}
+        console.log("✅ Новый accessToken:", data.accessToken);
+
         if (data.accessToken) {
             localStorage.setItem("token", data.accessToken);
             return data.accessToken;
@@ -537,20 +543,36 @@ document.addEventListener("DOMContentLoaded", checkAuthStatus);
 window.addEventListener("storage", checkAuthStatus);
 
 // Логика для выхода
-function logout() {
-    fetch("https://makadamia.onrender.com/logout", { method: "POST", credentials: "include" })
-        .then(() => {
-            localStorage.removeItem("token");
-            localStorage.removeItem("cart");
-            sessionStorage.clear();
+async function logout() {
+    try {
+        // Отправляем запрос на сервер для удаления refreshToken
+        const response = await fetch("/logout", {
+            method: "POST",
+            credentials: "include" // Передаёт куки
+        });
 
-            document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        if (!response.ok) {
+            console.error("❌ Ошибка при выходе с сервера");
+        }
 
-            window.location.href = "/login.html";
-        })
-        .catch((error) => console.error("Ошибка выхода:", error));
+        // Очищаем данные из localStorage и sessionStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("cart_guest"); // Очищаем корзину гостя
+        sessionStorage.clear();
+
+        // Очищаем куки вручную (если сервер не удалил)
+        document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+        checkAuthStatus(); // Обновляем UI
+
+        window.location.href = "/"; // Перенаправляем на главную страницу
+    } catch (error) {
+        console.error("Ошибка при выходе:", error);
+    }
 }
+
 // Переход на страницу личного кабинета
 function openCabinet() {
     const token = localStorage.getItem('token');
@@ -709,26 +731,7 @@ async function updateAccount(newUsername, newPassword) {
   const data = await response.json();
   console.log("Ответ от сервера:", data);
 }
-document.addEventListener("DOMContentLoaded", function () {
-    if (!localStorage.getItem("cookiesAccepted")) {
-        showCookieBanner();
-    }
-});
 
-function showCookieBanner() {
-    const banner = document.createElement("div");
-    banner.innerHTML = `
-        <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
-            <p>Мы используем cookies для улучшения работы сайта, так как для постоянного поддержания аккаунта нужен токен, без него будет очень быстро выкидывать. <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
-        </div>
-    `;
-    document.body.appendChild(banner);
-
-    document.getElementById("acceptCookies").addEventListener("click", function () {
-        localStorage.setItem("cookiesAccepted", "true");
-        banner.remove();
-    });
-}
 // Переход на страницу оформления заказа
 function goToCheckoutPage() {
     saveCartToLocalStorage();
