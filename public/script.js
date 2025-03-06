@@ -4,15 +4,17 @@ window.onload = function () {
     const userAgent = navigator.userAgent.toLowerCase();
 
     console.log("User-Agent: ", userAgent);
+    
+    const isMobile = userAgent.includes("mobile");
+    const isOnMobileSite = window.location.href.includes("mobile-site.onrender.com");
+    const isOnDesktopSite = window.location.href.includes("makadamia.onrender.com");
 
-    if (userAgent.includes("mobile")) {
-        if (!window.location.href.includes("mobile-site.onrender.com")) {
-            window.location.href = "https://mobile-site.onrender.com";
-        }
-    } else {
-        if (!window.location.href.includes("makadamia.onrender.com")) {
-            window.location.href = "https://makadamia.onrender.com";
-        }
+    if (isMobile && !isOnMobileSite) {
+        console.log("🔄 Перенаправляем на мобильную версию...");
+        window.location.href = "https://mobile-site.onrender.com";
+    } else if (!isMobile && !isOnDesktopSite) {
+        console.log("🔄 Перенаправляем на десктопную версию...");
+        window.location.href = "https://makadamia.onrender.com";
     }
 };
 
