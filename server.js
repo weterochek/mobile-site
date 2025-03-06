@@ -303,29 +303,31 @@ app.post('/refresh', async (req, res) => {
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-    if (err) {
-        console.warn("❌ Недействительный refresh-токен, отправляем 403.");
-        return res.status(403).json({ message: "Недействительный refresh-токен" });
-    }
+        if (err) {
+            console.warn("❌ Недействительный refresh-токен, отправляем 403.");
+            return res.status(403).json({ message: "Недействительный refresh-токен" });
+        }
 
-    const user = await User.findById(decodedUser.id);
-    if (!user) {
-        return res.status(404).json({ message: "Пользователь не найден" });
-    }
+        const user = await User.findById(decodedUser.id);
+        if (!user) {
+            return res.status(404).json({ message: "Пользователь не найден" });
+        }
 
-    console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
-    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
-    res.cookie("refreshTokenMobile", newRefreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+        res.cookie("refreshTokenMobile", newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+        });
+
+        return res.json({ accessToken }); // ✅ Добавил return
     });
-
-    res.json({ accessToken });
 });
+
 
 
 app.post('/logout', authMiddleware, (req, res) => {
