@@ -258,9 +258,10 @@ app.post('/register', async (req, res) => {
 
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
+  console.log(`🔹 Устанавливаем refreshTokenMobile для ${user.username} с сайтом: ${origin}`);
     const { username, password } = req.body;
     const origin = req.headers.origin;
-
+    
     const user = await User.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: 'Неверные данные' });
@@ -305,7 +306,7 @@ app.post('/refresh', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
-
+        console.log("🔍 Отправляем запрос на refresh. Cookies:", document.cookie);
         console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, origin);
 
