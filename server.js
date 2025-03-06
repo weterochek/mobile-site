@@ -34,6 +34,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.options('*', cors(corsOptions));
+// 🔄 Редирект с HTTP на HTTPS (чтобы работал SameSite=None)
+app.use((req, res, next) => {
+    if (!req.secure && req.headers["x-forwarded-proto"] !== "https") {
+        return res.redirect("https://" + req.headers.host + req.url);
+    }
+    next();
+});
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
 const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
@@ -110,7 +117,8 @@ async function refreshAccessToken(req, res) {
 
     console.log("🔄 Сервер: Попытка обновления токена...");
     
-    const refreshToken = req.cookies.refreshTokenDesktop || req.cookies.refreshTokenMobile;
+    const refreshToken = req.cookies.refreshTokenMobile || req.cookies.refreshToken;
+console.log("🔍 Полученный refreshToken:", refreshToken);
     if (!refreshToken) {
         console.warn("❌ Нет refresh-токена, отправляем 401.");
         return res.status(401).json({ message: "Не авторизован" });
@@ -135,7 +143,6 @@ async function refreshAccessToken(req, res) {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            domain: ".onrender.com",
             path: "/",
             partitioned: true
         });
@@ -274,15 +281,13 @@ app.post('/login', async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user, origin);
 
     // Устанавливаем refreshTokenMobile в cookie
-    res.cookie("refreshTokenMobile", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        domain: "mobile-site.onrender.com",
-        path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
-    });
-
+    res.cookie("refreshTokenMobile", newRefreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+});
     res.json({ accessToken });
 });
 
@@ -314,7 +319,6 @@ app.post('/refresh', async (req, res) => {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            domain: "mobile-site.onrender.com",
             path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
         });
@@ -329,7 +333,6 @@ app.post('/logout', authMiddleware, (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: 'None',
-        domain: "mobile-site.onrender.com",  // ✅ Убедимся, что удаляется правильный cookie
         path: "/"
     });
 
