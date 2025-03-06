@@ -317,17 +317,19 @@ app.post('/refresh', async (req, res) => {
         }
 
         console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
+        // Обновляем refreshTokenMobile в cookie
         res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
+            domain: "mobile-site.onrender.com",  // ✅ Добавлено
             path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
         });
 
-        return res.json({ accessToken }); // ✅ Добавил return
+        res.json({ accessToken });
     });
 });
 
