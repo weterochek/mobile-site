@@ -117,12 +117,12 @@ async function refreshAccessToken(req, res) {
 
     console.log("🔄 Сервер: Попытка обновления токена...");
     
-    const refreshToken = req.cookies.refreshTokenMobile || req.cookies.refreshToken;
-console.log("🔍 Полученный refreshToken:", refreshToken);
-    if (!refreshToken) {
-        console.warn("❌ Нет refresh-токена, отправляем 401.");
-        return res.status(401).json({ message: "Не авторизован" });
-    }
+    const refreshToken = req.cookies.refreshTokenMobile;
+console.log("🔍 Полученный refreshTokenMobile:", refreshToken);
+if (!refreshToken) {
+    console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
+    return res.status(401).json({ message: "Не авторизован" });
+}
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
         if (err) {
@@ -199,7 +199,7 @@ const User = mongoose.model("User", userSchema);
 
 // Мидлвар для проверки токена
 
-function generateTokens(user, site) {
+function generateTokens(user) {
     const issuedAt = Math.floor(Date.now() / 1000);
     const accessToken = jwt.sign(
         { id: user._id, username: user.username, iat: issuedAt },
@@ -208,13 +208,14 @@ function generateTokens(user, site) {
     );
 
     const refreshToken = jwt.sign(
-        { id: user._id, username: user.username, site, iat: issuedAt },
+        { id: user._id, username: user.username, iat: issuedAt },
         REFRESH_SECRET,
         { expiresIn: "7d" } // Refresh-токен живёт 7 дней
     );
 
     return { accessToken, refreshToken };
 }
+
 
 // Регистрация пользователя
 app.post('/register', async (req, res) => {
@@ -281,13 +282,14 @@ app.post('/login', async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user, origin);
 
     // Устанавливаем refreshTokenMobile в cookie
-    res.cookie("refreshTokenMobile", newRefreshToken, {
+    res.cookie("refreshTokenMobile", refreshToken, { // ✅ Используем refreshToken
     httpOnly: true,
     secure: true,
     sameSite: "None",
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
 });
+
     res.json({ accessToken });
 });
 
@@ -301,30 +303,28 @@ app.post('/refresh', async (req, res) => {
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err || decodedUser.site !== "https://mobile-site.onrender.com") {
-            console.warn("❌ Недействительный refresh-токен, отправляем 403.");
-            return res.status(403).json({ message: "Недействительный refresh-токен" });
-        }
+    if (err) {
+        console.warn("❌ Недействительный refresh-токен, отправляем 403.");
+        return res.status(403).json({ message: "Недействительный refresh-токен" });
+    }
 
-        const user = await User.findById(decodedUser.id);
-        if (!user) {
-            return res.status(404).json({ message: "Пользователь не найден" });
-        }
+    const user = await User.findById(decodedUser.id);
+    if (!user) {
+        return res.status(404).json({ message: "Пользователь не найден" });
+    }
 
-        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+    console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
+    const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
-        // Обновляем refreshTokenMobile в cookie
-        res.cookie("refreshTokenMobile", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
-        });
-
-        res.json({ accessToken });
+    res.cookie("refreshTokenMobile", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
     });
+
+    res.json({ accessToken });
 });
 
 
@@ -333,12 +333,12 @@ app.post('/logout', authMiddleware, (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: 'None',
-        path: "/"
+        path: "/",
+        domain: "mobile-site.onrender.com" // ✅ Добавлено
     });
 
     res.json({ message: 'Вы вышли из системы' });
 });
-
 
 
 // Обновление токена
