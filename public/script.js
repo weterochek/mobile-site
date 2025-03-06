@@ -2,21 +2,21 @@ let cart = {};
 window.onload = function() {
   const userAgent = navigator.userAgent.toLowerCase();
 
-  // Логирование для проверки, что передается в User-Agent
   console.log("User-Agent: ", userAgent);
 
   if (userAgent.includes('mobile')) {
-    // Перенаправление на мобильную версию сайта
     if (!window.location.href.includes('mobile-site.onrender.com')) {
-      window.location.href = "https://mobile-site.onrender.com";
+      console.log("🔄 Перенаправление на мобильный сайт...");
+      // window.location.href = "https://mobile-site.onrender.com"; // ❌ ОТКЛЮЧИ ЭТО
     }
   } else {
-    // Перенаправление на десктопную версию сайта
     if (!window.location.href.includes('makadamia.onrender.com')) {
-      window.location.href = "https://makadamia.onrender.com";
+      console.log("🔄 Перенаправление на ПК-сайт...");
+      // window.location.href = "https://makadamia.onrender.com"; // ❌ ОТКЛЮЧИ ЭТО
     }
   }
 };
+
 
 console.log("Отправка запроса на /refresh");
 console.log("Токен перед запросом:", localStorage.getItem("token"));
