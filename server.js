@@ -304,6 +304,8 @@ app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена для мобильной версии");
 
     const refreshToken = req.cookies.refreshTokenMobile;
+    console.log("🔍 Полученный refreshTokenMobile:", refreshToken);
+
     if (!refreshToken) {
         console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
         return res.status(401).json({ message: "Не авторизован" });
@@ -323,20 +325,18 @@ app.post('/refresh', async (req, res) => {
         console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
-        // Обновляем refreshTokenMobile в cookie
+        // 🛠 Убираем `domain`, чтобы гарантировать работу на мобильной версии
         res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            domain: "mobile-site.onrender.com",  // ✅ Добавлено
-            path: "/",
+            path: "/", 
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
         });
 
         res.json({ accessToken });
     });
 });
-
 
 
 app.post('/logout', authMiddleware, (req, res) => {
