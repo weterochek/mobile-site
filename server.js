@@ -303,8 +303,9 @@ app.post('/login', async (req, res) => {
 
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена для мобильной версии");
+    console.log("🔍 Все куки:", req.cookies); // Добавляем логирование всех куков
 
-    const refreshToken = req.cookies.refreshTokenMobile;
+    const refreshToken = req.cookies.refreshTokenMobile; // Должен быть refreshTokenMobile
     console.log("🔍 Полученный refreshTokenMobile:", refreshToken);
 
     if (!refreshToken) {
@@ -326,12 +327,11 @@ app.post('/refresh', async (req, res) => {
         console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
         const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
-        // 🛠 Убираем `domain`, чтобы гарантировать работу на мобильной версии
         res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
-            path: "/", 
+            path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
         });
 
