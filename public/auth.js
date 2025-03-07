@@ -27,7 +27,7 @@ registerForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("registerPassword").value;
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/register", {
+        const response = await fetch("https://mobile-site.onrender.com/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
@@ -49,7 +49,7 @@ registerForm.addEventListener("submit", async (e) => {
 async function refreshAccessToken() {
     try {
         console.log("🔄 Запрос на обновление токена...");
-        const response = await fetch("https://makadamia.onrender.com/refresh", {
+        const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
             credentials: "include",
         });
@@ -124,7 +124,7 @@ async function fetchWithAuth(url, options = {}) {
 function logout() {
     console.log("🚪 Выход из аккаунта...");
 
-    fetch("https://makadamia.onrender.com/logout", { 
+    fetch("https://mobile-site.onrender.com/logout", { 
         method: "POST", 
         credentials: "include" 
     }).then(() => {
@@ -161,7 +161,7 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("loginPassword").value;
 
     try {
-        const response = await fetch("https://makadamia.onrender.com/login", {
+        const response = await fetch("https://mobile-site.onrender.com/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
@@ -247,7 +247,7 @@ async function refreshAccessToken() {
 }
 
 function logout() {
-    fetch("https://makadamia.onrender.com/logout", { method: "POST", credentials: "include" })
+    fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
         .then(() => {
             localStorage.removeItem("token"); // Удаляем токен
             localStorage.removeItem("cart");  // Удаляем корзину
