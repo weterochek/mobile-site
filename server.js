@@ -292,7 +292,6 @@ app.post('/login', async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "None",
-        domain: "mobile-site.onrender.com",
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
     });
@@ -375,6 +374,18 @@ app.get('/private-route', authMiddleware, (req, res) => {
   res.json({ message: `Добро пожаловать, пользователь ${req.user.id}` });
 });
 app.get('/account', authMiddleware, async (req, res) => {
+  console.log("🔍 Все куки в запросе /account:", req.cookies);
+
+    const user = await User.findById(req.user.id).select("username name city");
+    if (!user) {
+        return res.status(404).json({ message: "Пользователь не найден" });
+    }
+    
+    res.set("Cache-Control", "no-cache, no-store, must-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.json({ username: user.username, name: user.name, city: user.city });
+});
     try {
         const user = await User.findById(req.user.id).select("username name city");
         if (!user) {
