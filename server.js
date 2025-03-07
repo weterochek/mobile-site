@@ -37,13 +37,15 @@ app.options('*', cors(corsOptions));
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production") {
         console.log("Проверка протокола:", req.headers["x-forwarded-proto"]);
-        if (req.headers["x-forwarded-proto"] !== "") {
-            return res.redirect(`https://${req.headers.host}${req.url}`);
+        
+        // ✅ Проверяем, что уже на HTTPS и редирект не повторяется
+        if (req.headers["x-forwarded-proto"] !== "https" && !req.secure) {
+            console.log("🔄 Перенаправление на HTTPS...");
+            return res.redirect(301, `https://${req.headers.host}${req.url}`);
         }
     }
     next();
 });
-
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
 const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
