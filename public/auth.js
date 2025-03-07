@@ -51,15 +51,13 @@ async function refreshAccessToken() {
         console.log("🔄 Запрос на обновление токена...");
         const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
-            credentials: "include",
+            credentials: "include", // ✅ Должно быть включено
         });
 
         const data = await response.json();
         if (response.ok) {
             console.log("✅ Токен успешно обновлён!");
             localStorage.setItem("token", data.accessToken);
-            localStorage.setItem("sharedAccessToken", data.accessToken);
-            window.dispatchEvent(new Event("storage")); // 🔄 Обновляем токен во всех вкладках
             return data.accessToken;
         } else {
             console.warn("❌ Ошибка обновления токена. Выход...");
@@ -196,6 +194,7 @@ async function addToCart(productId, quantity) {
     try {
         const response = await fetch("https://mobile-site.onrender.com/cart/add", {
             method: "POST",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
