@@ -435,7 +435,7 @@ function editField(field) {
         input.disabled = false;
         input.focus();
     } else {
-        fetch("https://makadamia.onrender.com/account", {
+        fetch("https://mobile-site.onrender.com/account", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -453,7 +453,7 @@ function editField(field) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch("https://makadamia.onrender.com/account", {
+    fetch("https://mobile-site.onrender.com/account", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
     })
     .then(res => res.json())
@@ -629,7 +629,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function updateAccount(newUsername, newPassword) {
   const token = localStorage.getItem("accessToken");
 
-  const response = await fetch("https://makadamia.onrender.com/account", {
+  const response = await fetch("https://mobile-site.onrender.com/account", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -728,7 +728,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function updateAccount(newUsername, newPassword) {
   const token = localStorage.getItem("accessToken");
 
-  const response = await fetch("https://makadamia.onrender.com/account", {
+  const response = await fetch("https://mobile-site.onrender.com/account", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
