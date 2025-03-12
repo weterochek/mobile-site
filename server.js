@@ -273,42 +273,33 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    // Проверяем наличие пользователя и пароля
     const user = await User.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-    // Генерируем токены для мобильной версии
-    const { accessToken, refreshToken } = generateTokens(user, "mobile");
+    const { accessToken, refreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
-    // Устанавливаем cookie для мобильной версии
-    res.cookie("refreshTokenMobile", refreshToken, {
+    res.cookie("refreshTokenMobile", refreshToken, { 
         httpOnly: true,
         secure: true,
-        sameSite: 'None',
+        sameSite: "None",
         path: "/",
-        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+        maxAge: 30 * 24 * 60 * 60 * 1000  // Устанавливаем refreshToken на 30 дней для мобильной версии
     });
 
     res.json({ accessToken });
 });
 
 app.post('/refresh', async (req, res) => {
-    console.log("🔄 Запрос на обновление токена для мобильной версии");
-    console.log("🔍 Все куки:", req.cookies); // Добавляем логирование всех куков
-
-    const refreshToken = req.cookies.refreshTokenMobile; // Должен быть refreshTokenMobile
-    console.log("🔍 Полученный refreshTokenMobile:", refreshToken);
+    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenMobile для мобильной версии
 
     if (!refreshToken) {
-        console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err) {
-            console.warn("❌ Недействительный refresh-токен, отправляем 403.");
+        if (err || decodedUser.site !== "https://mobile-site.onrender.com") {
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
@@ -317,15 +308,14 @@ app.post('/refresh', async (req, res) => {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
-        console.log("✅ Refresh-токен действителен, создаём новый access-токен.");
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
         res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
             path: "/",
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
+            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
         });
 
         res.json({ accessToken });
