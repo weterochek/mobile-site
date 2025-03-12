@@ -49,7 +49,7 @@ app.use((req, res, next) => {
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
 const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
-const REFRESH_SECRET = process.env.REFRESH_SECRET || "J8$GzP1d&KxT^m4YvNcR";
+const _SECRET = process.env._SECRET || "J8$GzP1d&KxT^m4YvNcR";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -114,7 +114,7 @@ function isTokenExpired(token) {
         return true; // Если ошибка — токен недействителен
     }
 }
-async function refreshAccessToken(req, res) {
+async function AccessToken(req, res) {
     if (!req || !req.cookies) {
         console.error("❌ Ошибка: req или req.cookies отсутствуют!");
         return null;
@@ -122,17 +122,17 @@ async function refreshAccessToken(req, res) {
 
     console.log("🔄 Сервер: Попытка обновления токена...");
     
-    const refreshToken = req.cookies.refreshTokenMobile;
-console.log("🔍 Полученный refreshTokenMobile:", refreshToken);
-if (!refreshToken) {
-    console.warn("❌ Нет refreshTokenMobile, отправляем 401.");
+    const Token = req.cookies.TokenMobile;
+console.log("🔍 Полученный TokenMobile:", Token);
+if (!Token) {
+    console.warn("❌ Нет TokenMobile, отправляем 401.");
     return res.status(401).json({ message: "Не авторизован" });
 }
 
-    jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
+    jwt.verify(Token, _SECRET, async (err, decodedUser) => {
         if (err) {
-            console.warn("❌ Недействительный refresh-токен, отправляем 403.");
-            return res.status(403).json({ message: "Недействительный refresh-токен" });
+            console.warn("❌ Недействительный -токен, отправляем 403.");
+            return res.status(403).json({ message: "Недействительный -токен" });
         }
 
         const user = await User.findById(decodedUser.id);
@@ -292,14 +292,14 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/refresh', async (req, res) => {
-    const refreshToken = req.cookies.refreshTokenMobile || req.cookies.refreshToken;  // Используем актуальный refresh токен
+    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenDesktop для ПК-версии
 
     if (!refreshToken) {
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err) {
+        if (err || decodedUser.site !== "https://mobile-site.onrender.com") {
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
@@ -308,20 +308,19 @@ app.post('/refresh', async (req, res) => {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
-        const { accessToken, newRefreshToken } = generateTokens(user);
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
-        // Обновляем refresh токен в cookies
-       res.cookie("refreshTokenMobile", newRefreshToken, {
-    httpOnly: true,  // Запрещает доступ к cookie через JavaScript
-    secure: true,    // Работает только через HTTPS
-    sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
-    path: "/",
-    maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
-});
+        res.cookie("refreshTokenMobile", newRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+            path: "/",
+            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
+        });
+
         res.json({ accessToken });
     });
 });
-
 app.post('/logout', authMiddleware, (req, res) => {
     res.clearCookie("refreshTokenMobile", {
         httpOnly: true,
