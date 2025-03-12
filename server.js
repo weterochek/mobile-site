@@ -278,15 +278,15 @@ app.post('/login', async (req, res) => {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+    const { accessToken, refreshToken } = generateTokens(user);
 
-   res.cookie("refreshTokenMobile", newRefreshToken, {
-    httpOnly: true,  // Запрещает доступ к cookie через JavaScript
-    secure: true,    // Работает только через HTTPS
-    sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
-    path: "/",
-    maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
-});
+    res.cookie("refreshTokenMobile", refreshToken, {
+        httpOnly: true,  // Запрещает доступ к cookie через JavaScript
+        secure: true,    // Работает только через HTTPS
+        sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
+    });
 
     res.json({ accessToken });
 });
