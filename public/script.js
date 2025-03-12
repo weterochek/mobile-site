@@ -385,12 +385,16 @@ function getTokenExp(token) {
 async function refreshAccessToken() {
     console.log("🔄 Запрос на обновление токена...");
 
-    const refreshUrl = "https://mobile-site.onrender.com/refresh";   // URL для обновления токена для мобильной версии
+    const token = localStorage.getItem("token"); // Проверка наличия токена
+    if (!token) {
+        console.warn("❌ Нет токена, пропускаем обновление");
+        return null; // Если токена нет, не отправляем запрос на обновление
+    }
 
     try {
-        const response = await fetch(refreshUrl, {
+        const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
-            credentials: 'include'  // Отправляем cookies вместе с запросом
+            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -400,17 +404,14 @@ async function refreshAccessToken() {
 
         const data = await response.json();
         console.log("✅ Новый токен получен:", data.accessToken);
-
-        if (data.accessToken) {
-            localStorage.setItem("token", data.accessToken);  // Сохраняем новый токен в localStorage
-        }
-
+        localStorage.setItem("token", data.accessToken);  // Сохраняем новый токен
         return data.accessToken;
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
         return null;
     }
 }
+
 
 
 
@@ -555,23 +556,25 @@ document.addEventListener("DOMContentLoaded", checkAuthStatus);
 window.addEventListener("storage", checkAuthStatus);
 
 async function logout() {
-    const token = localStorage.getItem("token"); // Add token here if needed
+    const token = localStorage.getItem("token"); // Получаем токен
 
     try {
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: 'include',
+            credentials: 'include', // Обязательно передаем cookies
             headers: {
-                "Authorization": `Bearer ${token}`  // Send the token in the request header
+                "Authorization": `Bearer ${token}`  // Отправка токена для выхода
             }
         });
 
         if (response.ok) {
+            // Очистка токенов и cookies
+            localStorage.removeItem('token');
+            sessionStorage.removeItem('token');
             document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            localStorage.removeItem('accessToken');
-
-            window.location.href = "/index.html";
+            
+            window.location.href = "/index.html"; // Перенаправление на страницу входа
         } else {
             console.error("❌ Ошибка при выходе:", response.status);
         }
@@ -579,6 +582,7 @@ async function logout() {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
+
 
 // Переход на страницу личного кабинета
 function openCabinet() {
