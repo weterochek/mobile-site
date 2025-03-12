@@ -385,16 +385,18 @@ function getTokenExp(token) {
 async function refreshAccessToken() {
     console.log("🔄 Запрос на обновление токена...");
 
-    const token = localStorage.getItem("token"); // Проверка наличия токена
-    if (!token) {
-        console.warn("❌ Нет токена, пропускаем обновление");
-        return null; // Если токена нет, не отправляем запрос на обновление
+    // Получаем refresh токен из cookies
+    const refreshToken = getCookie('refreshTokenMobile') || getCookie('refreshToken');  // Используем правильный refresh token
+
+    if (!refreshToken) {
+        console.warn("❌ Нет refresh токена, пропускаем обновление");
+        return null; // Если refresh токен отсутствует, не отправляем запрос на обновление
     }
 
     try {
         const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
-            credentials: 'include'
+            credentials: 'include' // Обязательно передаем cookies с запросом
         });
 
         if (!response.ok) {
@@ -412,6 +414,13 @@ async function refreshAccessToken() {
     }
 }
 
+// Функция для получения значения cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
 
 
 
@@ -563,11 +572,12 @@ async function logout() {
         // Попробуем обновить токен
         const newToken = await refreshAccessToken();
         if (newToken) {
-            // Если новый токен получен, продолжим выполнение выхода
+            // Если новый токен получен, продолжаем выполнение выхода
             await sendLogoutRequest(newToken);
         } else {
-            // Если токен не обновился, выводим ошибку
+            // Если токен не обновился, выводим ошибку и отправляем на страницу входа
             console.error("Не удалось обновить токен. Пройдите повторную авторизацию.");
+            window.location.href = "/login.html";  // Перенаправляем на страницу входа
             return;
         }
     } else {
