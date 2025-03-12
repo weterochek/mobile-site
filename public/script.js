@@ -428,7 +428,6 @@ function handleLogout() {
 
 
 
-
 function isTokenExpired(token) {
     try {
         const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем токен
@@ -558,23 +557,42 @@ window.addEventListener("storage", checkAuthStatus);
 async function logout() {
     const token = localStorage.getItem("token"); // Получаем токен
 
+    // Проверяем, истёк ли токен
+    if (isTokenExpired(token)) {
+        console.log("Токен истек, пытаемся обновить...");
+        // Попробуем обновить токен
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+            // Если новый токен получен, продолжим выполнение выхода
+            await sendLogoutRequest(newToken);
+        } else {
+            // Если токен не обновился, выводим ошибку
+            console.error("Не удалось обновить токен. Пройдите повторную авторизацию.");
+            return;
+        }
+    } else {
+        // Если токен ещё действителен, сразу отправляем запрос на выход
+        await sendLogoutRequest(token);
+    }
+}
+
+async function sendLogoutRequest(token) {
     try {
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: 'include', // Обязательно передаем cookies
+            credentials: 'include', // Включаем cookies
             headers: {
-                "Authorization": `Bearer ${token}`  // Отправка токена для выхода
+                "Authorization": `Bearer ${token}`,  // Передаем действующий токен в заголовке
             }
         });
 
         if (response.ok) {
-            // Очистка токенов и cookies
+            // Если запрос успешен, очищаем токены и редиректим
             localStorage.removeItem('token');
             sessionStorage.removeItem('token');
             document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            
-            window.location.href = "/index.html"; // Перенаправление на страницу входа
+            window.location.href = "/index.html"; // Перенаправляем на страницу входа
         } else {
             console.error("❌ Ошибка при выходе:", response.status);
         }
@@ -582,6 +600,7 @@ async function logout() {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
+
 
 
 // Переход на страницу личного кабинета
