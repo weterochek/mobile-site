@@ -396,7 +396,7 @@ async function refreshAccessToken() {
     try {
         const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
-            credentials: 'include' // Обязательно передаем cookies с запросом
+            credentials: 'include' // Включаем cookies в запрос
         });
 
         if (!response.ok) {
@@ -421,6 +421,7 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
     return null;
 }
+
 
 
 
