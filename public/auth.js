@@ -257,7 +257,10 @@ function logout() {
 
             window.location.href = "/login.html"; // Перенаправляем на страницу входа
         })
-        .catch((error) => console.error("Ошибка выхода:", error));
+        .catch((error) => {
+            console.error("Ошибка выхода:", error);
+            alert("Произошла ошибка при выходе.");
+        });
 }
 
 // Функция запроса с авторизацией
