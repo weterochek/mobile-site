@@ -532,30 +532,33 @@ document.addEventListener("DOMContentLoaded", checkAuthStatus);
 // ✅ Следим за изменениями в localStorage (например, когда токен обновится)
 window.addEventListener("storage", checkAuthStatus);
 
-// Логика для выхода
-// Логика выхода с мобильной версии
 async function logout() {
     try {
+        const refreshToken = document.cookie.split("; ").find(row => row.startsWith("refreshTokenMobile="));
+        if (!refreshToken) {
+            console.error("❌ Не найден refreshTokenMobile!");
+            return;
+        }
+
+        console.log("🔍 Токен перед выходом:", refreshToken);
+        
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
             credentials: "include", // передаем cookie с запросом
         });
 
         if (response.ok) {
-            // Удаляем cookie для мобильной версии
-            document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";  // Удаление токена
             localStorage.removeItem("accessToken");
 
-            // Перенаправляем на страницу входа
-            window.location.href = "/index.html";
+            window.location.href = "/index.html"; // Перенаправление на главную страницу
         } else {
-            console.error("Ошибка при выходе:", response.status);
+            console.error("❌ Ошибка при выходе:", response.status);
         }
     } catch (error) {
-        console.error("Ошибка при выходе:", error);
+        console.error("❌ Ошибка при выходе:", error);
     }
 }
-
 
 // Переход на страницу личного кабинета
 function openCabinet() {
