@@ -270,35 +270,29 @@ app.post('/register', async (req, res) => {
 
 
 // Авторизация пользователя
-// Авторизация пользователя
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const origin = req.headers.origin;
 
-    if (origin !== "https://mobile-site.onrender.com") {
-        return res.status(403).json({ message: "Недопустимый источник запроса" });
-    }
-
+    // Проверяем наличие пользователя и пароля
     const user = await User.findOne({ username });
     if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.status(401).json({ message: 'Неверные данные' });
     }
 
-    // Генерируем токены
-    const { accessToken, refreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
+    // Генерируем токены для мобильной версии
+    const { accessToken, refreshToken } = generateTokens(user, "mobile");
 
-    // ✅ Устанавливаем refreshTokenMobile в cookie
-    res.cookie("refreshTokenMobile", refreshToken, { 
+    // Устанавливаем cookie для мобильной версии
+    res.cookie("refreshTokenMobile", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "None",
+        sameSite: 'None',
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 дней
     });
 
     res.json({ accessToken });
 });
-
 
 app.post('/refresh', async (req, res) => {
     console.log("🔄 Запрос на обновление токена для мобильной версии");
@@ -345,7 +339,7 @@ app.post('/logout', authMiddleware, (req, res) => {
         secure: true,
         sameSite: 'None',
         path: "/",
-        domain: "mobile-site.onrender.com" // ✅ Добавлено
+        domain: "mobile-site.onrender.com"
     });
 
     res.json({ message: 'Вы вышли из системы' });
