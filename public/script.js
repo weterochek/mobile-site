@@ -194,6 +194,30 @@ function revertControlsToAddButton(itemName) {
     addButtonControl.style.display = "none";
     quantityDisplay.style.display = "none";
 }
+document.addEventListener('DOMContentLoaded', async () => {
+    const accessToken = localStorage.getItem('accessToken');  // Получаем токен из localStorage
+
+    if (accessToken) {
+        document.getElementById('authButton').textContent = 'Личный кабинет';  // Если токен есть, отображаем "Личный кабинет"
+        await loadUserData(accessToken);  // Загружаем данные пользователя
+    } else {
+        document.getElementById('authButton').textContent = 'Вход';  // Если токен отсутствует, отображаем "Вход"
+    }
+});
+async function loadUserData(token) {
+    const response = await fetch("/account", {
+        headers: {
+            "Authorization": `Bearer ${token}`  // Передаем токен в заголовке
+        }
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        document.getElementById("username").textContent = data.username;  // Отображаем имя пользователя
+    } else {
+        localStorage.removeItem('accessToken');  // Если токен недействителен, удаляем его
+    }
+}
 
 // Обновление отображения корзины и количества товара на карточке
 function updateCartDisplay() {
@@ -361,15 +385,12 @@ function getTokenExp(token) {
 async function refreshAccessToken() {
     console.log("🔄 Запрос на обновление токена...");
 
-    const isMobile = window.location.hostname.includes("mobile-site"); // Проверка на мобильную версию
-    const refreshUrl = isMobile
-        ? "https://mobile-site.onrender.com/refresh"
-        : "https://makadamia.onrender.com/refresh";  // Используем разные URL для ПК и мобильного сайта
+    const refreshUrl = "https://mobile-site.onrender.com/refresh";   // URL для обновления токена для мобильной версии
 
     try {
         const response = await fetch(refreshUrl, {
             method: "POST",
-            credentials: "include",  // передаем cookie с запросом
+            credentials: 'include'  // Отправляем cookies вместе с запросом
         });
 
         if (!response.ok) {
@@ -381,7 +402,7 @@ async function refreshAccessToken() {
         console.log("✅ Новый токен получен:", data.accessToken);
 
         if (data.accessToken) {
-            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("token", data.accessToken);  // Сохраняем новый токен в localStorage
         }
 
         return data.accessToken;
@@ -390,6 +411,7 @@ async function refreshAccessToken() {
         return null;
     }
 }
+
 
 
 // ✅ Добавляем обработчик выхода (если `logout()` не определён)
@@ -534,24 +556,19 @@ window.addEventListener("storage", checkAuthStatus);
 
 async function logout() {
     try {
-        const refreshToken = document.cookie.split("; ").find(row => row.startsWith("refreshTokenMobile="));
-        if (!refreshToken) {
-            console.error("❌ Не найден refreshTokenMobile!");
-            return;
-        }
-
-        console.log("🔍 Токен перед выходом:", refreshToken);
-        
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: "include", // передаем cookie с запросом
+            credentials: 'include'  // Отправляем cookies с запросом
         });
 
         if (response.ok) {
-            document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";  // Удаление токена
-            localStorage.removeItem("accessToken");
+            // Удаляем токены
+            document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            localStorage.removeItem('accessToken');
 
-            window.location.href = "/index.html"; // Перенаправление на главную страницу
+            // Перенаправляем на страницу входа
+            window.location.href = "/index.html";
         } else {
             console.error("❌ Ошибка при выходе:", response.status);
         }
@@ -559,6 +576,7 @@ async function logout() {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
+
 
 // Переход на страницу личного кабинета
 function openCabinet() {
