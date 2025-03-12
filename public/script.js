@@ -306,7 +306,17 @@ function resetAddToCartButtons() {
         revertControlsToAddButton(itemName);
     }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem('token');  // Получаем токен из localStorage
 
+    if (token) {
+        // Если токен есть, показываем кнопку "Личный кабинет" и скрываем "Вход"
+        document.getElementById('authButton').textContent = 'Личный кабинет';
+    } else {
+        // Если токен отсутствует, показываем "Вход"
+        document.getElementById('authButton').textContent = 'Вход';
+    }
+});
 // Загрузка корзины из localStorage при загрузке страницы
 document.addEventListener("DOMContentLoaded", () => {
     loadCartFromLocalStorage();
