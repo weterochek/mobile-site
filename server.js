@@ -155,17 +155,7 @@ if (!refreshToken) {
         res.json({ accessToken });
     });
 }
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem('token');  // Получаем токен из localStorage
 
-    if (token) {
-        // Если токен есть, показываем кнопку "Личный кабинет" и скрываем "Вход"
-        document.getElementById('authButton').textContent = 'Личный кабинет';
-    } else {
-        // Если токен отсутствует, показываем "Вход"
-        document.getElementById('authButton').textContent = 'Вход';
-    }
-});
 const Cart = require("./models/Cart"); // Подключаем модель
 
 app.post('/cart/add', authMiddleware, async (req, res) => {
