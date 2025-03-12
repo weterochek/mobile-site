@@ -555,19 +555,22 @@ document.addEventListener("DOMContentLoaded", checkAuthStatus);
 window.addEventListener("storage", checkAuthStatus);
 
 async function logout() {
+    const token = localStorage.getItem("token"); // Add token here if needed
+
     try {
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: 'include'  // Отправляем cookies с запросом
+            credentials: 'include',
+            headers: {
+                "Authorization": `Bearer ${token}`  // Send the token in the request header
+            }
         });
 
         if (response.ok) {
-            // Удаляем токены
             document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             localStorage.removeItem('accessToken');
 
-            // Перенаправляем на страницу входа
             window.location.href = "/index.html";
         } else {
             console.error("❌ Ошибка при выходе:", response.status);
@@ -576,7 +579,6 @@ async function logout() {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
-
 
 // Переход на страницу личного кабинета
 function openCabinet() {
