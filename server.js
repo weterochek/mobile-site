@@ -155,7 +155,17 @@ if (!refreshToken) {
         res.json({ accessToken });
     });
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem('token');  // Получаем токен из localStorage
 
+    if (token) {
+        // Если токен есть, показываем кнопку "Личный кабинет" и скрываем "Вход"
+        document.getElementById('authButton').textContent = 'Личный кабинет';
+    } else {
+        // Если токен отсутствует, показываем "Вход"
+        document.getElementById('authButton').textContent = 'Вход';
+    }
+});
 const Cart = require("./models/Cart"); // Подключаем модель
 
 app.post('/cart/add', authMiddleware, async (req, res) => {
@@ -280,13 +290,13 @@ app.post('/login', async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user, "https://mobile-site.onrender.com");
 
-    res.cookie("refreshTokenMobile", refreshToken, { 
-        httpOnly: true,
-        secure: true,
-        sameSite: "None",
-        path: "/",
-        maxAge: 30 * 24 * 60 * 60 * 1000  // Устанавливаем refreshToken на 30 дней для мобильной версии
-    });
+   res.cookie("refreshTokenMobile", newRefreshToken, {
+    httpOnly: true,  // Запрещает доступ к cookie через JavaScript
+    secure: true,    // Работает только через HTTPS
+    sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
+});
 
     res.json({ accessToken });
 });
@@ -311,14 +321,13 @@ app.post('/refresh', async (req, res) => {
         const { accessToken, newRefreshToken } = generateTokens(user);
 
         // Обновляем refresh токен в cookies
-        res.cookie("refreshTokenMobile", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000  // Новый refresh токен на 30 дней
-        });
-
+       res.cookie("refreshTokenMobile", newRefreshToken, {
+    httpOnly: true,  // Запрещает доступ к cookie через JavaScript
+    secure: true,    // Работает только через HTTPS
+    sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
+});
         res.json({ accessToken });
     });
 });
