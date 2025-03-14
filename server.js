@@ -276,25 +276,29 @@ app.post('/login', async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user);
 
     res.cookie("refreshTokenMobile", refreshToken, {
-        httpOnly: true,  // Запрещает доступ к cookie через JavaScript
-        secure: true,    // Работает только через HTTPS
-        sameSite: "None", // Чтобы cookie работала в кросс-доменных запросах
+        httpOnly: true,  
+        secure: true,    
+        sameSite: "None", 
         path: "/",
-        maxAge: 30 * 24 * 60 * 60 * 1000 // Срок действия refresh токена
+        maxAge: 30 * 24 * 60 * 60 * 1000 // ✅ 30 дней хранения
     });
 
     res.json({ accessToken });
 });
 
-app.post('/refresh', async (req, res) => {
-    const refreshToken = req.cookies.refreshTokenMobile;
 
+app.post('/refresh', async (req, res) => {
+    console.log("🔍 Все куки в запросе /refresh:", req.cookies);
+
+    const refreshToken = req.cookies.refreshTokenMobile; // ✅ Теперь сервер видит куки
     if (!refreshToken) {
+        console.warn("❌ Нет refreshTokenMobile в cookies");
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
         if (err) {
+            console.warn("❌ Недействительный refresh-токен");
             res.clearCookie("refreshTokenMobile", { httpOnly: true, secure: true, sameSite: "None", path: "/" });
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
@@ -311,7 +315,7 @@ app.post('/refresh', async (req, res) => {
             secure: true,
             sameSite: "None",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000
+            maxAge: 30 * 24 * 60 * 60 * 1000  // ✅ Кука обновляется на 30 дней
         });
 
         res.json({ accessToken });
