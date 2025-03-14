@@ -395,30 +395,21 @@ function getTokenExp(token) {
 async function refreshAccessToken() {
     console.log("🔄 Запрос на обновление токена...");
 
-    const refreshToken = getCookie("refreshTokenMobile");  // Получаем refreshToken из cookies
-
-    if (!refreshToken) {
-        console.warn("❌ Нет refresh токена, пропускаем обновление");
-        return null;
-    }
-
-    const response = await fetch("https://mobile-site.onrender.com/refresh", {
+    const response = await fetch("/refresh", {
         method: "POST",
-        credentials: "include"  // Обязательно передаем куки с запросом
+        credentials: "include"  // 🔥 Передаёт куки, даже если они httpOnly
     });
 
     const data = await response.json();
     if (response.ok) {
         console.log("✅ Токен успешно обновлён!");
-        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("accessToken", data.accessToken);
         return data.accessToken;
     } else {
-        console.warn("❌ Ошибка обновления токена. Выход...");
-        logout();
+        console.warn("❌ Ошибка обновления токена:", data.message);
         return null;
     }
 }
-
 // Функция для получения значения cookie
 function getCookie(name) {
     const value = `; ${document.cookie}`;
