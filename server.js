@@ -50,6 +50,7 @@ app.use((req, res, next) => {
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
 const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
 const _SECRET = process.env._SECRET || "J8$GzP1d&KxT^m4YvNcR";
+const REFRESH_SECRET = process.env.REFRESH_SECRET || "J8$GzP1d&KxT^m4YvNcR";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -77,33 +78,27 @@ async function fetchWithAuth(url, options = {}) {
     let accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken || isTokenExpired(accessToken)) {
-        console.log("Токен устарел, обновляем...");
-        accessToken = await refreshAccessToken();
+        console.log("🔄 Токен истек, запрашиваем новый...");
+        const response = await fetch("/refresh", { method: "POST", credentials: "include" });
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("accessToken", data.accessToken);
+            accessToken = data.accessToken;
+        } else {
+            console.warn("❌ Ошибка обновления токена:", data.message);
+            return null;
+        }
     }
 
-    const res = await fetch(url, {
+    return fetch(url, {
         ...options,
         headers: {
             ...options.headers,
             Authorization: `Bearer ${accessToken}`
         }
     });
-
-    if (res.status === 401) {
-        console.log("Ошибка 401: Токен недействителен, пробуем обновить...");
-        accessToken = await refreshAccessToken();
-
-        return fetch(url, {
-            ...options,
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
-    }
-
-    return res;
 }
+
 
 // Функция проверки срока жизни токена
 function isTokenExpired(token) {
@@ -292,14 +287,15 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/refresh', async (req, res) => {
-    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenDesktop для ПК-версии
+    const refreshToken = req.cookies.refreshTokenMobile;
 
     if (!refreshToken) {
         return res.status(401).json({ message: "Не авторизован" });
     }
 
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
-        if (err || decodedUser.site !== "https://mobile-site.onrender.com") {
+        if (err) {
+            res.clearCookie("refreshTokenMobile", { httpOnly: true, secure: true, sameSite: "None", path: "/" });
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
@@ -315,12 +311,13 @@ app.post('/refresh', async (req, res) => {
             secure: true,
             sameSite: "None",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
+            maxAge: 30 * 24 * 60 * 60 * 1000
         });
 
         res.json({ accessToken });
     });
 });
+
 app.post('/logout', authMiddleware, (req, res) => {
     res.clearCookie("refreshTokenMobile", {
         httpOnly: true,
