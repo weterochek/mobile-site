@@ -1,4 +1,4 @@
-// Переключение между формами
+// === Переключение между формами ===
 function showRegister() {
     document.getElementById("registerForm").classList.add("active");
     document.getElementById("loginForm").classList.remove("active");
@@ -15,13 +15,12 @@ function showLogin() {
     document.getElementById("toggleRegister").classList.remove("active");
 }
 
-// Показ формы авторизации по умолчанию
-showLogin();
+showLogin(); // По умолчанию
 
-// Обработчик регистрации
+// === Регистрация ===
 const registerForm = document.querySelector("#registerForm form");
 registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // Останавливаем отправку формы по умолчанию
+    e.preventDefault();
 
     const username = document.getElementById("registerUsername").value;
     const password = document.getElementById("registerPassword").value;
@@ -35,122 +34,18 @@ registerForm.addEventListener("submit", async (e) => {
 
         const data = await response.json();
         if (response.ok) {
-            alert("Регистрация прошла успешно! Вы можете войти.");
-            showLogin(); // Переключаемся на форму входа
+            alert("Регистрация прошла успешно!");
+            showLogin();
         } else {
             alert(data.message || "Ошибка регистрации.");
         }
     } catch (error) {
         console.error("Ошибка регистрации:", error);
-        alert("Произошла ошибка. Попробуйте снова.");
-    }
-});
-// Функция обновления токена
-async function refreshAccessToken() {
-    try {
-        console.log("🔄 Запрос на обновление токена...");
-        const response = await fetch("https://mobile-site.onrender.com/refresh", {
-            method: "POST",
-            credentials: "include", // ✅ Должно быть включено
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            console.log("✅ Токен успешно обновлён!");
-            localStorage.setItem("token", data.accessToken);
-            return data.accessToken;
-        } else {
-            console.warn("❌ Ошибка обновления токена. Выход...");
-            logout();
-            return null;
-        }
-    } catch (error) {
-        console.error("❌ Ошибка при обновлении токена:", error);
-        logout();
-        return null;
-    }
-}
-
-// Таймер автообновления токена (каждую минуту)
-setInterval(() => { 
-    const token = localStorage.getItem("token"); 
-    if (!token) return;
-
-    const exp = getTokenExp(token);
-    const now = Math.floor(Date.now() / 1000);
-
-    // 🔄 Обновляем за 5 минут до истечения
-    if (exp && (exp - now) < 300) { 
-        console.log("🔄 Токен скоро истечёт, обновляем...");
-        refreshAccessToken();
-    }
-}, 60000);
-
-// Обновлённая функция fetchWithAuth
-async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
-
-    if (!token) {
-        console.warn("❌ Нет accessToken, пробуем обновить...");
-        token = await refreshAccessToken();
-        if (!token) return null;
-    }
-
-    let response = await fetch(url, {
-        ...options,
-        headers: {
-            ...options.headers,
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    if (response.status === 401) {
-        console.warn("🔄 Токен истёк, пробуем обновить...");
-        token = await refreshAccessToken();
-        if (!token) return response;
-
-        return fetch(url, {
-            ...options,
-            headers: { ...options.headers, Authorization: `Bearer ${token}` },
-        });
-    }
-
-    return response;
-}
-
-// Функция выхода из системы
-function logout() {
-    console.log("🚪 Выход из аккаунта...");
-
-    fetch("https://mobile-site.onrender.com/logout", { 
-        method: "POST", 
-        credentials: "include" 
-    }).then(() => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("sharedAccessToken");
-        localStorage.removeItem("cart");
-        sessionStorage.clear();
-
-        // Очищаем refreshToken
-        document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0;";
-
-        window.dispatchEvent(new Event("storage")); // 🔄 Обновляем logout на всех вкладках
-        window.location.href = "/login.html";
-    }).catch((error) => console.error("Ошибка выхода:", error));
-}
-
-// 📢 Слушаем изменения токена в localStorage (другие вкладки и сайты)
-window.addEventListener("storage", (event) => {
-    if (event.key === "sharedAccessToken") {
-        const newToken = localStorage.getItem("sharedAccessToken");
-        if (newToken) {
-            localStorage.setItem("token", newToken);
-            console.log("🔄 Токен обновлён через localStorage:", newToken);
-        }
+        alert("Произошла ошибка.");
     }
 });
 
-// Обработчик входа
+// === Вход ===
 const loginForm = document.querySelector("#loginForm form");
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -159,19 +54,18 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("loginPassword").value;
 
     try {
-        const response = await fetch("https://mobile-site.onrender.com/login", {
+        const response = await fetch("/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
-            credentials: "include", // Включаем куки
+            credentials: "include"
         });
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("accessToken", data.accessToken);
+            localStorage.setItem("userId", data.userId);
             localStorage.setItem("username", username);
-
-            // Редирект без всплывающего окна
             window.location.href = "/index.html";
         } else {
             alert(data.message || "Ошибка входа.");
@@ -182,47 +76,8 @@ loginForm.addEventListener("submit", async (e) => {
     }
 });
 
-async function addToCart(productId, quantity) {
-    const token = localStorage.getItem("token");
 
-    if (!token) {
-        alert("Пожалуйста, войдите в аккаунт, чтобы добавить товар в корзину.");
-        window.location.href = "/login.html";
-        return;
-    }
-
-    try {
-        const response = await fetch("https://mobile-site.onrender.com/cart/add", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ productId, quantity }),
-        });
-
-        const data = await response.json();
-
-        if (response.status === 401) {
-            alert("Вы не авторизованы! Войдите, чтобы добавить товар.");
-            localStorage.removeItem("token"); // Очищаем токен, если он недействителен
-            window.location.href = "/login.html";
-            return;
-        }
-
-        if (response.ok) {
-            alert("Товар добавлен в корзину!");
-        } else {
-            alert(data.message);
-        }
-    } catch (error) {
-        console.error("Ошибка добавления в корзину:", error);
-        alert("Произошла ошибка. Попробуйте снова.");
-    }
-}
-
-// Функция обновления токена
+// === Функция обновления accessToken ===
 async function refreshAccessToken() {
     try {
         const response = await fetch("https://mobile-site.onrender.com/refresh", {
@@ -232,40 +87,56 @@ async function refreshAccessToken() {
 
         const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", data.accessToken);
+            localStorage.setItem("accessToken", data.accessToken);
+            console.log("🔄 Access Token обновлён!");
             return data.accessToken;
         } else {
-            logout(); // Если refreshToken недействителен, выходим из аккаунта
+            logout();
             return null;
         }
     } catch (error) {
-        console.error("Ошибка обновления токена:", error);
-        logout(); // Если произошла ошибка, выходим
+        console.error("Ошибка при обновлении токена:", error);
+        logout();
         return null;
     }
 }
 
+// === Выход ===
 function logout() {
     fetch("https://mobile-site.onrender.com/logout", { method: "POST", credentials: "include" })
         .then(() => {
-            localStorage.removeItem("token"); // Удаляем токен
-            localStorage.removeItem("cart");  // Удаляем корзину
-            sessionStorage.clear(); // Очищаем сессию
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("username");
+            localStorage.removeItem("userId");
+            sessionStorage.clear();
 
-            // Очищаем refreshToken
-            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; max-age=0;";
+            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
 
-            window.location.href = "/login.html"; // Перенаправляем на страницу входа
+            window.location.href = "/login.html";
         })
-        .catch((error) => {
-            console.error("Ошибка выхода:", error);
-            alert("Произошла ошибка при выходе.");
-        });
+        .catch((error) => console.error("Ошибка выхода:", error));
 }
 
-// Функция запроса с авторизацией
+// === Автообновление токена каждые 5 минут ===
+setInterval(async () => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+        const exp = getTokenExp(token);
+        const now = Math.floor(Date.now() / 1000);
+        if (exp && (exp - now) < 300) {
+            await refreshAccessToken();
+        }
+    }
+}, 60000);
+
+// === Функция для работы с авторизованными запросами ===
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
+    let token = localStorage.getItem("accessToken");
+
+    if (!token) {
+        token = await refreshAccessToken();
+        if (!token) return null;
+    }
 
     let response = await fetch(url, {
         ...options,
@@ -288,12 +159,12 @@ async function fetchWithAuth(url, options = {}) {
     return response;
 }
 
-window.addEventListener("storage", (event) => {
-    if (event.key === "sharedAccessTokenUpdate") {
-        const newToken = localStorage.getItem("sharedAccessToken");
-        if (newToken) {
-            localStorage.setItem("token", newToken);
-            console.log("Токен обновлён через localStorage:", newToken);
-        }
+// === Парсинг exp из токена ===
+function getTokenExp(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.exp;
+    } catch (e) {
+        return null;
     }
-});
+}
