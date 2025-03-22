@@ -31,14 +31,18 @@ async function loadUserOrders() {
 function displayOrders(orders) {
     const ordersContainer = document.getElementById('ordersContainer');
     const noOrdersMessage = document.getElementById('noOrdersMessage');
-
+    
     if (orders.length === 0) {
         noOrdersMessage.style.display = 'block';
         ordersContainer.style.display = 'none';
+        return;
     } else {
         noOrdersMessage.style.display = 'none';
         ordersContainer.style.display = 'block';
     }
+
+    // Сортировка от новых к старым
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     ordersContainer.innerHTML = '';
 
@@ -70,7 +74,6 @@ function displayOrders(orders) {
         ordersContainer.innerHTML += orderHTML;
     });
 }
-
 
 // Загрузка заказов при загрузке страницы
 document.addEventListener("DOMContentLoaded", loadUserOrders);
