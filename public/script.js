@@ -100,6 +100,23 @@ function showCookieBanner() {
     });
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menuContent = document.querySelector('.menu-content');
+    const closeMenu = document.querySelector('.close-menu');
+
+    if (menuToggle && menuContent) {
+        menuToggle.addEventListener('click', () => {
+            menuContent.classList.add('active'); // Показываем меню
+        });
+    }
+
+    if (closeMenu && menuContent) {
+        closeMenu.addEventListener('click', () => {
+            menuContent.classList.remove('active'); // Закрываем меню
+        });
+    }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     if (localStorage.getItem("cookiesAccepted") === "true") {
