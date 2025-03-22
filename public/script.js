@@ -529,7 +529,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".toggle-description-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const description = this.previousElementSibling;
+            if (description) {
+                description.classList.toggle("expanded");
+                this.textContent = description.classList.contains("expanded") ? "Скрыть" : "Читать далее";
+            }
+        });
+    });
+});
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
