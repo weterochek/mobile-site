@@ -1,4 +1,5 @@
-let cart = {};
+let productMap = {};// Будет заполнен динамически
+let cart = JSON.parse(localStorage.getItem('cart')) || {};
 window.onload = function() {
   const userAgent = navigator.userAgent.toLowerCase();
 
@@ -17,7 +18,25 @@ window.onload = function() {
     }
   }
 };
-
+async function loadProductMap() {
+    try {
+        const response = await fetch('https://mobile-site.onrender.com/api/products');
+        const products = await response.json();
+        products.forEach(product => {
+            productMap[product._id] = { name: product.name, price: product.price };
+        });
+        console.log("✅ Product Map загружен:", productMap);
+    } catch (error) {
+        console.error("Ошибка загрузки productMap:", error);
+    }
+}
+window.onload = function () {
+    // Вызов updateControls для всех товаров в корзине
+    for (const productId in cart) {
+        updateControls(productId);
+    }
+    updateCartDisplay();
+};
 console.log("Отправка запроса на /refresh");
 console.log("Токен перед запросом:", localStorage.getItem("token"));
 
@@ -82,35 +101,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartItemsContainer = document.getElementById('cartItems'); // Контейнер товаров в корзине
 
     // Функция обновления отображения корзины
-    function updateCartDisplay() {
-        // Очищаем корзину на странице
-        cartItemsContainer.innerHTML = '';
+   function updateCartDisplay() {
+    const cartItems = document.getElementById("cartItems");
+    if (!cartItems) return;
 
-        // Получаем корзину из localStorage
-        const cart = JSON.parse(localStorage.getItem('cart')) || {};
-        let totalAmount = 0;
+    cartItems.innerHTML = "";  // Очищаем список товаров
+    let totalAmount = 0;
 
-        // Перебираем все товары в корзине и рассчитываем общую сумму
-        for (const item in cart) {
-            totalAmount += cart[item].price * cart[item].quantity;
+    for (const productId in cart) {
+        const item = cart[productId];  // item = { name, price, quantity }
+        const itemTotal = item.price * item.quantity;
+        totalAmount += itemTotal;
 
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.innerHTML = `
-                <div class="item-info">${item} - ${cart[item].price * cart[item].quantity} ₽</div>
-                <div class="cart-buttons">
-                    <button onclick="decrementItem('${item}')">-</button>
-                    <span class="quantity">${cart[item].quantity}</span>
-                    <button onclick="incrementItem('${item}', ${cart[item].price})">+</button>
-                </div>
-            `;
-            cartItemsContainer.appendChild(cartItem);
-        }
-
-        // Обновляем итоговую сумму
-        cartTotal.textContent = `Итого: ${totalAmount} ₽`;
+        const cartItem = document.createElement("div");
+        cartItem.className = "cart-item";
+        cartItem.setAttribute("data-id", productId); // Назовём честно productId, а не name
+        cartItem.innerHTML = `
+            <div class="item-info">${item.name} - ${itemTotal} ₽</div>
+            <div class="cart-buttons">
+                <button onclick="decrementItem('${productId}')">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button onclick="incrementItem('${productId}', ${item.price})">+</button>
+            </div>
+        `;
+        cartItems.appendChild(cartItem);
     }
 
+    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+
+    // Если корзина пуста, скрываем её
+    if (Object.keys(cart).length === 0) {
+        document.getElementById("cartDropdown").style.display = "none";
+    }
+}
     // Очищение корзины
     if (clearCartButton) {
     clearCartButton.addEventListener('click', () => {
@@ -127,6 +150,75 @@ document.addEventListener('DOMContentLoaded', () => {
     // Инициализируем корзину при загрузке страницы
     updateCartDisplay();
 });
+function displayUserOrders(orders) {
+    const ordersContainer = document.getElementById('ordersContainer');
+    const noOrdersMessage = document.getElementById('noOrdersMessage');
+
+    if (orders.length === 0) {
+        noOrdersMessage.style.display = 'block';
+        ordersContainer.style.display = 'none';
+    } else {
+        noOrdersMessage.style.display = 'none';
+        ordersContainer.style.display = 'block';
+    }
+
+    ordersContainer.innerHTML = '';
+
+    orders.forEach(order => {
+        const itemsList = order.items.map(item => {
+            if (item.productId && item.productId.name) {
+                return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
+            } else {
+                return `<li>Товар не найден</li>`;
+            }
+        }).join('');
+
+        let orderHTML = `
+            <div class="order">
+                <h3>Заказ №${order._id.slice(0, 8)}</h3>
+                <p>Адрес: ${order.address}</p>
+                <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
+                <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
+                <p>Общая сумма: ${order.totalAmount} ₽</p>
+        `;
+
+        if (order.additionalInfo) {
+            orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
+        }
+
+        orderHTML += `<ul>${itemsList}</ul></div><hr>`;
+
+        ordersContainer.innerHTML += orderHTML;
+    });
+}
+function renderCart() {
+    const cartItems = document.getElementById("cartItems");
+    if (!cartItems) return;
+
+    cartItems.innerHTML = ""; // Очищаем список товаров
+    let totalAmount = 0;
+
+    for (const productId in cart) {
+        const item = cart[productId]; // item = { name, price, quantity }
+        const itemTotal = item.price * item.quantity;
+        totalAmount += itemTotal;
+
+        const cartItem = document.createElement("div");
+        cartItem.className = "cart-item";
+        cartItem.setAttribute("data-id", productId); // Назовём честно productId
+        cartItem.innerHTML = `
+            <div class="item-info">${item.name} - ${itemTotal} ₽</div>
+            <div class="cart-buttons">
+                <button onclick="decrementItem('${productId}')">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button onclick="incrementItem('${productId}', ${item.price})">+</button>
+            </div>
+        `;
+        cartItems.appendChild(cartItem);
+    }
+
+    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+}
 
 // Функции для увеличения/уменьшения количества товаров
 function decrementItem(itemName) {
@@ -154,6 +246,7 @@ function decrementItem(itemName) {
         }
     }
 }
+
 function incrementItem(itemName, itemPrice) {
     addToCart(itemName, itemPrice);
 }
@@ -442,6 +535,58 @@ function isTokenExpired(token) {
         return true; // Если ошибка — считаем токен недействительным
     }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+
+    if (!token || !userId) {
+        console.log("Пользователь не авторизован");
+        return;
+    }
+
+    fetch(`https://makadamia.onrender.com/api/user-orders`, { 
+    method: "GET",
+    headers: {
+        "Authorization": `Bearer ${token}`
+    }
+})
+.then(res => res.json())
+.then(orders => {
+    const container = document.getElementById("ordersContainer");
+
+    if (orders.length === 0) {
+        container.innerHTML = "<p>У вас пока нет заказов.</p>";
+        return;
+    }
+
+    // Сортируем от новых к старым
+    orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Показываем самый последний заказ
+    displayOrder(orders[0], container);
+
+    // Логика кнопки истории
+    const toggleBtn = document.getElementById('toggleHistoryBtn');
+    const ordersHistory = document.getElementById('ordersHistory');
+
+    toggleBtn.addEventListener('click', () => {
+        if (ordersHistory.style.display === 'none') {
+            ordersHistory.style.display = 'block';
+            toggleBtn.textContent = 'Скрыть историю заказов';
+            ordersHistory.innerHTML = '';
+            orders.forEach(order => displayOrder(order, ordersHistory));
+        } else {
+            ordersHistory.style.display = 'none';
+            toggleBtn.textContent = 'Показать историю заказов';
+            ordersHistory.innerHTML = '';
+            displayOrder(orders[0], ordersHistory); // Показываем снова последний
+        }
+    });
+})
+.catch(err => {
+    console.error("Ошибка загрузки заказов:", err);
+});
+})
 
 
 // Запускаем проверку токена раз в минуту
@@ -478,6 +623,32 @@ function editField(field) {
         })
         .catch(error => console.log("Ошибка обновления профиля:", error));
     }
+}
+function displayOrder(order, container) {
+    const itemsList = order.items.map(item => {
+        if (item.productId && item.productId.name) {
+            return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
+        } else {
+            return `<li>Товар не найден</li>`;
+        }
+    }).join('');
+
+    let orderHTML = `
+        <div class="order">
+            <h3>Заказ №${order._id.slice(0, 8)}</h3>
+            <p>Адрес: ${order.address}</p>
+            <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
+            <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
+            <p>Общая сумма: ${order.totalAmount} ₽</p>
+    `;
+
+    if (order.additionalInfo) {
+        orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
+    }
+
+    orderHTML += `<ul>${itemsList}</ul></div><hr>`;
+
+    container.innerHTML += orderHTML;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -739,7 +910,8 @@ function showCookieBanner() {
     const banner = document.createElement("div");
     banner.innerHTML = `
         <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
-            <p>Мы используем cookies для улучшения работы сайта, так как без них с аккаунта вас выкинет через минуту. <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
+            <p>Мы используем cookies для улучшения работы сайта. Они позволяют оставаться в аккаунте дольше, так как мы передаём данные с помощью них. 
+            <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
         </div>
     `;
     document.body.appendChild(banner);
@@ -749,6 +921,7 @@ function showCookieBanner() {
         banner.remove();
     });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const toggleButtons = document.querySelectorAll(".toggle-description-btn");
