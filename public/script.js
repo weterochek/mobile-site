@@ -438,7 +438,7 @@ function loadCartFromLocalStorage() {
     updateCartDisplay(); // Обновляем UI корзины
 }
 async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("token");
+    let token = localStorage.getItem("accessToken");
     const fullUrl = window.location.origin + url; // ✅ Теперь запрос идёт на текущий сервер
 
     if (!token) {
@@ -691,7 +691,7 @@ function parseJwt(token) {
 
 // ✅ Функция для сохранения username в localStorage
 function saveUserInfo() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accesstoken');
     if (token) {
         const decoded = parseJwt(token);
         if (decoded && decoded.username) {
@@ -778,6 +778,35 @@ async function sendLogoutRequest(token) {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
+async function checkAndRefreshToken() {
+    let token = localStorage.getItem("accessToken");
+    if (!token) {
+        console.log("❌ Нет accessToken, пользователь не авторизован");
+        return false;
+    }
+
+    // Декодируем токен (можно через jwt-decode библиотеку или вручную)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const now = Date.now() / 1000;
+
+    if (payload.exp < now) {
+        console.log("⏳ AccessToken истёк, пробуем обновить...");
+        const refreshResponse = await fetch('/refresh', { credentials: 'include' });
+        if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            localStorage.setItem("accessToken", refreshData.accessToken);
+            token = refreshData.accessToken;
+            console.log("✅ AccessToken обновлён");
+            return true;
+        } else {
+            console.log("❌ Не удалось обновить токен");
+            return false;
+        }
+    } else {
+        console.log("✅ AccessToken валиден");
+        return true;
+    }
+}
 
 
 
@@ -860,11 +889,11 @@ async function updateAccount(newUsername, newPassword) {
   console.log("Ответ от сервера:", data);
 }
 function handleAuthClick() {
-    const token = localStorage.getItem('token');
-    if (token) {
-        window.location.href = 'account.html'; // Если пользователь авторизован, переходим в личный кабинет
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+        window.location.href = "login.html";
     } else {
-        window.location.href = 'login.html'; // Если нет, перенаправляем на страницу входа
+        window.location.href = "account.html";
     }
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -899,6 +928,20 @@ document.addEventListener('DOMContentLoaded', () => {
             closeNavMenu();
         });
     });
+});
+document.addEventListener("DOMContentLoaded", () => {
+    (async () => {
+        await loadProductMap();
+        loadUserOrders();
+        loadAccountData();
+        renderCart();
+        checkAuthStatus();
+        loadCartFromLocalStorage();
+        loadUserData();
+        initializeAddToCartButtons();
+        setupAuthButtons(isAuth);  // добавлена проверка авторизации
+        loadOrders();
+    })();
 });
 document.addEventListener("DOMContentLoaded", function () {
     if (!localStorage.getItem("cookiesAccepted")) {
