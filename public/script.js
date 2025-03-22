@@ -30,6 +30,10 @@ async function loadProductMap() {
         console.error("Ошибка загрузки productMap:", error);
     }
 }
+
+
+console.log("Отправка запроса на /refresh");
+console.log("Токен перед запросом:", localStorage.getItem("accessToken"));
 window.onload = function () {
     // Вызов updateControls для всех товаров в корзине
     for (const productId in cart) {
@@ -37,16 +41,13 @@ window.onload = function () {
     }
     updateCartDisplay();
 };
-console.log("Отправка запроса на /refresh");
-console.log("Токен перед запросом:", localStorage.getItem("token"));
-
 document.addEventListener("DOMContentLoaded", async function () {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("accessToken");
 
-    if (!token || isTokenExpired(token)) {
-        console.log("🔄 Обновляем токен при входе на сайт...");
-        await refreshAccessToken();
-    }
+    if (!token && !sessionStorage.getItem("authChecked")) {
+    sessionStorage.setItem("authChecked", "true");
+    await refreshAccessToken();
+}
 
     const cartButton = document.getElementById("cartButton");
     const cartDropdown = document.getElementById("cartDropdown");
@@ -76,80 +77,85 @@ document.addEventListener("DOMContentLoaded", async function () {
         console.warn("❌ cartButton или cartDropdown не найдены!");
     }
 });
-// Закрытие корзины при клике вне корзины (но не на товарах)
-document.addEventListener("click", function (event) {
-    const cartDropdown = document.getElementById('cartDropdown');
-    if (cartDropdown && !cartDropdown.contains(event.target) && !event.target.closest("#cartButton") && !event.target.closest(".cart-item")) {
-        cartDropdown.style.display = 'none'; // Скрыть корзину, если клик был вне корзины и её элементов
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (!localStorage.getItem("cookiesAccepted")) {
+        showCookieBanner();
     }
 });
-// Функция добавления товара в корзину
-function addToCart(itemName, itemPrice) {
-    if (cart[itemName]) {
-        cart[itemName].quantity += 1;
-    } else {
-        cart[itemName] = { price: itemPrice, quantity: 1 };
-    }
-    saveCartToLocalStorage();
-    updateCartDisplay();
-    replaceAddButtonWithControls(itemName);
-}
-//очищение корзины
-document.addEventListener('DOMContentLoaded', () => {
-    const clearCartButton = document.getElementById('clear-cart');
-    const cartTotal = document.getElementById('totalAmount'); // Элемент с итоговой суммой
-    const cartItemsContainer = document.getElementById('cartItems'); // Контейнер товаров в корзине
 
-    // Функция обновления отображения корзины
-   function updateCartDisplay() {
-    const cartItems = document.getElementById("cartItems");
-    if (!cartItems) return;
+function showCookieBanner() {
+    const banner = document.createElement("div");
+    banner.innerHTML = `
+        <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
+            <p>Мы используем cookies для улучшения работы сайта. Они позволяют оставаться в аккаунте дольше, так как мы передаём данные с помощью них. 
+            <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
+        </div>
+    `;
+    document.body.appendChild(banner);
 
-    cartItems.innerHTML = "";  // Очищаем список товаров
-    let totalAmount = 0;
-
-    for (const productId in cart) {
-        const item = cart[productId];  // item = { name, price, quantity }
-        const itemTotal = item.price * item.quantity;
-        totalAmount += itemTotal;
-
-        const cartItem = document.createElement("div");
-        cartItem.className = "cart-item";
-        cartItem.setAttribute("data-id", productId); // Назовём честно productId, а не name
-        cartItem.innerHTML = `
-            <div class="item-info">${item.name} - ${itemTotal} ₽</div>
-            <div class="cart-buttons">
-                <button onclick="decrementItem('${productId}')">-</button>
-                <span class="quantity">${item.quantity}</span>
-                <button onclick="incrementItem('${productId}', ${item.price})">+</button>
-            </div>
-        `;
-        cartItems.appendChild(cartItem);
-    }
-
-    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
-
-    // Если корзина пуста, скрываем её
-    if (Object.keys(cart).length === 0) {
-        document.getElementById("cartDropdown").style.display = "none";
-    }
-}
-    // Очищение корзины
-    if (clearCartButton) {
-    clearCartButton.addEventListener('click', () => {
-        const username = localStorage.getItem("username");
-        if (username) {
-            localStorage.removeItem(`cart_${username}`); // Удаляем корзину для текущего пользователя
-        }
-        localStorage.removeItem('cart'); // Если корзина также хранится под этим ключом
-        updateCartDisplay(); // Обновляем корзину на странице
-        cartTotal.textContent = 'Итого: 0 ₽';
+    document.getElementById("acceptCookies").addEventListener("click", function () {
+        localStorage.setItem("cookiesAccepted", "true");
+        banner.remove();
     });
 }
 
-    // Инициализируем корзину при загрузке страницы
-    updateCartDisplay();
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("cookiesAccepted") === "true") {
+        const token = localStorage.getItem("accessToken"); // Получаем токен
+
+        if (!token) {
+            console.warn("❌ Нет токена, не запрашиваем /account");
+            return;
+        }
+
+        fetch("https://mobile-site.onrender.com/account", {
+            method: "GET", // ✅ Добавляем явное указание метода
+            credentials: "include", // ✅ Передаем cookies
+            headers: {
+                "Authorization": `Bearer ${token}` // ✅ Передаем токен
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Ошибка HTTP: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => console.log("✅ Данные аккаунта:", data))
+        .catch(error => console.error("❌ Ошибка загрузки аккаунта:", error));
+    } else {
+        console.log("⚠️ Пользователь не принял cookies. Запрос не отправлен.");
+    }
 });
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function updateControls(productId) {
+    const addButton = document.getElementById(`addButton_${productId}`);
+    const removeButton = document.getElementById(`removeBtn_${productId}`);
+    const quantityDisplay = document.getElementById(`quantity_${productId}`);
+    const addButtonControl = document.getElementById(`addBtn_${productId}`);
+
+    if (cart[productId] && cart[productId].quantity > 0) {
+        if (addButton) addButton.style.display = "none";
+        if (removeButton) removeButton.style.display = "inline-block";
+        if (addButtonControl) addButtonControl.style.display = "inline-block";
+        if (quantityDisplay) {
+            quantityDisplay.style.display = "inline-block";
+            quantityDisplay.textContent = cart[productId].quantity;
+        }
+    } else {
+        if (addButton) addButton.style.display = "inline-block";
+        if (removeButton) removeButton.style.display = "none";
+        if (addButtonControl) addButtonControl.style.display = "none";
+        if (quantityDisplay) {
+            quantityDisplay.style.display = "none";
+        }
+    }
+}
 function displayUserOrders(orders) {
     const ordersContainer = document.getElementById('ordersContainer');
     const noOrdersMessage = document.getElementById('noOrdersMessage');
@@ -191,6 +197,39 @@ function displayUserOrders(orders) {
         ordersContainer.innerHTML += orderHTML;
     });
 }
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navbar = document.querySelector('.navbar');
+    const closeMenu = document.querySelector('.close-menu');
+    const menuLinks = document.querySelectorAll('.navbar a'); // Все ссылки в меню
+    const body = document.body; // Для блокировки прокрутки
+
+    if (!menuToggle || !navbar || !closeMenu) {
+        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        return;
+    }
+
+    // Открытие меню
+    menuToggle.addEventListener('click', () => {
+        navbar.classList.add('active');
+        body.classList.add('no-scroll'); // Блокируем прокрутку
+    });
+
+    // Закрытие меню
+    function closeNavMenu() {
+        navbar.classList.remove('active');
+        body.classList.remove('no-scroll'); // Разблокируем прокрутку
+    }
+
+    closeMenu.addEventListener('click', closeNavMenu);
+
+    // Закрытие меню при клике на любую ссылку
+    menuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeNavMenu();
+        });
+    });
+});
 function renderCart() {
     const cartItems = document.getElementById("cartItems");
     if (!cartItems) return;
@@ -219,6 +258,9 @@ function renderCart() {
 
     document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
 }
+
+
+
 function updateAddToCartButton(productId) {
     const addToCartButton = document.querySelector(`.add-to-cart-button[data-id="${productId}"]`);
     if (addToCartButton) {
@@ -226,321 +268,268 @@ function updateAddToCartButton(productId) {
         addToCartButton.disabled = true;
     }
 }
-// Функции для увеличения/уменьшения количества товаров
-function decrementItem(itemName) {
-    if (cart[itemName]) {
-        cart[itemName].quantity -= 1;
+async function handleCheckoutFormSubmit(event) {
+    event.preventDefault();
+    const token = localStorage.getItem("accessToken");
 
-        if (cart[itemName].quantity === 0) {
-            delete cart[itemName]; // ❌ Удаляем товар из объекта cart
-
-            // Удаляем товар из корзины на странице
-            const cartItemElement = document.querySelector(`.cart-item[data-name="${itemName}"]`);
-            if (cartItemElement) {
-                cartItemElement.remove();
-            }
-
-            revertControlsToAddButton(itemName); // Возвращаем кнопку "Добавить"
-        }
-
-        saveCartToLocalStorage(); // Сохраняем обновлённые данные
-        updateCartDisplay(); // Обновляем UI корзины
-
-        // Если корзина пуста, скрываем её
-        if (Object.keys(cart).length === 0) {
-            document.getElementById("cartDropdown").style.display = "none";
-        }
-    }
-}
-
-function incrementItem(itemName, itemPrice) {
-    addToCart(itemName, itemPrice);
-}
-// Преобразование кнопки "Добавить" в контролы "+", "-", и количество
-function replaceAddButtonWithControls(itemName) {
-    const addButton = document.getElementById(`addButton_${itemName}`);
-    const removeButton = document.getElementById(`removeBtn_${itemName}`);
-    const addButtonControl = document.getElementById(`addBtn_${itemName}`);
-    const quantityDisplay = document.getElementById(`quantity_${itemName}`);
-
-    if (!addButton || !removeButton || !addButtonControl || !quantityDisplay) {
-        console.warn(`❌ Ошибка: Не найдены элементы для ${itemName}`);
+    if (!token) {
+        alert("Вы не авторизованы!");
         return;
     }
 
-    addButton.style.display = "none";
-    removeButton.style.display = "inline-block";
-    addButtonControl.style.display = "inline-block";
-    quantityDisplay.style.display = "inline-block";
-    quantityDisplay.textContent = cart[itemName].quantity;
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const items = Object.keys(cart).map(productId => ({
+        productId: productId,
+        quantity: cart[productId].quantity
+    }));
+
+    const nameInput = document.getElementById('customerName');
+    const addressInput = document.getElementById('customerAddress');
+    const additionalInfoInput = document.getElementById('additionalInfo');
+    const userId = localStorage.getItem("userId");
+
+    const orderData = {
+        userId: userId,
+        name: nameInput.value,
+        address: addressInput.value,
+        additionalInfo: additionalInfoInput.value,
+        items: items
+    };
+
+    console.log("📡 Отправка данных заказа:", orderData);
+
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/api/order", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        console.log("📥 Ответ от сервера:", response);
+
+        if (!response.ok) {
+            console.error(`❌ Ошибка ${response.status}:`, response.statusText);
+            alert("Ошибка при оформлении заказа.");
+            return;
+        }
+
+        const responseData = await response.json();
+        console.log("✅ Заказ успешно оформлен:", responseData);
+
+        alert("🎉 Заказ успешно оформлен!");
+        saveCart();
+        window.location.href = "index.html";
+    } catch (error) {
+        console.error("❌ Ошибка сети или сервера:", error);
+        alert("Ошибка при оформлении заказа. Проверьте соединение.");
+    }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    renderCheckoutCart();
+    loadUserData();
+    initializeAddToCartButtons();
 
-
-// Возвращение кнопки "Добавить" вместо контролов, если товара нет в корзине
-function revertControlsToAddButton(itemName) {
-    const addButton = document.getElementById(`addButton_${itemName}`);
-    const removeButton = document.getElementById(`removeBtn_${itemName}`);
-    const addButtonControl = document.getElementById(`addBtn_${itemName}`);
-    const quantityDisplay = document.getElementById(`quantity_${itemName}`);
-
-    if (!addButton || !removeButton || !addButtonControl || !quantityDisplay) {
-        console.warn(`⚠️ Ошибка: Не найдены элементы для товара ${itemName}`);
-        return;
+    const backToShoppingButton = document.getElementById("backToShopping");
+    if (backToShoppingButton) {
+        backToShoppingButton.addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
     }
 
-    addButton.style.display = "inline-block";
-    removeButton.style.display = "none";
-    addButtonControl.style.display = "none";
-    quantityDisplay.style.display = "none";
-}
-document.addEventListener('DOMContentLoaded', async () => {
-    const accessToken = localStorage.getItem('accessToken');  // Получаем токен из localStorage
-
-    if (accessToken) {
-        document.getElementById('authButton').textContent = 'Личный кабинет';  // Если токен есть, отображаем "Личный кабинет"
-        await loadUserData(accessToken);  // Загружаем данные пользователя
-    } else {
-        document.getElementById('authButton').textContent = 'Вход';  // Если токен отсутствует, отображаем "Вход"
+    const checkoutForm = document.getElementById("checkoutForm");
+    if (checkoutForm) {
+        checkoutForm.addEventListener("submit", handleCheckoutFormSubmit);
     }
 });
-async function loadUserData(token) {
-    const response = await fetch("/account", {
-        headers: {
-            "Authorization": `Bearer ${token}`  // Передаем токен в заголовке
+function initializeAddToCartButtons() {
+    const addToCartButtons = document.querySelectorAll(".add-to-cart-button");
+    addToCartButtons.forEach(button => {
+        const productId = button.getAttribute("data-id");
+        const productName = button.getAttribute("data-name");
+        const productPrice = parseFloat(button.getAttribute("data-price"));
+
+        button.addEventListener("click", () => {
+            addToCart(productId, productName, productPrice);
+        });
+
+        // Проверяем, есть ли товар в корзине, чтобы обновить состояние кнопки
+        const cart = JSON.parse(localStorage.getItem('cart')) || {};
+        if (cart[productId]) {
+            updateAddToCartButton(productId);
         }
     });
-
-    if (response.ok) {
-        const data = await response.json();
-        document.getElementById("username").textContent = data.username;  // Отображаем имя пользователя
-    } else {
-        localStorage.removeItem('accessToken');  // Если токен недействителен, удаляем его
-    }
 }
 
-// Обновление отображения корзины и количества товара на карточке
+
+function displayOrder(order, container) {
+    const itemsList = order.items.map(item => {
+        if (item.productId && item.productId.name) {
+            return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
+        } else {
+            return `<li>Товар не найден</li>`;
+        }
+    }).join('');
+
+    let orderHTML = `
+        <div class="order">
+            <h3>Заказ №${order._id.slice(0, 8)}</h3>
+            <p>Адрес: ${order.address}</p>
+            <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
+            <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
+            <p>Общая сумма: ${order.totalAmount} ₽</p>
+    `;
+
+    if (order.additionalInfo) {
+        orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
+    }
+
+    orderHTML += `<ul>${itemsList}</ul></div><hr>`;
+
+    container.innerHTML += orderHTML;
+}
+
+
+// Добавление товара
+function addToCart(productId, productName, productPrice) {
+    if (!cart[productId]) {
+        cart[productId] = {
+            name: productName,
+            price: productPrice,
+            quantity: 1
+        };
+    } else {
+        cart[productId].quantity++;
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));  // Сохраняем корзину
+    updateControls(productId);  // Обновляем кнопки и количество
+    updateCartDisplay();  // Обновляем отображение корзины
+}
+
+
+
 function updateCartDisplay() {
     const cartItems = document.getElementById("cartItems");
     if (!cartItems) return;
 
-    cartItems.innerHTML = ""; // Очищаем список товаров
+    cartItems.innerHTML = ""; 
     let totalAmount = 0;
 
-    for (const item in cart) {
-        const itemTotal = cart[item].price * cart[item].quantity;
+    for (const productId in cart) {
+        const item = cart[productId]; // item = { name, price, quantity }
+        const itemTotal = item.price * item.quantity;
         totalAmount += itemTotal;
 
         const cartItem = document.createElement("div");
         cartItem.className = "cart-item";
-        cartItem.setAttribute("data-name", item); // Добавляем атрибут для поиска
+        cartItem.setAttribute("data-id", productId); // Назовём честно productId
         cartItem.innerHTML = `
-            <div class="item-info">${item} - ${itemTotal} ₽</div>
+            <div class="item-info">${item.name} - ${itemTotal} ₽</div>  <!-- Используем item.name для отображения названия товара -->
             <div class="cart-buttons">
-                <button onclick="decrementItem('${item}')">-</button>
-                <span class="quantity">${cart[item].quantity}</span>
-                <button onclick="incrementItem('${item}', ${cart[item].price})">+</button>
+                <button onclick="decrementItem('${productId}')">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button onclick="incrementItem('${productId}', ${item.price})">+</button>
             </div>
         `;
         cartItems.appendChild(cartItem);
     }
 
     document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+}
 
-    // Если корзина пуста, скрываем её
-    if (Object.keys(cart).length === 0) {
-        document.getElementById("cartDropdown").style.display = "none";
+
+function updateQuantityDisplay(productName) {
+    const quantityElement = document.getElementById(`quantity_${productName}`);
+    if (quantityElement) {
+        quantityElement.textContent = cart[productName].quantity;
+    }
+}
+function checkForEmptyCart(productName) {
+    const quantity = cart[productName] ? cart[productName].quantity : 0;
+    const addButton = document.getElementById(`addButton_${productName}`);
+    const controls = document.getElementById(`controls_${productName}`);
+
+    // Если количество товара равно нулю, показываем кнопку "Добавить"
+    if (quantity === 0) {
+        if (addButton) addButton.style.display = 'inline-block';  // Показываем кнопку "Добавить"
+        if (controls) controls.style.display = 'none';  // Скрываем кнопки "+" и "-"
     }
 }
 
-// Сохранение корзины в localStorage
-function saveCartToLocalStorage() {
-    const username = localStorage.getItem("username");
 
-    if (username) {
-        localStorage.setItem(`cart_${username}`, JSON.stringify(cart)); // Сохраняем для пользователя
-    } else {
-        localStorage.setItem("cart_guest", JSON.stringify(cart)); // Сохраняем для гостя
+// Увеличение количества товара
+function incrementItem(productId, price) {
+    if (cart[productId]) {
+        cart[productId].quantity += 1;
+        saveCart();
+        updateControls(productId);  // Обновляем кнопки и количество
+        updateCartDisplay();  // Обновляем отображение корзины
     }
 }
-function mergeGuestCart() {
-    const username = localStorage.getItem("username");
 
-    if (!username) return; // Если пользователь не вошел, ничего не делаем
-
-    const guestCart = JSON.parse(localStorage.getItem("cart_guest"));
-    if (!guestCart) return; // Если корзины гостя нет, просто продолжаем
-
-    const userCart = JSON.parse(localStorage.getItem(`cart_${username}`)) || {};
-
-    // Объединяем корзины (если товар уже есть — увеличиваем количество)
-    for (const item in guestCart) {
-        if (userCart[item]) {
-            userCart[item].quantity += guestCart[item].quantity;
-        } else {
-            userCart[item] = guestCart[item];
+function decrementItem(productId) {
+    if (cart[productId]) {
+        cart[productId].quantity -= 1;
+        if (cart[productId].quantity <= 0) {
+            delete cart[productId]; // Удаляем товар из корзины
         }
+        saveCart();
+        updateControls(productId); // Обновляем кнопки
+        updateCartDisplay(); // Обновляем корзину
     }
+}
 
-    // Сохраняем объединенную корзину в localStorage и очищаем корзину гостя
-    localStorage.setItem(`cart_${username}`, JSON.stringify(userCart));
-    localStorage.removeItem("cart_guest");
 
-    console.log("✅ Гостевая корзина объединена с пользовательской");
+function updateQuantityDisplay(productName) {
+    const quantityElement = document.getElementById(`quantity_${productName}`);
+    if (quantityElement) {
+        quantityElement.textContent = cart[productName].quantity;
+    }
+}
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
 }
 
 
-// Оформление заказа
-function checkout() {
-    alert("Ваш заказ оформлен!");
-    cart = {};
-    updateCartDisplay();
-    resetAddToCartButtons();
-    saveCartToLocalStorage();
-    toggleCart();
-}
+//ощичение корзины
+document.addEventListener('DOMContentLoaded', () => {
+    const clearCartButton = document.getElementById('clear-cart');
+    const cartTotal = document.getElementById('totalAmount');
 
-// Сброс всех кнопок на исходное состояние "Добавить"
-function resetAddToCartButtons() {
-    for (const itemName in cart) {
-        revertControlsToAddButton(itemName);
-    }
-}
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem('token');  // Получаем токен из localStorage
-
-    if (token) {
-        // Если токен есть, показываем кнопку "Личный кабинет" и скрываем "Вход"
-        document.getElementById('authButton').textContent = 'Личный кабинет';
-    } else {
-        // Если токен отсутствует, показываем "Вход"
-        document.getElementById('authButton').textContent = 'Вход';
-    }
-});
-// Загрузка корзины из localStorage при загрузке страницы
-document.addEventListener("DOMContentLoaded", () => {
-    loadCartFromLocalStorage();
-    const cartModal = document.getElementById("cartModal");
-    if (cartModal) cartModal.style.display = "none";
-});
-
-// Функция загрузки корзины
-function loadCartFromLocalStorage() {
-    const username = localStorage.getItem("username");
-
-    if (username) {
-        // Загружаем корзину пользователя
-        const storedCart = JSON.parse(localStorage.getItem(`cart_${username}`));
-        if (storedCart) {
-            cart = storedCart;
-        }
-    } else {
-        // Если пользователь не авторизован, загружаем корзину для гостя
-        const guestCart = JSON.parse(localStorage.getItem("cart_guest"));
-        if (guestCart) {
-            cart = guestCart;
-        }
-    }
-
-    updateCartDisplay(); // Обновляем UI корзины
-}
-async function fetchWithAuth(url, options = {}) {
-    let token = localStorage.getItem("accessToken");
-    const fullUrl = window.location.origin + url; // ✅ Теперь запрос идёт на текущий сервер
-
-    if (!token) {
-        console.warn("❌ Нет accessToken, пробуем обновить...");
-        token = await refreshAccessToken();
-        if (!token) return null;
-    }
-
-    let res = await fetch(fullUrl, {
-        ...options,
-        credentials: "include",
-        headers: {
-            ...options.headers,
-            Authorization: `Bearer ${token}`
-        }
-    });
-
-    if (res.status === 401) {
-        console.warn("🔄 Токен истёк, пробуем обновить...");
-        token = await refreshAccessToken();
-        if (!token) return res;
-
-        return fetch(fullUrl, {
-            ...options,
-            credentials: "include",
-            headers: {
-                ...options.headers,
-                Authorization: `Bearer ${token}`
+    if (clearCartButton) {
+        clearCartButton.addEventListener('click', () => {
+            cart = {};  // Очищаем корзину
+            localStorage.removeItem('cart'); // Удаляем корзину
+            updateCartDisplay();  // Обновляем отображение корзины
+            if (cartTotal) {
+                cartTotal.textContent = 'Итого: 0 ₽';
             }
+
+            const productCards = document.querySelectorAll(".card-dish");
+            productCards.forEach(card => {
+                const addButton = card.querySelector(".add-button-size");
+                const removeButton = card.querySelector(".quantity-control");
+                const addButtonControl = card.querySelector(".quantity-size-button");
+                const quantityDisplay = card.querySelector(".quantity-display");
+
+                // Скрываем кнопки и количество
+                if (addButton) addButton.style.display = "inline-block";
+                if (removeButton) removeButton.style.display = "none";
+                if (addButtonControl) addButtonControl.style.display = "none";
+                if (quantityDisplay) {
+                    quantityDisplay.textContent = "";
+                    quantityDisplay.style.display = "none";
+                }
+            });
         });
     }
-
-    return res;
-}
+});
 
 
-function getTokenExp(token) {
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return payload.exp;
-    } catch (e) {
-        return null;
-    }
-}
-
-
-async function refreshAccessToken() {
-    console.log("🔄 Запрос на обновление токена...");
-
-    const response = await fetch("/refresh", {
-        method: "POST",
-        credentials: "include"  // 🔥 Передаёт куки, даже если они httpOnly
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-        console.log("✅ Токен успешно обновлён!");
-        localStorage.setItem("accessToken", data.accessToken);
-        return data.accessToken;
-    } else {
-        console.warn("❌ Ошибка обновления токена:", data.message);
-        return null;
-    }
-}
-// Функция для получения значения cookie
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
-
-
-
-
-// ✅ Добавляем обработчик выхода (если `logout()` не определён)
-function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("cart_guest"); // Очищаем корзину гостя
-    sessionStorage.clear();
-    document.cookie = "refreshTokenDesktop=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    document.cookie = "refreshTokenMobile=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-    window.location.href = "/";
-}
-
-
-
-function isTokenExpired(token) {
-    try {
-        const payload = JSON.parse(atob(token.split(".")[1])); // Декодируем токен
-        return (Date.now() / 1000) >= payload.exp; // Проверяем срок действия
-    } catch (e) {
-        return true; // Если ошибка — считаем токен недействительным
-    }
-}
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -550,7 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    fetch(`https://makadamia.onrender.com/api/user-orders`, { 
+    fetch(`https://mobile-site.onrender.com/api/user-orders`, { 
     method: "GET",
     headers: {
         "Authorization": `Bearer ${token}`
@@ -595,6 +584,234 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 
+// Обновление отображения корзины после очистки
+function updateCartDisplay() {
+    const cartItems = document.getElementById("cartItems");
+    if (!cartItems) return;
+
+    cartItems.innerHTML = "";  // Очищаем список товаров
+    let totalAmount = 0;
+
+    for (const productId in cart) {
+        const item = cart[productId];  // item = { name, price, quantity }
+        const itemTotal = item.price * item.quantity;
+        totalAmount += itemTotal;
+
+        const cartItem = document.createElement("div");
+        cartItem.className = "cart-item";
+        cartItem.setAttribute("data-id", productId); // Назовём честно productId, а не name
+        cartItem.innerHTML = `
+            <div class="item-info">${item.name} - ${itemTotal} ₽</div>
+            <div class="cart-buttons">
+                <button onclick="decrementItem('${productId}')">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button onclick="incrementItem('${productId}', ${item.price})">+</button>
+            </div>
+        `;
+        cartItems.appendChild(cartItem);
+    }
+
+    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+
+    // Если корзина пуста, скрываем её
+    if (Object.keys(cart).length === 0) {
+        document.getElementById("cartDropdown").style.display = "none";
+    }
+}
+
+// Сохранение корзины в localStorage
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+function renderCheckoutCart() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const cartItemsContainer = document.getElementById("cartItems");
+    const cartTotalPrice = document.getElementById("cartTotalPrice");
+
+    cartItemsContainer.innerHTML = "";
+    let totalPrice = 0;
+
+    for (const productId in cart) {
+        const item = cart[productId];
+        const itemTotalPrice = item.price * item.quantity;
+        totalPrice += itemTotalPrice;
+
+        const cartItemElement = document.createElement("div");
+        cartItemElement.className = "cart-item";
+        cartItemElement.innerHTML = `
+            <span class="item-name">${item.name}</span>
+            <span class="item-quantity">${item.quantity} шт.</span>
+            <span class="item-price">${itemTotalPrice.toFixed(2)} ₽</span>
+        `;
+        cartItemsContainer.appendChild(cartItemElement);
+    }
+
+    cartTotalPrice.textContent = totalPrice.toFixed(2) + " ₽";
+}
+function updateTotal() {
+    const cartItems = getCartItems();
+    const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const totalAmount = document.getElementById('totalAmount');
+    if (totalAmount) {
+        totalAmount.textContent = `Итого: ${total} ₽`;
+    }
+}
+function getCartItems() {
+    const stored = localStorage.getItem('cartItems');
+    if (!stored) return [];
+    try {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+        return [];
+    }
+}
+// Оформление заказа
+function checkout() {
+    alert("Ваш заказ оформлен!");
+    cart = {};
+    updateCartDisplay();
+    resetAddToCartButtons();
+    saveCart();
+    toggleCart();
+}
+
+// Сброс всех кнопок на исходное состояние "Добавить"
+function resetAddToCartButtons() {
+    for (const itemName in cart) {
+        revertControlsToAddButton(itemName);
+    }
+}
+
+// Загрузка корзины из localStorage при загрузке страницы
+document.addEventListener("DOMContentLoaded", () => {
+    loadCartFromLocalStorage();
+    const cartModal = document.getElementById("cartModal");
+    if (cartModal) cartModal.style.display = "none";
+});
+
+// Функция загрузки корзины
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+}
+
+async function fetchWithAuth(url, options = {}) {
+    let token = localStorage.getItem("accessToken");
+
+    if (!token) {
+        console.warn("❌ Нет accessToken, пробуем обновить...");
+        token = await refreshAccessToken();
+        if (!token) return null;
+    }
+
+    const res = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            Authorization: `Bearer ${token}`  // Добавляем токен в заголовки
+        }
+    });
+
+    if (res.status === 401) {
+        console.warn("🔄 Токен истёк, пробуем обновить...");
+        token = await refreshAccessToken();
+        if (!token) return res;
+
+        return fetch(url, {
+            ...options,
+            headers: { ...options.headers, Authorization: `Bearer ${token}` },
+        });
+    }
+
+    return res;
+}
+document.addEventListener('DOMContentLoaded', async () => {
+    const accessToken = localStorage.getItem('accessToken');  // Получаем токен из localStorage
+
+    if (accessToken) {
+        document.getElementById('authButton').textContent = 'Личный кабинет';  // Изменяем кнопку
+        await loadUserData(accessToken);  // Загружаем данные пользователя
+    } else {
+        document.getElementById('authButton').textContent = 'Вход';  // Если токен отсутствует, отображаем "Вход"
+    }
+});
+
+
+function getTokenExp(token) {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return payload.exp;
+    } catch (e) {
+        return null;
+    }
+}
+
+
+async function refreshAccessToken() {
+    console.log("🔄 Запрос на обновление токена...");
+
+    const token = localStorage.getItem("accessToken"); // Проверка наличия токена
+    if (!token) {
+        console.warn("❌ Нет токена, пропускаем обновление");
+        return null; // Если токена нет, не отправляем запрос на обновление
+    }
+
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/refresh", {
+            method: "POST",
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            console.warn(`❌ Ошибка обновления токена (${response.status})`);
+            return null;
+        }
+
+        const data = await response.json();
+        console.log("✅ Новый токен получен:", data.accessToken);
+        localStorage.setItem("accessToken", data.accessToken);  // Сохраняем новый токен
+        return data.accessToken;
+    } catch (error) {
+        console.error("❌ Ошибка при обновлении токена:", error);
+        return null;
+    }
+}
+
+
+function generateTokens(user, site) {
+    const issuedAt = Math.floor(Date.now() / 1000);
+    
+    const accessToken = jwt.sign(
+        { id: user._id, username: user.username, iat: issuedAt },
+        JWT_SECRET,
+        { expiresIn: "30m" }  // ⏳ Access-токен на 30 минут
+    );
+
+    const refreshToken = jwt.sign(
+        { id: user._id, username: user.username, site, iat: issuedAt },
+        REFRESH_SECRET,
+        { expiresIn: "7d" }  // 🔄 Refresh-токен на 7 дней
+    );
+
+    return { accessToken, refreshToken };
+}
+
+
+function isTokenExpired(token) {
+    if (!token) return true; // Если токена нет, он считается истекшим
+
+    try {
+        const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"); // Исправляем base64
+        const payload = JSON.parse(atob(base64)); // Декодируем payload
+        return (Date.now() / 1000) >= payload.exp; // Проверяем срок действия
+    } catch (e) {
+        console.error("❌ Ошибка декодирования токена:", e);
+        return true;
+    }
+}
+
+
 // Запускаем проверку токена раз в минуту
 setInterval(() => {
     if (isTokenExpired()) {
@@ -618,7 +835,7 @@ function editField(field) {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("token")}`
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
             },
             body: JSON.stringify({ [field]: input.value }) // Отправляем данные на сервер
         })
@@ -630,194 +847,130 @@ function editField(field) {
         .catch(error => console.log("Ошибка обновления профиля:", error));
     }
 }
-function displayUserOrders(orders) {
-    const ordersContainer = document.getElementById('ordersContainer');
-    const noOrdersMessage = document.getElementById('noOrdersMessage');
-
-    if (orders.length === 0) {
-        noOrdersMessage.style.display = 'block';
-        ordersContainer.style.display = 'none';
-    } else {
-        noOrdersMessage.style.display = 'none';
-        ordersContainer.style.display = 'block';
-    }
-
-    ordersContainer.innerHTML = '';
-
-    orders.forEach(order => {
-        const itemsList = order.items.map(item => {
-            if (item.productId && item.productId.name) {
-                return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
-            } else {
-                return `<li>Товар не найден</li>`;
-            }
-        }).join('');
-
-        let orderHTML = `
-            <div class="order">
-                <h3>Заказ №${order._id.slice(0, 8)}</h3>
-                <p>Адрес: ${order.address}</p>
-                <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
-                <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
-                <p>Общая сумма: ${order.totalAmount} ₽</p>
-        `;
-
-        if (order.additionalInfo) {
-            orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
-        }
-
-        orderHTML += `<ul>${itemsList}</ul></div><hr>`;
-
-        ordersContainer.innerHTML += orderHTML;
-    });
-}
-function displayOrder(order, container) {
-    const itemsList = order.items.map(item => {
-        if (item.productId && item.productId.name) {
-            return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
-        } else {
-            return `<li>Товар не найден</li>`;
-        }
-    }).join('');
-
-    let orderHTML = `
-        <div class="order">
-            <h3>Заказ №${order._id.slice(0, 8)}</h3>
-            <p>Адрес: ${order.address}</p>
-            <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
-            <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
-            <p>Общая сумма: ${order.totalAmount} ₽</p>
-    `;
-
-    if (order.additionalInfo) {
-        orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
-    }
-
-    orderHTML += `<ul>${itemsList}</ul></div><hr>`;
-
-    container.innerHTML += orderHTML;
-}
 
 document.addEventListener("DOMContentLoaded", () => {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token) {
+        console.warn("❌ Нет токена, не запрашиваем /account");
+        return;
+    }
+
     fetch("https://mobile-site.onrender.com/account", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        method: "GET", // ✅ Добавляем явное указание метода
+        headers: { 
+            "Authorization": `Bearer ${token}` // ✅ Передаем токен
+        }
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Ошибка HTTP: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
-        if (data.name) document.getElementById("nameInput").value = data.name;
-        if (data.city) document.getElementById("cityInput").value = data.city;
+        const nameInput = document.getElementById("nameInput");
+        const cityInput = document.getElementById("cityInput");
+
+        if (nameInput) nameInput.value = data.name || "";
+        if (cityInput) cityInput.value = data.city || "";
     })
-    .catch(() => console.log("Ошибка загрузки профиля"));
+    .catch(error => console.error("❌ Ошибка загрузки профиля:", error));
 });
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Страница загружена");
+async function updateAccountField(data) {
+    const token = localStorage.getItem("accessToken");
 
-    const editNameBtn = document.getElementById("editName");
-    const editCityBtn = document.getElementById("editCity");
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/account", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
+            },
+            body: JSON.stringify(data),
+        });
 
-    if (editNameBtn) {
-        editNameBtn.addEventListener("click", () => editField("name"));
-    } else {
-        console.warn("Кнопка editName не найдена!");
+        if (!response.ok) {
+            throw new Error("Ошибка при обновлении данных");
+        }
+
+        const result = await response.json();
+        console.log("✅ Данные успешно обновлены:", result);
+    } catch (error) {
+        console.error("❌ Ошибка обновления данных:", error);
     }
+}
 
-    if (editCityBtn) {
-        editCityBtn.addEventListener("click", () => editField("city"));
-    } else {
-        console.warn("Кнопка editCity не найдена!");
-    }
+
+document.getElementById('editName').addEventListener('click', () => {
+    document.getElementById('nameInput').disabled = false;
+    document.getElementById('saveName').style.display = 'inline-block';
+});
+
+document.getElementById('saveName').addEventListener('click', async () => {
+    const newName = document.getElementById('nameInput').value;
+    await updateAccountField({ name: newName });
+    document.getElementById('nameInput').disabled = true;
+    document.getElementById('saveName').style.display = 'none';
+});
+
+// Аккаунт: редактировать город
+document.getElementById('editCity').addEventListener('click', () => {
+    document.getElementById('cityInput').disabled = false;
+    document.getElementById('saveCity').style.display = 'inline-block';
+});
+
+document.getElementById('saveCity').addEventListener('click', async () => {
+    const newCity = document.getElementById('cityInput').value;
+    await updateAccountField({ city: newCity });
+    document.getElementById('cityInput').disabled = true;
+    document.getElementById('saveCity').style.display = 'none';
 });
 // Проверка состояния авторизации
-function parseJwt(token) {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
-}
-
-// ✅ Функция для сохранения username в localStorage
-function saveUserInfo() {
-    const token = localStorage.getItem('accesstoken');
-    if (token) {
-        const decoded = parseJwt(token);
-        if (decoded && decoded.username) {
-            localStorage.setItem('username', decoded.username);
-        }
-    }
-}
-
-// ✅ Функция проверки авторизации
 function checkAuthStatus() {
-    const token = localStorage.getItem('token');
-    const username = localStorage.getItem('username');
-    const authButton = document.getElementById('authButton');
-    const cabinetButton = document.getElementById('cabinetButton');
-    const logoutButton = document.getElementById('Button');
+    const token = localStorage.getItem("accessToken"); // Должно быть accessToken
+    const username = localStorage.getItem("username");
+    const authButton = document.getElementById("authButton");
+    const cabinetButton = document.getElementById("cabinetButton");
 
-    if (token && username && !isTokenExpired(token)) { // ✅ Проверяем, не истёк ли токен
-        authButton.style.display = 'none';
-        cabinetButton.style.display = 'inline-block';
+    if (!authButton || !cabinetButton) {
+        console.warn("❌ Не найдены кнопки 'Вход' или 'Личный кабинет'!");
+        return;
+    }
 
-        if (window.location.pathname === '/account.html' && logoutButton) {
-            logoutButton.style.display = 'inline-block';
-        }
+    if (token && username && !isTokenExpired(token)) { 
+        console.log("✅ Пользователь авторизован");
+        authButton.style.display = "none";
+        cabinetButton.style.display = "inline-block";
     } else {
-        authButton.style.display = 'inline-block';
-        cabinetButton.style.display = 'none';
-
-        if (logoutButton) {
-            logoutButton.style.display = 'none';
-        }
+        console.log("⚠️ Пользователь не авторизован");
+        authButton.style.display = "inline-block";
+        cabinetButton.style.display = "none";
+        sessionStorage.removeItem("authChecked");
     }
 }
-
-// ✅ Запускаем проверку при загрузке страницы
-document.addEventListener("DOMContentLoaded", checkAuthStatus);
-
-// ✅ Следим за изменениями в localStorage (например, когда токен обновится)
-window.addEventListener("storage", checkAuthStatus);
 
 async function logout() {
-    const token = localStorage.getItem("token"); // Получаем токен
+    const token = localStorage.getItem("accessToken"); // Получаем токен
 
-    // Проверяем, истёк ли токен
-    if (isTokenExpired(token)) {
-        console.log("Токен истек, пытаемся обновить...");
-        // Попробуем обновить токен
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-            // Если новый токен получен, продолжаем выполнение выхода
-            await sendLogoutRequest(newToken);
-        } else {
-            // Если токен не обновился, выводим ошибку и отправляем на страницу входа
-            console.error("Не удалось обновить токен. Пройдите повторную авторизацию.");
-            window.location.href = "/login.html";  // Перенаправляем на страницу входа
-            return;
-        }
-    } else {
-        // Если токен ещё действителен, сразу отправляем запрос на выход
-        await sendLogoutRequest(token);
-    }
-}
-
-async function sendLogoutRequest(token) {
     try {
         const response = await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: 'include', // Включаем cookies
+            credentials: 'include', // Обязательно передаем cookies
             headers: {
-                "Authorization": `Bearer ${token}`,  // Передаем действующий токен в заголовке
+                "Authorization": `Bearer ${token}`  // Отправка токена для выхода
             }
         });
 
         if (response.ok) {
-            // Если запрос успешен, очищаем токены и редиректим
-            localStorage.removeItem('token');
-            sessionStorage.removeItem('token');
+            // Очистка токенов и cookies
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('username');
             document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            window.location.href = "/index.html"; // Перенаправляем на страницу входа
+            
+            window.location.href = "/index.html"; // Перенаправление на страницу входа
         } else {
             console.error("❌ Ошибка при выходе:", response.status);
         }
@@ -825,46 +978,25 @@ async function sendLogoutRequest(token) {
         console.error("❌ Ошибка при выходе:", error);
     }
 }
-async function checkAndRefreshToken() {
-    let token = localStorage.getItem("accessToken");
-    if (!token) {
-        console.log("❌ Нет accessToken, пользователь не авторизован");
-        return false;
-    }
 
-    // Декодируем токен (можно через jwt-decode библиотеку или вручную)
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const now = Date.now() / 1000;
 
-    if (payload.exp < now) {
-        console.log("⏳ AccessToken истёк, пробуем обновить...");
-        const refreshResponse = await fetch('/refresh', { credentials: 'include' });
-        if (refreshResponse.ok) {
-            const refreshData = await refreshResponse.json();
-            localStorage.setItem("accessToken", refreshData.accessToken);
-            token = refreshData.accessToken;
-            console.log("✅ AccessToken обновлён");
-            return true;
-        } else {
-            console.log("❌ Не удалось обновить токен");
-            return false;
-        }
+function handleAuthClick() {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        window.location.href = 'account.html';
     } else {
-        console.log("✅ AccessToken валиден");
-        return true;
+        window.location.href = 'login.html';
     }
 }
 
-
-
 // Переход на страницу личного кабинета
 function openCabinet() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     const username = localStorage.getItem('username');
 
-    if (!token || !username) {
-        // Если токен отсутствует, перенаправляем на страницу входа
-        window.location.href = "/login.html";
+   if (!token && !sessionStorage.getItem("authFailed")) {
+    alert("Вы не авторизованы. Перенаправление...");
+    window.location.href = "/login.html";
     } else {
         // Переход на страницу личного кабинета
         window.location.href = "/account.html";
@@ -892,21 +1024,31 @@ function calculateBalance() {
 }
 // Переход на страницу оформления заказа
 function goToCheckoutPage() {
-    saveCartToLocalStorage();
+    saveCart();
     window.location.href = "checkout.html";
 }
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem('token'); // Получаем токен из localStorage
+    const token = localStorage.getItem('accessToken'); // Получаем токен из localStorage
     if (!token) {
         document.getElementById('usernameDisplay').innerText = "Гость";
         return;
     }
-    fetch('/account', {
-        headers: { Authorization: `Bearer ${token}` }
+
+    fetch("https://mobile-site.onrender.com/account", {
+        method: "GET",
+        credentials: "include", // ✅ Добавляем передачу cookies
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     })
-    .then(res => res.json())
+    .then(res => {
+        if (!res.ok) {
+            throw new Error(`Ошибка HTTP: ${res.status}`);
+        }
+        return res.json();
+    })
     .then(data => {
         if (data.username) {
             document.getElementById('usernameDisplay').innerText = data.username;
@@ -916,7 +1058,8 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('usernameDisplay').innerText = "Ошибка загрузки";
         }
     })
-    .catch(() => {
+    .catch(error => {
+        console.error("Ошибка загрузки аккаунта:", error);
         document.getElementById('usernameDisplay').innerText = "Ошибка загрузки";
     });
 });
@@ -935,124 +1078,80 @@ async function updateAccount(newUsername, newPassword) {
   const data = await response.json();
   console.log("Ответ от сервера:", data);
 }
-function handleAuthClick() {
+
+function loadUserData() {
+    const customerNameInput = document.getElementById("customerName");
+    const customerAddressInput = document.getElementById("customerAddress");
+    const additionalInfoInput = document.getElementById("additionalInfo");
+
+    const userData = JSON.parse(localStorage.getItem("userData")) || {};
+
+    if (customerNameInput) customerNameInput.value = userData.name || "";
+    if (customerAddressInput) customerAddressInput.value = userData.address || "";
+    if (additionalInfoInput) additionalInfoInput.value = userData.additionalInfo || "";
+}
+
+
+// Убедитесь, что этот код в `script.js` загружен перед его вызовом в HTML
+document.addEventListener("DOMContentLoaded", function () {
+    const authButton = document.getElementById("authButton");
+    if (authButton) {
+        authButton.onclick = handleAuthClick;
+    }
+});
+async function loadOrders() {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        window.location.href = "login.html";
-    } else {
-        window.location.href = "account.html";
-    }
-}
-document.addEventListener('DOMContentLoaded', () => {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navbar = document.querySelector('.navbar');
-    const closeMenu = document.querySelector('.close-menu');
-    const menuLinks = document.querySelectorAll('.navbar a'); // Все ссылки в меню
-    const body = document.body; // Для блокировки прокрутки
-
-    if (!menuToggle || !navbar || !closeMenu) {
-        console.error("Не найден один из элементов: menuToggle, navbar, closeMenu.");
+        alert("Вы не авторизованы!");
         return;
     }
 
-    // Открытие меню
-    menuToggle.addEventListener('click', () => {
-        navbar.classList.add('active');
-        body.classList.add('no-scroll'); // Блокируем прокрутку
-    });
-
-    // Закрытие меню
-    function closeNavMenu() {
-        navbar.classList.remove('active');
-        body.classList.remove('no-scroll'); // Разблокируем прокрутку
-    }
-
-    closeMenu.addEventListener('click', closeNavMenu);
-
-    // Закрытие меню при клике на любую ссылку
-    menuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            closeNavMenu();
-        });
-    });
-});
-document.addEventListener("DOMContentLoaded", () => {
-    (async () => {
-        await loadProductMap();
-        loadUserOrders();
-        loadAccountData();
-        renderCart();
-        checkAuthStatus();
-        loadCartFromLocalStorage();
-        loadUserData();
-        initializeAddToCartButtons();
-        setupAuthButtons(isAuth);  // добавлена проверка авторизации
-        loadOrders();
-    })();
-});
-document.addEventListener("DOMContentLoaded", function () {
-    if (!localStorage.getItem("cookiesAccepted")) {
-        showCookieBanner();
-    }
-});
-
-function showCookieBanner() {
-    const banner = document.createElement("div");
-    banner.innerHTML = `
-        <div id="cookie-banner" style="position: fixed; bottom: 0; width: 100%; background: black; color: white; padding: 10px; text-align: center; z-index: 1000;">
-            <p>Мы используем cookies для улучшения работы сайта. Они позволяют оставаться в аккаунте дольше, так как мы передаём данные с помощью них. 
-            <button id="acceptCookies" style="margin-left: 10px;">Принять</button></p>
-        </div>
-    `;
-    document.body.appendChild(banner);
-
-    document.getElementById("acceptCookies").addEventListener("click", function () {
-        localStorage.setItem("cookiesAccepted", "true");
-        banner.remove();
-    });
-}
-
-
-document.addEventListener("DOMContentLoaded", () => {
-    const toggleButtons = document.querySelectorAll(".toggle-description-btn");
-
-    toggleButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            // Ищем текст внутри родительского элемента
-            const parent = button.closest(".menu-item"); // Находим общий контейнер
-            const description = parent.querySelector(".description-collapsible"); // Находим текст
-
-            if (description) {
-                description.classList.toggle("expanded"); // Переключаем класс "expanded"
-
-                // Меняем текст кнопки
-                button.textContent = description.classList.contains("expanded")
-                    ? "Свернуть"
-                    : "Читать далее";
-            } else {
-                console.error("Описание не найдено!");
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/orders", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
             }
         });
-    });
-});
-async function updateAccount(newUsername, newPassword) {
-  const token = localStorage.getItem("accessToken");
 
-  const response = await fetch("https://mobile-site.onrender.com/account", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
-    },
-    body: JSON.stringify({ username: newUsername, password: newPassword }),
-  });
+        if (!response.ok) {
+            throw new Error("Ошибка при загрузке заказов");
+        }
 
-  const data = await response.json();
-  console.log("Ответ от сервера:", data);
+        const orders = await response.json();
+        displayOrders(orders); // Вызываем функцию для отображения заказов
+
+    } catch (error) {
+        console.error("Ошибка при загрузке заказов:", error);
+        alert("Ошибка при загрузке заказов");
+    }
 }
 
-// Переход на страницу оформления заказа
-function goToCheckoutPage() {
-    saveCartToLocalStorage();
-    window.location.href = "checkout.html";
+// Отображение заказов на странице
+function displayOrder(order, container) {
+    const itemsList = order.items.map(item => {
+        if (item.productId && item.productId.name) {
+            return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
+        } else {
+            return `<li>Товар не найден</li>`;
+        }
+    }).join('');
+
+    let orderHTML = `
+        <div class="order">
+            <h3>Заказ №${order._id.slice(0, 8)}</h3>
+            <p>Адрес: ${order.address}</p>
+            <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
+            <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
+            <p>Общая сумма: ${order.totalAmount} ₽</p>
+    `;
+
+    if (order.additionalInfo) {
+        orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
+    }
+
+    orderHTML += `<ul>${itemsList}</ul></div><hr>`;
+
+    container.innerHTML += orderHTML;
 }
