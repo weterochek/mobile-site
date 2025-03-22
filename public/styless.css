@@ -10,7 +10,117 @@ body {
     color: #333;
     background-color: #fdfdfd;
 }
-  
+    #toggleHistoryBtn {
+  display: block;
+  margin: 20px auto; /* Центрирование */
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#toggleHistoryBtn:hover {
+  background-color: #555;
+}
+
+    .order {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.order h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.order p {
+    margin: 5px 0;
+}
+
+.order ul {
+    list-style: none;
+    padding: 0;
+}
+
+.order ul li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #ccc;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+ #ordersContainer {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Заголовок страницы */
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Стиль для каждого заказа */
+    .order {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        padding: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    /* При наведении на заказ */
+    .order:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+    }
+
+    /* Заголовок каждого заказа */
+    .order h3 {
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    /* Стиль для информации о заказе */
+    .order p {
+        font-size: 1rem;
+        color: #666;
+        margin-bottom: 8px;
+    }
+
+    /* Список товаров в заказе */
+    .order ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .order ul li {
+        font-size: 1rem;
+        color: #555;
+        padding: 5px 0;
+    }
+ .no-orders {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #999;
+        padding: 20px;
+    }
   .account-container {
     max-width: 400px;
     margin: 150px auto;
