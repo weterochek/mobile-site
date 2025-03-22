@@ -8,48 +8,47 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const Joi = require("joi");
 const app = express();
+const orderRoutes = require("./routes/orderRoutes");
+const authMiddleware = require('./middleware/authMiddleware');
+const Order = require('./models/Order');
+const User = require('./models/User');
+const Product = require("./models/Products");  
+
+
 
 // Настройка CORS
 const allowedOrigins = [
-  'https://makadamia.onrender.com',
-  'https://mobile-site.onrender.com',
-  'http://localhost:3000', // Для локальной разработки
+  'https://makadamia.onrender.com', // Первый сайт
+  'https://mobile-site.onrender.com', // Второй сайт
+  'http://localhost:3000' // Для локальной разработки
 ];
-require("dotenv").config();
+
+console.log("Отправка запроса на /refresh");
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            "https://makadamia.onrender.com",
+            "https://mobile-site.onrender.com",
+            "http://localhost:3000"
+        ];
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true, // Обязательно для передачи s!
 };
-
+app.use(express.json());
+app.use(cors(corsOptions));
 // Используем CORS с настройками
 app.use(cors(corsOptions));
 app.use(cookieParser());
-app.options('*', cors(corsOptions));
-app.use((req, res, next) => {
-    if (process.env.NODE_ENV === "production") {
-        console.log("Проверка протокола:", req.headers["x-forwarded-proto"]);
-        
-        // ✅ Проверяем, что уже на HTTPS и редирект не повторяется
-        if (req.headers["x-forwarded-proto"] !== "https" && !req.secure) {
-            console.log("🔄 Перенаправление на HTTPS...");
-            return res.redirect(301, `https://${req.headers.host}${req.url}`);
-        }
-    }
-    next();
-});
+app.use('/api', orderRoutes);
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
 const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
-const _SECRET = process.env._SECRET || "J8$GzP1d&KxT^m4YvNcR";
 const REFRESH_SECRET = process.env.REFRESH_SECRET || "J8$GzP1d&KxT^m4YvNcR";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -60,45 +59,6 @@ mongoose.connect(mongoURI, {
   .catch((error) => console.error("MongoDB connection error:", error));
 
 // Middleware для обработки JSON
-app.use(express.json());
-const authMiddleware = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "Токен не предоставлен" });
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        return res.status(401).json({ message: "Недействительный токен" });
-    }
-};
-
-async function fetchWithAuth(url, options = {}) {
-    let accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken || isTokenExpired(accessToken)) {
-        console.log("🔄 Токен истек, запрашиваем новый...");
-        const response = await fetch("/refresh", { method: "POST", credentials: "include" });
-        const data = await response.json();
-        if (response.ok) {
-            localStorage.setItem("accessToken", data.accessToken);
-            accessToken = data.accessToken;
-        } else {
-            console.warn("❌ Ошибка обновления токена:", data.message);
-            return null;
-        }
-    }
-
-    return fetch(url, {
-        ...options,
-        headers: {
-            ...options.headers,
-            Authorization: `Bearer ${accessToken}`
-        }
-    });
-}
-
 
 // Функция проверки срока жизни токена
 function isTokenExpired(token) {
@@ -109,47 +69,19 @@ function isTokenExpired(token) {
         return true; // Если ошибка — токен недействителен
     }
 }
-async function AccessToken(req, res) {
-    if (!req || !req.cookies) {
-        console.error("❌ Ошибка: req или req.cookies отсутствуют!");
-        return null;
+
+
+// Перенаправление HTTP на HTTPS
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV === "production") {
+        console.log("Проверка протокола:", req.headers["x-forwarded-proto"]);
+        if (req.headers["x-forwarded-proto"] !== "https") {
+            console.log("🔄 Перенаправление на HTTPS...");
+            return res.redirect(`https://${req.headers.host}${req.url}`);
+        }
     }
-
-    console.log("🔄 Сервер: Попытка обновления токена...");
-    
-    const Token = req.cookies.TokenMobile;
-console.log("🔍 Полученный TokenMobile:", Token);
-if (!Token) {
-    console.warn("❌ Нет TokenMobile, отправляем 401.");
-    return res.status(401).json({ message: "Не авторизован" });
-}
-
-    jwt.verify(Token, _SECRET, async (err, decodedUser) => {
-        if (err) {
-            console.warn("❌ Недействительный -токен, отправляем 403.");
-            return res.status(403).json({ message: "Недействительный -токен" });
-        }
-
-        const user = await User.findById(decodedUser.id);
-        if (!user) {
-            return res.status(404).json({ message: "Пользователь не найден" });
-        }
-
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user, req.headers.origin);
-
-        console.log("✅ Новый access-токен сгенерирован.");
-        
-        res.cookie(decodedUser.site === "https://makadamia.onrender.com" ? "refreshTokenDesktop" : "refreshTokenMobile", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-            partitioned: true
-        });
-
-        res.json({ accessToken });
-    });
-}
+    next();
+});
 
 const Cart = require("./models/Cart"); // Подключаем модель
 
@@ -188,33 +120,96 @@ app.post('/cart/add', authMiddleware, async (req, res) => {
 // Указание папки со статическими файлами
 app.use(express.static(path.join(__dirname, "public")));
 
-// Схема и модель пользователя
-const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  name: { type: String, default: "" },
-  city: { type: String, default: "" }
+// Маршрут для получения товара по ID
+app.get('/s/:id', async (req, res) => {
+  try {
+    const product = await Products.findById(req.params.id); // Используется Products, так как это ваша модель
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    res.json(product);  // Отправляем товар
+  } catch (error) {
+    console.error("Ошибка при получении товара:", error);
+    res.status(500).json({ message: 'Ошибка при получении товара' });
+  }
 });
-const User = mongoose.model("User", userSchema);
 
-// Мидлвар для проверки токена
+app.get('/api/products', async (req, res) => {
+    try {
+        const products = await Products.find();  // Используется Products, так как это ваша модель
+        res.json(products);
+    } catch (err) {
+        res.status(500).json({ message: "Ошибка получения списка продуктов" });
+    }
+});
 
-function generateTokens(user) {
+// Получение всех заказов
+app.get('/orders', async (req, res) => {
+    try {
+        const orders = await Order.find().populate('items.productId');
+        res.json(orders);
+    } catch (err) {
+        console.error("❌ Ошибка получения заказов:", err);
+        res.status(500).json({ message: "Ошибка получения заказов" });
+    }
+});
+app.post("/api/order", authMiddleware, async (req, res) => {
+    try {
+        const { items, address, additionalInfo, createdAt } = req.body;
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ message: "Корзина не может быть пустой" });
+        }
+
+        const newOrder = new Order({
+            userId: req.user.id,
+            address,
+            additionalInfo,
+            items,
+            createdAt,
+        });
+
+        await newOrder.save();
+
+        res.status(201).json({ message: "Заказ успешно оформлен", order: newOrder });
+    } catch (error) {
+        console.error("Ошибка при создании заказа:", error);
+        res.status(500).json({ message: "Ошибка при создании заказа", error: error.message });
+    }
+});
+
+
+// Получение заказов пользователя
+app.get('/user-orders/:userId', authMiddleware, async (req, res) => {
+    try {
+        const orders = await Order.find({ userId: req.params.userId }).populate("items.productId", "name price");
+        res.json(orders);
+    } catch (error) {
+        console.error("Ошибка при получении заказов:", error);
+        res.status(500).json({ message: "Ошибка при получении заказов" });
+    }
+});
+
+
+function generateTokens(user, site) {
     const issuedAt = Math.floor(Date.now() / 1000);
+    
     const accessToken = jwt.sign(
-        { id: user._id, username: user.username, iat: issuedAt },
+        { id: user._id, username: user.username, site: "https://mobile-site.onrender.com", iat: issuedAt },
         JWT_SECRET,
-        { expiresIn: "30m" } // Access-токен живёт 30 минут
+        { expiresIn: "30m" }  // ⏳ Access-токен на 30 минут
     );
 
     const refreshToken = jwt.sign(
-        { id: user._id, username: user.username, iat: issuedAt },
+        { id: user._id, username: user.username, site: "https://mobile-site.onrender.com", iat: issuedAt },
         REFRESH_SECRET,
-        { expiresIn: "7d" } // Refresh-токен живёт 7 дней
+        { expiresIn: "7d" }  // 🔄 Refresh-токен на 7 дней
     );
 
     return { accessToken, refreshToken };
 }
+
+
 
 
 // Регистрация пользователя
@@ -233,37 +228,23 @@ app.post('/register', async (req, res) => {
 
   try {
     console.log("Регистрация пользователя:", username);
-
-    // Проверяем наличие пользователя
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      console.warn(`Пользователь "${username}" уже существует.`);
       return res.status(409).json({ message: 'Пользователь с таким именем уже существует' });
     }
 
-    // Хэшируем пароль
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ username, password: hashedPassword });
 
-    // Пробуем сохранить пользователя
     await newUser.save();
-
     console.log(`Пользователь "${username}" успешно зарегистрирован.`);
     return res.status(201).json({ message: 'Пользователь успешно зарегистрирован' });
 
   } catch (err) {
     console.error("Ошибка регистрации:", err);
-
-    // Проверка на дублирование (если не проверило выше)
-    if (err.code === 11000) {
-      return res.status(409).json({ message: 'Такой пользователь уже существует' });
-    }
-
     return res.status(500).json({ message: 'Ошибка регистрации пользователя', error: err.message });
   }
 });
-
-
 // Авторизация пользователя
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
@@ -275,36 +256,42 @@ app.post('/login', async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
-    res.cookie("refreshTokenMobile", refreshToken, {
-        httpOnly: true,  
-        secure: true,    
-        sameSite: "None", 
+    res.cookie("refreshTokenMobile", refreshToken, { 
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
         path: "/",
-        maxAge: 30 * 24 * 60 * 60 * 1000 // ✅ 30 дней хранения
+        maxAge: 30 * 24 * 60 * 60 * 1000  // Устанавливаем refreshToken на 30 дней
     });
 
-    res.json({ accessToken });
+    res.json({ accessToken, userId: user._id });
 });
 
 
+// Обработка запроса на обновление токена для ПК-версии
 app.post('/refresh', async (req, res) => {
-    console.log("🔍 Все куки в запросе /refresh:", req.cookies);
+    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenMobile для ПК-версии
 
-    const refreshToken = req.cookies.refreshTokenMobile; // ✅ Теперь сервер видит куки
     if (!refreshToken) {
-        console.warn("❌ Нет refreshTokenMobile в cookies");
+        console.error("❌ Refresh-токен отсутствует в cookies");
         return res.status(401).json({ message: "Не авторизован" });
     }
-
+  
+    console.log("🔍 Полученный refreshToken:", refreshToken);
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
         if (err) {
-            console.warn("❌ Недействительный refresh-токен");
-            res.clearCookie("refreshTokenMobile", { httpOnly: true, secure: true, sameSite: "None", path: "/" });
+            console.error("❌ Ошибка проверки refresh-токена:", err.message);
+            return res.status(403).json({ message: "Недействительный refresh-токен" });
+        }
+
+        if (!decodedUser || decodedUser.site !== "https://mobile-site.onrender.com") {
+            console.error("❌ Токен не соответствует сайту:", decodedUser);
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
         const user = await User.findById(decodedUser.id);
         if (!user) {
+            console.error("❌ Пользователь не найден по ID:", decodedUser.id);
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
@@ -315,13 +302,37 @@ app.post('/refresh', async (req, res) => {
             secure: true,
             sameSite: "None",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000  // ✅ Кука обновляется на 30 дней
+            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
         });
 
+        console.log("✅ Refresh-токен обновлен успешно");
         res.json({ accessToken });
     });
 });
 
+
+async function refreshAccessToken() {
+    try {
+        console.log("🔄 Отправляем запрос на обновление токена...");
+        const response = await fetch(`${window.location.origin}/refresh`, { // ✅ Автоматически берёт URL
+            method: "POST",
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            console.warn("❌ Ошибка обновления токена:", response.status);
+            return null;
+        }
+
+        const data = await response.json(); // ✅ Получаем новый accessToken
+        console.log("✅ Новый accessToken:", data.accessToken);
+        localStorage.setItem("accessToken", data.accessToken);
+        return data.accessToken;
+    } catch (error) {  // ✅ Добавили catch
+        console.error("Ошибка при обновлении токена:", error);
+        return null;
+    }
+}
 app.post('/logout', authMiddleware, (req, res) => {
     res.clearCookie("refreshTokenMobile", {
         httpOnly: true,
@@ -336,15 +347,15 @@ app.post('/logout', authMiddleware, (req, res) => {
 
 
 // Обновление токена
-app.post('/refresh-token', (req, res) => {
-  const { token: refreshToken } = req.body;
+app.post('/-token', (req, res) => {
+  const { token: Token } = req.body;
 
-  if (!refreshToken) {
+  if (!Token) {
     return res.status(403).json({ message: 'Токен обновления не предоставлен' });
   }
 
   try {
-    const user = jwt.verify(refreshToken, JWT_SECRET);
+    const user = jwt.verify(Token, JWT_SECRET);
     const newAccessToken = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '1h' });
     res.status(200).json({ token: newAccessToken });
   } catch (err) {
@@ -358,21 +369,19 @@ app.get('/private-route', authMiddleware, (req, res) => {
 });
 app.get('/account', authMiddleware, async (req, res) => {
     try {
-        console.log("🔍 Все куки в запросе /account:", req.cookies);
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ message: "Не авторизован" });
+        }
 
         const user = await User.findById(req.user.id).select("username name city");
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
 
-        res.set("Cache-Control", "no-cache, no-store, must-revalidate");
-        res.set("Pragma", "no-cache");
-        res.set("Expires", "0");
         res.json({ username: user.username, name: user.name, city: user.city });
-
-    } catch (error) {
-        console.error("❌ Ошибка при получении данных аккаунта:", error);
-        res.status(500).json({ message: "Ошибка сервера" });
+    } catch (error) {  // ✅ Добавляем обработку ошибки
+        console.error("Ошибка при загрузке аккаунта:", error);
+        res.status(500).json({ message: "Ошибка сервера", error: error.message });
     }
 });
 app.put('/account', authMiddleware, async (req, res) => {
