@@ -529,13 +529,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".toggle-description-btn").forEach(button => {
-        button.addEventListener("click", function () {
-            const description = this.previousElementSibling;
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleButtons = document.querySelectorAll(".toggle-description-btn");
+
+    toggleButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            // Ищем текст внутри родительского элемента
+            const parent = button.closest(".menu-item"); // Находим общий контейнер
+            const description = parent.querySelector(".description-collapsible"); // Находим текст
+
             if (description) {
-                description.classList.toggle("expanded");
-                this.textContent = description.classList.contains("expanded") ? "Скрыть" : "Читать далее";
+                description.classList.toggle("expanded"); // Переключаем класс "expanded"
+
+                // Меняем текст кнопки
+                button.textContent = description.classList.contains("expanded")
+                    ? "Свернуть"
+                    : "Читать далее";
+            } else {
+                console.error("Описание не найдено!");
             }
         });
     });
