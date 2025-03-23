@@ -57,6 +57,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     sessionStorage.setItem("authChecked", "true");
     await refreshAccessToken();
 }
+document.addEventListener("DOMContentLoaded", function () {
+    const cartItems = document.getElementById("cartItems");
+    if (cartItems) {
+        cartItems.style.maxHeight = "300px"; // Ограничиваем высоту контейнера
+        cartItems.style.overflowY = "auto"; // Добавляем скролл при необходимости
+    }
+});
 
     const cartButton = document.getElementById("cartButton");
     const cartDropdown = document.getElementById("cartDropdown");
