@@ -84,6 +84,13 @@ document.addEventListener("DOMContentLoaded", function () {
         cartDropdown.appendChild(cartFooter);
     }
 });
+document.addEventListener("DOMContentLoaded", async function () {
+    const token = localStorage.getItem("accessToken");
+
+    if (!token && !sessionStorage.getItem("authChecked")) {
+    sessionStorage.setItem("authChecked", "true");
+    await refreshAccessToken();
+}
 
     const cartButton = document.getElementById("cartButton");
     const cartDropdown = document.getElementById("cartDropdown");
