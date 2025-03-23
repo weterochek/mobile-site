@@ -57,12 +57,13 @@ document.addEventListener("DOMContentLoaded", function () {
         cartItems.style.overflowY = "auto"; // Добавляем скролл при необходимости
     }
     
-    const cartDropdown = document.getElementById("cartDropdown");
-    if (cartDropdown) {
-        cartDropdown.style.display = "flex";
-        cartDropdown.style.flexDirection = "column";
-        cartDropdown.style.maxHeight = "80vh";
-    }
+   const cartDropdown = document.getElementById("cartDropdown");
+
+if (cartDropdown) {
+    cartDropdown.style.display = "none"; // Убираем корзину по умолчанию
+    cartDropdown.style.flexDirection = "column";
+    cartDropdown.style.maxHeight = "80vh";
+}
     
     const cartFooter = document.createElement("div");
     cartFooter.id = "cartFooter";
