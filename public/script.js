@@ -50,18 +50,38 @@ window.onload = function () {
     }
     updateCartDisplay();
 };
-document.addEventListener("DOMContentLoaded", async function () {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token && !sessionStorage.getItem("authChecked")) {
-    sessionStorage.setItem("authChecked", "true");
-    await refreshAccessToken();
-}
 document.addEventListener("DOMContentLoaded", function () {
     const cartItems = document.getElementById("cartItems");
     if (cartItems) {
-        cartItems.style.maxHeight = "300px"; // Ограничиваем высоту контейнера
+        cartItems.style.maxHeight = "600px"; // Изменяем высоту для 10 товаров
         cartItems.style.overflowY = "auto"; // Добавляем скролл при необходимости
+    }
+    
+    const cartDropdown = document.getElementById("cartDropdown");
+    if (cartDropdown) {
+        cartDropdown.style.display = "flex";
+        cartDropdown.style.flexDirection = "column";
+        cartDropdown.style.maxHeight = "80vh";
+    }
+    
+    const cartFooter = document.createElement("div");
+    cartFooter.id = "cartFooter";
+    cartFooter.style.position = "sticky";
+    cartFooter.style.bottom = "0";
+    cartFooter.style.background = "white";
+    cartFooter.style.padding = "10px";
+    cartFooter.style.boxShadow = "0 -2px 5px rgba(0, 0, 0, 0.1)";
+    cartFooter.style.display = "flex";
+    cartFooter.style.justifyContent = "space-between";
+    cartFooter.style.alignItems = "center";
+    
+    const checkoutButton = document.querySelector("button[onclick='goToCheckoutPage()']");
+    const clearCartButton = document.getElementById("clear-cart");
+    
+    if (checkoutButton && clearCartButton) {
+        cartFooter.appendChild(checkoutButton);
+        cartFooter.appendChild(clearCartButton);
+        cartDropdown.appendChild(cartFooter);
     }
 });
 
