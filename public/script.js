@@ -839,6 +839,7 @@ async function refreshAccessToken() {
         return data.accessToken;
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
+        logout();
         return null;
     }
 }
