@@ -269,46 +269,35 @@ app.post('/login', async (req, res) => {
 
 
 // Обработка запроса на обновление токена для ПК-версии
-app.post('/refresh', async (req, res) => {
-    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenMobile для ПК-версии
+app.post("/refresh", async (req, res) => {
+    const refreshToken = req.cookies.refreshTokenMobile;
 
     if (!refreshToken) {
-        console.error("❌ Refresh-токен отсутствует в cookies");
+        console.log("❌ Refresh-токен отсутствует в cookies");
         return res.status(401).json({ message: "Не авторизован" });
     }
-  
-    console.log("🔍 Полученный refreshToken:", refreshToken);
+
     jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
         if (err) {
             console.error("❌ Ошибка проверки refresh-токена:", err.message);
             return res.status(403).json({ message: "Недействительный refresh-токен" });
         }
 
-        if (!decodedUser || decodedUser.site !== "https://mobile-site.onrender.com") {
-            console.error("❌ Токен не соответствует сайту:", decodedUser);
-            return res.status(403).json({ message: "Недействительный refresh-токен" });
-        }
-
-        const user = await User.findById(decodedUser.id);
-        if (!user) {
-            console.error("❌ Пользователь не найден по ID:", decodedUser.id);
-            return res.status(404).json({ message: "Пользователь не найден" });
-        }
-
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+        // Обновляем accessToken
+        const { accessToken, refreshToken: newRefreshToken } = generateTokens(decodedUser);
 
         res.cookie("refreshTokenMobile", newRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "None",
             path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
+            maxAge: 30 * 24 * 60 * 60 * 1000
         });
 
-        console.log("✅ Refresh-токен обновлен успешно");
         res.json({ accessToken });
     });
 });
+
 
 
 async function refreshAccessToken() {
@@ -330,6 +319,7 @@ async function refreshAccessToken() {
         return data.accessToken;
     } catch (error) {  // ✅ Добавили catch
         console.error("Ошибка при обновлении токена:", error);
+        logout();
         return null;
     }
 }
