@@ -26,16 +26,29 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
         console.log("🔴 Редирект не требуется.");
     }
 });
-window.addEventListener("load", async () => {
-    console.log("🔄 Проверяем и обновляем токен при загрузке страницы...");
+(async () => {
+    console.log("🔄 Мгновенная проверка и обновление токена...");
 
     const token = localStorage.getItem("accessToken");
 
-    if (!token || isTokenExpired(token)) { 
-        console.log("⏳ Access-токен отсутствует или истёк, обновляем...");
+    if (!token) {
+        console.log("⏳ Access-токен отсутствует, обновляем немедленно...");
+        await refreshAccessToken();
+    } else if (isTokenExpired(token)) {
+        console.log("⚠️ Access-токен истёк, обновляем...");
         await refreshAccessToken();
     } else {
         console.log("✅ Access-токен активен, обновление не требуется.");
+    }
+})();
+
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("🔄 Дополнительная проверка токена после загрузки DOM...");
+
+    const token = localStorage.getItem("accessToken");
+    if (!token || isTokenExpired(token)) {
+        console.log("⏳ Повторная попытка обновления токена...");
+        await refreshAccessToken();
     }
 });
 
