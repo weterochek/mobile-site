@@ -270,81 +270,62 @@ app.post('/login', async (req, res) => {
 
 // Обработка запроса на обновление токена для ПК-версии
 app.post('/refresh', async (req, res) => {
-    const refreshToken = req.cookies.refreshTokenMobile;  // Используем refreshTokenDesktop для ПК-версии
+    const refreshToken = req.cookies.refreshTokenMobile;
 
     if (!refreshToken) {
         console.error("❌ Refresh-токен отсутствует в cookies");
         return res.status(401).json({ message: "Не авторизован" });
     }
-  
+
     console.log("🔍 Полученный refreshToken:", refreshToken);
-    jwt.verify(refreshToken, REFRESH_SECRET, async (err, decodedUser) => {
+    
+    jwt.verify(refreshToken, REFRESH_SECRET, async (err, decoded) => {
         if (err) {
             console.error("❌ Ошибка проверки refresh-токена:", err.message);
-            return res.status(403).json({ message: "Недействительный refresh-токен" });
+            
+            res.clearCookie("refreshTokenMobile", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "None",
+                path: "/"
+            });
+
+            return res.status(403).json({ message: "Refresh-токен недействителен или истёк" });
         }
 
-        if (!decodedUser || decodedUser.site !== "https://mobile-site.onrender.com") {
-            console.error("❌ Токен не соответствует сайту:", decodedUser);
-            return res.status(403).json({ message: "Недействительный refresh-токен" });
+        if (!decoded.exp || (decoded.exp * 1000 < Date.now())) {
+            console.error("❌ Refresh-токен окончательно истёк!");
+            res.clearCookie("refreshTokenMobile", { path: "/" });
+            return res.status(403).json({ message: "Refresh-токен истёк" });
         }
 
-        const user = await User.findById(decodedUser.id);
-        if (!user) {
-            console.error("❌ Пользователь не найден по ID:", decodedUser.id);
-            return res.status(404).json({ message: "Пользователь не найден" });
+        try {
+            const user = await User.findById(decoded.id);
+            if (!user) {
+                console.error("❌ Пользователь не найден по ID:", decoded.id);
+                return res.status(404).json({ message: "Пользователь не найден" });
+            }
+
+            const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
+
+            res.cookie("refreshTokenMobile", newRefreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "None",
+                path: "/",
+                maxAge: 30 * 24 * 60 * 60 * 1000  // 30 дней
+            });
+
+            console.log("✅ Refresh-токен обновлён успешно");
+            res.json({ accessToken });
+
+        } catch (error) {
+            console.error("❌ Ошибка при поиске пользователя:", error);
+            return res.status(500).json({ message: "Ошибка сервера" });
         }
-
-        const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
-
-        res.cookie("refreshTokenMobile", newRefreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60 * 1000  // Обновляем refreshToken на 30 дней
-        });
-
-        console.log("✅ Refresh-токен обновлен успешно");
-        res.json({ accessToken });
     });
 });
 
-
-async function refreshAccessToken() {
-    try {
-        console.log("🔄 Отправляем запрос на обновление токена...");
-        const response = await fetch(`${window.location.origin}/refresh`, { // ✅ Автоматически берёт URL
-            method: "POST",
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            console.warn("❌ Ошибка обновления токена:", response.status);
-            return null;
-        }
-
-        const data = await response.json(); // ✅ Получаем новый accessToken
-        console.log("✅ Новый accessToken:", data.accessToken);
-        localStorage.setItem("accessToken", data.accessToken);
-        return data.accessToken;
-    } catch (error) {  // ✅ Добавили catch
-        console.error("Ошибка при обновлении токена:", error);
-        logout();
-        return null;
-    }
-}
-app.post('/logout', authMiddleware, (req, res) => {
-    res.clearCookie("refreshTokenMobile", {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-        path: "/",
-        domain: "mobile-site.onrender.com"
-    });
-
-    res.json({ message: 'Вы вышли из системы' });
-});
 
 
 // Обновление токена
