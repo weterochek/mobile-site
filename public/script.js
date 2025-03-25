@@ -26,6 +26,18 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
         console.log("🔴 Редирект не требуется.");
     }
 });
+window.addEventListener("load", async () => {
+    console.log("🔄 Проверяем и обновляем токен при загрузке страницы...");
+
+    const token = localStorage.getItem("accessToken");
+
+    if (!token || isTokenExpired(token)) { 
+        console.log("⏳ Access-токен отсутствует или истёк, обновляем...");
+        await refreshAccessToken();
+    } else {
+        console.log("✅ Access-токен активен, обновление не требуется.");
+    }
+});
 
 async function loadProductMap() {
     try {
