@@ -209,6 +209,18 @@ function generateTokens(user, site) {
     return { accessToken, refreshToken };
 }
 
+app.post('/logout', (req, res) => {
+    console.log("🚪 Пользователь выходит, удаляем refreshToken...");
+
+    res.clearCookie("refreshTokenMobile", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        path: "/"
+    });
+
+    res.status(200).json({ message: "Выход выполнен успешно" });
+});
 
 
 
