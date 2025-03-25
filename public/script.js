@@ -814,35 +814,43 @@ function getTokenExp(token) {
 
 
 async function refreshAccessToken() {
-    console.log("🔄 Запрос на обновление токена...");
-
-    const token = localStorage.getItem("accessToken"); // Проверка наличия токена
-    if (!token) {
-        console.warn("❌ Нет токена, пропускаем обновление");
-        return null; // Если токена нет, не отправляем запрос на обновление
-    }
+    console.log("🔄 Запрос на обновление access-токена...");
 
     try {
         const response = await fetch("https://mobile-site.onrender.com/refresh", {
             method: "POST",
-            credentials: 'include'
+            credentials: "include"
         });
 
         if (!response.ok) {
-            console.warn(`❌ Ошибка обновления токена (${response.status})`);
+            const data = await response.json();
+            console.warn("❌ Ошибка обновления токена:", data.message);
+
+            if (data.message.includes("Refresh-токен истек") || data.message.includes("Недействителен")) {
+                console.error("⏳ Refresh-токен окончательно истек. Требуется повторный вход!");
+                logout();
+            }
+            
             return null;
         }
 
         const data = await response.json();
-        console.log("✅ Новый токен получен:", data.accessToken);
-        localStorage.setItem("accessToken", data.accessToken);  // Сохраняем новый токен
+        console.log("✅ Новый accessToken:", data.accessToken);
+
+        if (data.accessToken) {
+            localStorage.setItem("accessToken", data.accessToken);
+        } else {
+            console.error("❌ Сервер не отправил новый accessToken!");
+            return null;
+        }
+
         return data.accessToken;
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
-        logout();
         return null;
     }
 }
+
 
 
 function generateTokens(user, site) {
