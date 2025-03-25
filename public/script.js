@@ -1036,33 +1036,28 @@ function checkAuthStatus() {
 }
 
 async function logout() {
-    const token = localStorage.getItem("accessToken"); // Получаем токен
+    console.log("🚪 Выход из аккаунта...");
 
     try {
-        const response = await fetch("https://mobile-site.onrender.com/logout", {
+        await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: 'include', // Обязательно передаем cookies
-            headers: {
-                "Authorization": `Bearer ${token}`  // Отправка токена для выхода
-            }
+            credentials: "include" // Передаем cookies
         });
 
-        if (response.ok) {
-            // Очистка токенов и cookies
-            localStorage.removeItem('accessToken');
-            localStorage.removeItem('userId');
-            localStorage.removeItem('username');
-            document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            
-            window.location.href = "/index.html"; // Перенаправление на страницу входа
-        } else {
-            console.error("❌ Ошибка при выходе:", response.status);
-        }
+        // Очищаем локальное хранилище
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
+
+        console.log("✅ Выход выполнен успешно!");
     } catch (error) {
         console.error("❌ Ошибка при выходе:", error);
+    } finally {
+        // Перенаправляем пользователя на страницу входа
+        window.location.href = "/index.html";
     }
 }
+
 
 
 function handleAuthClick() {
