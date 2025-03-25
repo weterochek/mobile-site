@@ -291,19 +291,36 @@ app.post('/refresh', async (req, res) => {
 
     console.log("🔍 Полученный refreshToken:", refreshToken);
     
-    jwt.verify(refreshToken, REFRESH_SECRET, async (err, decoded) => {
-        if (err) {
-            console.error("❌ Ошибка проверки refresh-токена:", err.message);
-            
-            res.clearCookie("refreshTokenMobile", {
-                httpOnly: true,
-                secure: true,
-                sameSite: "None",
-                path: "/"
-            });
+if (err.message === "jwt expired") {
+    console.log("🔄 Refresh-токен истёк, создаём новый...");
 
-            return res.status(403).json({ message: "Refresh-токен недействителен или истёк" });
-        }
+    // Декодируем токен вручную, без проверки подписи
+    const decoded = jwt.decode(refreshToken); 
+
+    if (!decoded || !decoded.id) {
+        console.error("❌ Ошибка: не удалось декодировать истёкший токен!");
+        return res.status(403).json({ message: "Невозможно обновить токен" });
+    }
+
+    // Создаём новый refresh-токен
+    const newRefreshToken = jwt.sign(
+        { id: decoded.id, username: decoded.username }, // ✅ Теперь decoded всегда есть
+        REFRESH_SECRET,
+        { expiresIn: "7d" }
+    );
+
+    // Сохраняем новый refresh-токен в cookie
+    res.cookie("refreshTokenDesktop", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        path: "/",
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    });
+
+    return res.status(200).json({ message: "Токен обновлён", refreshToken: newRefreshToken });
+}
+
 
         if (!decoded.exp || (decoded.exp * 1000 < Date.now())) {
             console.error("❌ Refresh-токен окончательно истёк!");
@@ -340,7 +357,7 @@ app.post('/refresh', async (req, res) => {
             return res.status(500).json({ message: "Ошибка сервера" });
         }
     });
-});
+
 
 
 
