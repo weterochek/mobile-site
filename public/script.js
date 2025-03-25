@@ -1,31 +1,31 @@
 let productMap = {};// Будет заполнен динамически
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
-  document.addEventListener("DOMContentLoaded", function () {
+ (() => {
     const userAgent = navigator.userAgent.toLowerCase();
-    const isMobile = userAgent.includes("mobile") || navigator.maxTouchPoints > 0 || window.innerWidth < 768;
     const currentURL = window.location.href;
 
-    console.log("📲 Мобильное устройство:", isMobile);
-    console.log("🌐 Текущий URL:", currentURL);
-    console.log("🛑 sessionStorage.redirected:", sessionStorage.getItem("redirected"));
+    console.log("User-Agent:", userAgent);
+    console.log("Текущий URL:", currentURL);
+    console.log("sessionStorage.redirected:", sessionStorage.getItem("redirected"));
 
     if (sessionStorage.getItem("redirected")) {
-        console.log("⚠️ Редирект уже выполнялся, не повторяем.");
+        console.log("Редирект уже выполнялся, прерываем.");
         return;
     }
 
-    if (isMobile && !currentURL.includes("mobile-site.onrender.com")) {
-        console.log("🟢 Редирект на мобильную версию...");
+    if (userAgent.includes("mobile") && !currentURL.includes("mobile-site.onrender.com")) {
+        console.log("🟢 Должен быть редирект на мобильную версию...");
         sessionStorage.setItem("redirected", "true");
-        window.location.replace("https://mobile-site.onrender.com");
-    } else if (!isMobile && !currentURL.includes("makadamia.onrender.com")) {
-        console.log("🟢 Редирект на ПК-версию...");
+        window.location.href = "https://mobile-site.onrender.com";
+    } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia.onrender.com")) {
+        console.log("🟢 Должен быть редирект на десктопную версию...");
         sessionStorage.setItem("redirected", "true");
-        window.location.replace("https://makadamia.onrender.com");
+        window.location.href = "https://makadamia.onrender.com";
     } else {
-        console.log("🔴 Редирект не требуется.");
+        console.log("🔴 Условие редиректа не выполнено.");
     }
-});
+})();
+
 (async () => {
     console.log("🔄 Мгновенная проверка и обновление токена...");
 
