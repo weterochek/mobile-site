@@ -1263,18 +1263,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Закрываем все перед открытием нового
                 document.querySelectorAll(".accordion-content").forEach((el) => {
                     el.classList.remove("open");
-                    el.style.maxHeight = null;
+                    el.style.maxHeight = "";
+                });
+                document.querySelectorAll(".accordion-button").forEach((btn) => {
+                    btn.classList.remove("active");
                 });
 
                 if (!isOpen) {
                     content.classList.add("open");
                     content.style.maxHeight = content.scrollHeight + "px";
+                    this.classList.add("active"); // Добавляем класс активной кнопке
                     console.log("Новая высота контента:", content.style.maxHeight);
                 }
             }
         });
     });
 });
+
 
 
 // Отображение заказов на странице
