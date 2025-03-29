@@ -1240,26 +1240,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     buttons.forEach((button) => {
         button.addEventListener("click", function () {
-            const content = this.nextElementSibling; // Берем следующий `.accordion-content`
+            const content = this.nextElementSibling; // Берем следующий элемент
 
             if (!content || !content.classList.contains("accordion-content")) {
-                console.warn("Не найден контент для аккордеона рядом с кнопкой", button);
+                console.warn("Не найден контент рядом с кнопкой", button);
                 return;
             }
 
-            const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+            const isOpen = content.classList.contains("open");
 
             // Закрываем все перед открытием нового
             document.querySelectorAll(".accordion-content").forEach((el) => {
+                el.classList.remove("open");
                 el.style.maxHeight = null;
+            });
+            document.querySelectorAll(".accordion-button").forEach((btn) => {
+                btn.classList.remove("active");
             });
 
             if (!isOpen) {
+                content.classList.add("open");
                 content.style.maxHeight = content.scrollHeight + "px";
+                this.classList.add("active");
             }
         });
     });
 });
+
 
 
 
