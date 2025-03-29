@@ -1247,6 +1247,8 @@ async function loadOrders() {
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("JS загружен!");
+
     const buttons = document.querySelectorAll(".accordion-button");
 
     buttons.forEach((button, index) => {
@@ -1254,17 +1256,16 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(`Клик по кнопке ${index}`);
 
             const content = this.nextElementSibling;
-            console.log("Найден ли контент?", content ? "Да" : "Нет");
 
             if (content && content.classList.contains("accordion-content")) {
                 const isOpen = content.classList.contains("open");
-                console.log("Открыт ли контент до клика?", isOpen);
 
                 // Закрываем все перед открытием нового
                 document.querySelectorAll(".accordion-content").forEach((el) => {
                     el.classList.remove("open");
-                    el.style.maxHeight = "";
+                    el.style.maxHeight = null;
                 });
+
                 document.querySelectorAll(".accordion-button").forEach((btn) => {
                     btn.classList.remove("active");
                 });
@@ -1272,13 +1273,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!isOpen) {
                     content.classList.add("open");
                     content.style.maxHeight = content.scrollHeight + "px";
-                    this.classList.add("active"); // Добавляем класс активной кнопке
-                    console.log("Новая высота контента:", content.style.maxHeight);
+                    this.classList.add("active");
+                    console.log(`Контент ${index} открыт`);
+                } else {
+                    console.log(`Контент ${index} закрыт`);
                 }
+            } else {
+                console.log("Контент не найден!");
             }
         });
     });
 });
+
 
 
 
