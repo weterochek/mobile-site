@@ -458,6 +458,7 @@ nav {
     max-width: 600px;
     margin: 0 auto;
 }
+/* Footer */
 footer {
     background-color: #333;  /* Цвет фона подвала */
     color: #fff;             /* Цвет текста */
@@ -465,6 +466,37 @@ footer {
     padding: 1rem;
 }
 
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.footer-item {
+    width: 30%; /* Настроить ширину блоков */
+    padding: 10px;
+}
+
+.footer-item h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.footer-item p {
+    font-size: 14px;
+    color: #ddd;
+    line-height: 1.5;
+}
+
+.footer-item p a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.footer-item p a:hover {
+    text-decoration: underline;
+}
 .footer-links button {
     background: none;
     border: none;
