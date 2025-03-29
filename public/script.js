@@ -41,6 +41,17 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
         console.log("✅ Access-токен активен, обновление не требуется.");
     }
 })();
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("JS загружен!"); // Проверка загрузки скрипта
+    const buttons = document.querySelectorAll(".accordion-button");
+    console.log("Найдено кнопок:", buttons.length); // Проверка количества кнопок
+
+    buttons.forEach((button, index) => {
+        button.addEventListener("click", function () {
+            console.log("Клик по кнопке:", index); // Проверка кликов
+        });
+    });
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🔄 Дополнительная проверка токена после загрузки DOM...");
