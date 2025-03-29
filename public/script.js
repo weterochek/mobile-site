@@ -1236,44 +1236,31 @@ async function loadOrders() {
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
-    const accordionItems = document.querySelectorAll(".accordion-item");
+    const buttons = document.querySelectorAll(".accordion-button");
 
-    if (accordionItems.length === 0) {
-        console.warn("Аккордеон не найден. Проверьте селекторы в HTML.");
-        return;
-    }
+    buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const content = this.nextElementSibling; // Берем следующий `.accordion-content`
 
-    accordionItems.forEach((item) => {
-        const header = item.querySelector(".accordion-header");
-
-        if (!header) {
-            console.warn("Не найден заголовок аккордеона внутри:", item);
-            return;
-        }
-
-        header.addEventListener("click", function () {
-            const content = item.querySelector(".accordion-content");
-
-            if (!content) {
-                console.warn("Не найден контент аккордеона внутри:", item);
+            if (!content || !content.classList.contains("accordion-content")) {
+                console.warn("Не найден контент для аккордеона рядом с кнопкой", button);
                 return;
             }
 
-            const isOpen = item.classList.contains("active");
+            const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
 
-            // Закрываем все элементы перед открытием нового
-            accordionItems.forEach((el) => {
-                el.classList.remove("active");
-                el.querySelector(".accordion-content").style.maxHeight = null;
+            // Закрываем все перед открытием нового
+            document.querySelectorAll(".accordion-content").forEach((el) => {
+                el.style.maxHeight = null;
             });
 
             if (!isOpen) {
-                item.classList.add("active");
                 content.style.maxHeight = content.scrollHeight + "px";
             }
         });
     });
 });
+
 
 
 // Отображение заказов на странице
