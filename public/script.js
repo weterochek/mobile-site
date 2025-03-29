@@ -56,14 +56,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 const isOpen = content.classList.contains("open");
                 console.log(`Открыт ли контент ${index}?`, isOpen);
 
-                // Закрываем все
-                document.querySelectorAll(".accordion-content").forEach((el) => {
-                    el.classList.remove("open");
-                    el.style.maxHeight = null;
-                });
+                if (isOpen) {
+                    // Если открыт – закрываем его
+                    content.classList.remove("open");
+                    content.style.maxHeight = null;
+                    console.log(`Закрываю контент ${index}`);
+                } else {
+                    // Закрываем все перед открытием нового
+                    document.querySelectorAll(".accordion-content").forEach((el) => {
+                        el.classList.remove("open");
+                        el.style.maxHeight = null;
+                    });
 
-                // Открываем, если он не был открыт
-                if (!isOpen) {
+                    // Открываем нужный блок
                     content.classList.add("open");
                     content.style.maxHeight = content.scrollHeight + "px";
                     console.log(`Открываю контент ${index}, высота: ${content.scrollHeight}px`);
@@ -74,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
 
 
 document.addEventListener("DOMContentLoaded", async () => {
