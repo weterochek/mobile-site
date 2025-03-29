@@ -129,25 +129,24 @@
 
     <!-- Footer -->
 <footer>
-    <div class="footer-links">
-        <button class="footer-toggle" onclick="toggleContent('about')">О нас</button>
-        <button class="footer-toggle" onclick="toggleContent('privacy-policy')">Политика конфиденциальности</button>
-        <button class="footer-toggle" onclick="toggleContent('contacts')">Контакты</button>
+<div class="footer">
+  <div class="accordion">
+    <button class="accordion-button">О нас</button>
+    <div class="accordion-content">
+      <p>Здесь находится информация о нашей компании.</p>
+    </div>
+    
+    <button class="accordion-button">Политическая конфиденциальность</button>
+    <div class="accordion-content">
+      <p>Здесь размещена информация о политике конфиденциальности.</p>
     </div>
 
-    <div class="footer-content">
-        <div id="about" class="footer-info-block">
-            <p>Мы стремимся привнести в ваш дом традиционные вкусы и рецепты национальной кухни.</p>
-	    <p>Будут вопросы и предложения пишите на почту ssajt431@gmail.com</p>
-        </div>
-        <div id="privacy-policy" class="footer-info-block">
-            <p>Национальные Блюда © 2025</p>
-        </div>
-        <div id="contacts" class="footer-info-block">
-            <p>Телефон: +7 (xxx) xxx-xx-xx</p>
-            <p>Email: ssajt431@gmail.com</p>
-        </div>
+    <button class="accordion-button">Контакты</button>
+    <div class="accordion-content">
+      <p>Здесь можно найти наши контактные данные.</p>
     </div>
+  </div>
+</div>
 </footer>
     <script src="script.js"></script>
  
