@@ -467,35 +467,35 @@ footer {
 }
 
 .accordion-button {
-  background-color: #444;
-  color: white;
-  padding: 10px;
-  width: 100%;
-  text-align: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  font-size: 16px;
-  margin: 5px 0;
-  transition: background-color 0.3s;
+    background-color: #444;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0;
+    transition: background-color 0.3s;
 }
 
 .accordion-button:hover {
-  background-color: #666;
+    background-color: #666;
 }
 
 .accordion-button.active {
-  background-color: #666;
+    background-color: #555;
 }
 
 .accordion-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease-out;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
 }
 
 .accordion-content.open {
-  max-height: 1000px; /* Достаточно большое значение, чтобы анимация была плавной */
+    max-height: 500px;
 }
 
 /* Адаптивность */
