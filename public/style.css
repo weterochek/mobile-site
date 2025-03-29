@@ -465,37 +465,26 @@ footer {
     padding: 1rem;
 }
 
-.footer-links {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
-}
-
-.footer-item {
-    width: 30%; /* Настроить ширину блоков */
+.footer-links button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #333;
     padding: 10px;
+    cursor: pointer;
 }
 
-.footer-item h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: #fff;
+.footer-info-block {
+    display: none;
+    padding: 10px 0;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
 }
 
-.footer-item p {
-    font-size: 14px;
-    color: #ddd;
-    line-height: 1.5;
+.footer-info-block.active {
+    display: block;
 }
 
-.footer-item p a {
-    color: #ddd;
-    text-decoration: none;
-}
-
-.footer-item p a:hover {
-    text-decoration: underline;
-}
 
 /* Адаптивность */
 @media (max-width: 768px) {
