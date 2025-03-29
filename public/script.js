@@ -1235,7 +1235,20 @@ async function loadOrders() {
         alert("Ошибка при загрузке заказов");
     }
 }
+const accordionButtons = document.querySelectorAll(".accordion-button");
 
+accordionButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    const content = button.nextElementSibling;
+    
+    // Переключаем видимость контента
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+});
 // Отображение заказов на странице
 function displayOrder(order, container) {
     const itemsList = order.items.map(item => {
