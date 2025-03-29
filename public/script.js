@@ -1249,36 +1249,32 @@ async function loadOrders() {
 document.addEventListener("DOMContentLoaded", function () {
     const buttons = document.querySelectorAll(".accordion-button");
 
-    buttons.forEach((button) => {
+    buttons.forEach((button, index) => {
         button.addEventListener("click", function () {
-            const content = this.nextElementSibling; // Берем следующий элемент
+            console.log(`Клик по кнопке ${index}`);
 
-            if (!content || !content.classList.contains("accordion-content")) {
-                console.warn("Не найден контент рядом с кнопкой", button);
-                return;
-            }
+            const content = this.nextElementSibling;
+            console.log("Найден ли контент?", content ? "Да" : "Нет");
 
-            const isOpen = content.classList.contains("open");
+            if (content && content.classList.contains("accordion-content")) {
+                const isOpen = content.classList.contains("open");
+                console.log("Открыт ли контент до клика?", isOpen);
 
-            // Закрываем все перед открытием нового
-            document.querySelectorAll(".accordion-content").forEach((el) => {
-                el.classList.remove("open");
-                el.style.maxHeight = null;
-            });
-            document.querySelectorAll(".accordion-button").forEach((btn) => {
-                btn.classList.remove("active");
-            });
+                // Закрываем все перед открытием нового
+                document.querySelectorAll(".accordion-content").forEach((el) => {
+                    el.classList.remove("open");
+                    el.style.maxHeight = null;
+                });
 
-            if (!isOpen) {
-                content.classList.add("open");
-                content.style.maxHeight = content.scrollHeight + "px";
-                this.classList.add("active");
+                if (!isOpen) {
+                    content.classList.add("open");
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    console.log("Новая высота контента:", content.style.maxHeight);
+                }
             }
         });
     });
 });
-
-
 
 
 // Отображение заказов на странице
