@@ -502,7 +502,7 @@ footer {
         gap: 1rem; /* Меньший зазор */
     }
     .card-dish p {
-        font-size: 12px;
+        font-size: 10px;
     }
     
     .card-dish b {
