@@ -1235,27 +1235,46 @@ async function loadOrders() {
         alert("Ошибка при загрузке заказов");
     }
 }
-const accordionButtons = document.querySelectorAll(".accordion-button");
+document.addEventListener("DOMContentLoaded", function () {
+    const accordionItems = document.querySelectorAll(".accordion-item");
 
-accordionButtons.forEach(button => {
-  button.addEventListener("click", () => {
-    const content = button.nextElementSibling;
-
-    // Закрываем все другие открытые блоки
-    document.querySelectorAll(".accordion-content").forEach(item => {
-      if (item !== content) {
-        item.style.display = "none";
-      }
-    });
-
-    // Переключаем видимость выбранного контента
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
+    if (accordionItems.length === 0) {
+        console.warn("Аккордеон не найден. Проверьте селекторы в HTML.");
+        return;
     }
-  });
+
+    accordionItems.forEach((item) => {
+        const header = item.querySelector(".accordion-header");
+
+        if (!header) {
+            console.warn("Не найден заголовок аккордеона внутри:", item);
+            return;
+        }
+
+        header.addEventListener("click", function () {
+            const content = item.querySelector(".accordion-content");
+
+            if (!content) {
+                console.warn("Не найден контент аккордеона внутри:", item);
+                return;
+            }
+
+            const isOpen = item.classList.contains("active");
+
+            // Закрываем все элементы перед открытием нового
+            accordionItems.forEach((el) => {
+                el.classList.remove("active");
+                el.querySelector(".accordion-content").style.maxHeight = null;
+            });
+
+            if (!isOpen) {
+                item.classList.add("active");
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    });
 });
+
 
 // Отображение заказов на странице
 function displayOrder(order, container) {
