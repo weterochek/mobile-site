@@ -485,17 +485,16 @@ footer {
 }
 
 .accordion-content {
-    max-height: 0;
+    max-height: 0; /* Начинаем с 0 */
     overflow: hidden;
     transition: max-height 0.4s ease-out;
+}
+.accordion-content.open {
+    max-height: 500px; /* Установи нужную высоту */
 }
 
 .accordion-button.active {
     background-color: #666;
-}
-
-.accordion-content.open {
-    max-height: 500px;
 }
 
 /* Адаптивность */
