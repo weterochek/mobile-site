@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(`Открыт ли контент ${index}?`, isOpen);
 
                 if (isOpen) {
-                    // Если открыт – закрываем его
+                    // Закрываем текущий контент
                     content.classList.remove("open");
                     content.style.maxHeight = null;
                     console.log(`Закрываю контент ${index}`);
