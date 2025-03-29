@@ -1183,7 +1183,10 @@ async function updateAccount(newUsername, newPassword) {
   const data = await response.json();
   console.log("Ответ от сервера:", data);
 }
-
+function toggleContent(id) {
+    const content = document.getElementById(id);
+    content.classList.toggle('active');
+}
 function loadUserData() {
     const customerNameInput = document.getElementById("customerName");
     const customerAddressInput = document.getElementById("customerAddress");
