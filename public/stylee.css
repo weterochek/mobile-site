@@ -407,19 +407,44 @@ nav {
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
 }
-/* Footer */
 footer {
     background-color: #333;
     color: #fff;
     text-align: center;
     padding: 1rem;
 }
-footer p {
-    margin: 0.5rem 0;
+
+.accordion-button {
+    background-color: #444;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0;
+    transition: background-color 0.3s;
 }
 
+.accordion-button:hover {
+    background-color: #555;
+}
 
-/* Уменьшаем размеры текста на маленьких экранах */
+.accordion-content {
+    max-height: 0; /* Начинаем с 0 */
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+.accordion-content.open {
+    max-height: 500px; /* Установи нужную высоту */
+}
+
+.accordion-button.active {
+    background-color: #666;
+}
+
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
