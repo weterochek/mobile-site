@@ -477,20 +477,27 @@ footer {
   cursor: pointer;
   font-size: 16px;
   margin: 5px 0;
+  transition: background-color 0.3s;
 }
 
-.accordion-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out;
-}
-
-.accordion-item.active .accordion-content {
-    max-height: 500px; /* Задайте подходящую высоту */
-}
 .accordion-button:hover {
   background-color: #666;
 }
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+}
+
+.accordion-button.active {
+  background-color: #666;
+}
+
+.accordion-content.open {
+  max-height: 500px; /* Или auto, но лучше фиксированную */
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
     .footer-links {
