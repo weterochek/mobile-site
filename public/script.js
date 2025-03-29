@@ -1247,36 +1247,35 @@ async function loadOrders() {
     }
 }
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("JS загружен!");
+    console.log("JS загружен!"); // Проверка загрузки скрипта
 
     const buttons = document.querySelectorAll(".accordion-button");
 
     buttons.forEach((button, index) => {
         button.addEventListener("click", function () {
-            console.log(`Клик по кнопке ${index}`);
+            console.log(`Клик по кнопке: ${index}`); // Проверка кликов
 
             const content = this.nextElementSibling;
 
             if (content && content.classList.contains("accordion-content")) {
-                const isOpen = content.classList.contains("open");
+                console.log("Найден контент:", content);
 
-                // Закрываем все перед открытием нового
-                document.querySelectorAll(".accordion-content").forEach((el) => {
-                    el.classList.remove("open");
-                    el.style.maxHeight = null;
-                });
+                if (content.style.maxHeight) {
+                    // Закрываем
+                    content.style.maxHeight = null;
+                    this.classList.remove("active");
+                    console.log(`Контент ${index} закрыт`);
+                } else {
+                    // Закрываем все остальные
+                    document.querySelectorAll(".accordion-content").forEach((el) => {
+                        el.style.maxHeight = null;
+                        el.previousElementSibling.classList.remove("active");
+                    });
 
-                document.querySelectorAll(".accordion-button").forEach((btn) => {
-                    btn.classList.remove("active");
-                });
-
-                if (!isOpen) {
-                    content.classList.add("open");
+                    // Открываем нужный блок
                     content.style.maxHeight = content.scrollHeight + "px";
                     this.classList.add("active");
-                    console.log(`Контент ${index} открыт`);
-                } else {
-                    console.log(`Контент ${index} закрыт`);
+                    console.log(`Контент ${index} открыт, высота: ${content.scrollHeight}px`);
                 }
             } else {
                 console.log("Контент не найден!");
@@ -1284,9 +1283,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
-
-
-
 
 // Отображение заказов на странице
 function displayOrder(order, container) {
