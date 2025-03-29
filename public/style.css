@@ -460,8 +460,8 @@ nav {
 }
 /* Footer */
 footer {
-    background-color: #333;  /* Цвет фона подвала */
-    color: #fff;             /* Цвет текста */
+    background-color: #333;
+    color: #fff;
     text-align: center;
     padding: 1rem;
 }
@@ -484,18 +484,18 @@ footer {
   background-color: #666;
 }
 
+.accordion-button.active {
+  background-color: #666;
+}
+
 .accordion-content {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.4s ease-out;
 }
 
-.accordion-button.active {
-  background-color: #666;
-}
-
 .accordion-content.open {
-  max-height: 500px; /* Или auto, но лучше фиксированную */
+  max-height: 1000px; /* Достаточно большое значение, чтобы анимация была плавной */
 }
 
 /* Адаптивность */
