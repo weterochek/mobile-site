@@ -480,11 +480,14 @@ footer {
 }
 
 .accordion-content {
-  padding: 10px;
-  background-color: #555;
-  display: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
 }
 
+.accordion-item.active .accordion-content {
+    max-height: 500px; /* Задайте подходящую высоту */
+}
 .accordion-button:hover {
   background-color: #666;
 }
