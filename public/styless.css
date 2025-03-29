@@ -459,7 +459,6 @@ footer {
 .accordion-button.active {
     background-color: #666;
 }
-
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
