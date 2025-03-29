@@ -1240,8 +1240,15 @@ const accordionButtons = document.querySelectorAll(".accordion-button");
 accordionButtons.forEach(button => {
   button.addEventListener("click", () => {
     const content = button.nextElementSibling;
-    
-    // Переключаем видимость контента
+
+    // Закрываем все другие открытые блоки
+    document.querySelectorAll(".accordion-content").forEach(item => {
+      if (item !== content) {
+        item.style.display = "none";
+      }
+    });
+
+    // Переключаем видимость выбранного контента
     if (content.style.display === "block") {
       content.style.display = "none";
     } else {
@@ -1249,6 +1256,7 @@ accordionButtons.forEach(button => {
     }
   });
 });
+
 // Отображение заказов на странице
 function displayOrder(order, container) {
     const itemsList = order.items.map(item => {
