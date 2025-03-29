@@ -42,16 +42,39 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
     }
 })();
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("JS загружен!"); // Проверка загрузки скрипта
+    console.log("JS загружен!");
+
     const buttons = document.querySelectorAll(".accordion-button");
-    console.log("Найдено кнопок:", buttons.length); // Проверка количества кнопок
 
     buttons.forEach((button, index) => {
         button.addEventListener("click", function () {
-            console.log("Клик по кнопке:", index); // Проверка кликов
+            console.log(`Клик по кнопке: ${index}`);
+
+            const content = this.nextElementSibling;
+
+            if (content && content.classList.contains("accordion-content")) {
+                const isOpen = content.classList.contains("open");
+                console.log(`Открыт ли контент ${index}?`, isOpen);
+
+                // Закрываем все
+                document.querySelectorAll(".accordion-content").forEach((el) => {
+                    el.classList.remove("open");
+                    el.style.maxHeight = null;
+                });
+
+                // Открываем, если он не был открыт
+                if (!isOpen) {
+                    content.classList.add("open");
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    console.log(`Открываю контент ${index}, высота: ${content.scrollHeight}px`);
+                }
+            } else {
+                console.log("Контент не найден!");
+            }
         });
     });
 });
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🔄 Дополнительная проверка токена после загрузки DOM...");
