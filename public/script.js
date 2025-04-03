@@ -1340,3 +1340,113 @@ function displayOrder(order, container) {
 
     container.innerHTML += orderHTML;
 }
+
+// Функция для отправки отзыва
+async function submitReview(event) {
+    event.preventDefault();
+    
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+        alert("Пожалуйста, войдите в систему, чтобы оставить отзыв");
+        return;
+    }
+
+    const rating = document.getElementById("starRating").value;
+    const comment = document.getElementById("comment").value;
+    const displayName = document.getElementById("displayName").value;
+
+    if (!rating || !comment) {
+        alert("Пожалуйста, заполните все обязательные поля");
+        return;
+    }
+
+    try {
+        const response = await fetch("https://mobile-site.onrender.com/api/reviews", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                rating: parseInt(rating),
+                comment,
+                displayName: displayName || null
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Ошибка при отправке отзыва");
+        }
+
+        // Очищаем форму
+        document.getElementById("reviewForm").reset();
+        
+        // Перезагружаем отзывы
+        await loadReviews();
+        
+        alert("Спасибо за ваш отзыв!");
+    } catch (error) {
+        console.error("Ошибка при отправке отзыва:", error);
+        alert("Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.");
+    }
+}
+
+// Функция для загрузки отзывов
+async function loadReviews() {
+    try {
+        const filterStars = document.getElementById("filterStars").value;
+        const filterDate = document.getElementById("filterDate").value;
+        
+        let url = "https://mobile-site.onrender.com/api/reviews";
+        if (filterStars !== "all") {
+            url += `?rating=${filterStars}`;
+        }
+        
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Ошибка при загрузке отзывов");
+        }
+        
+        let reviews = await response.json();
+        
+        // Сортировка по дате
+        reviews.sort((a, b) => {
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return filterDate === "newest" ? dateB - dateA : dateA - dateB;
+        });
+        
+        displayReviews(reviews);
+    } catch (error) {
+        console.error("Ошибка при загрузке отзывов:", error);
+        document.getElementById("reviewContainer").innerHTML = "<p>Произошла ошибка при загрузке отзывов</p>";
+    }
+}
+
+// Функция для отображения отзывов
+function displayReviews(reviews) {
+    const container = document.getElementById("reviewContainer");
+    if (!container) return;
+    
+    if (reviews.length === 0) {
+        container.innerHTML = "<p>Пока нет отзывов. Будьте первым!</p>";
+        return;
+    }
+    
+    container.innerHTML = reviews.map(review => `
+        <div class="review">
+            <div class="review-header">
+                <span class="review-author">${review.displayName || review.username}</span>
+                <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
+            </div>
+            <div class="review-rating">
+                ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
+            </div>
+            <div class="review-text">${review.comment}</div>
+        </div>
+    `).join("");
+}
+
+// Обработчики событий для фильтров
+document.getElementById("filterStars")?.addEventListener("change", loadReviews);
+document.getElementById("filterDate")?.addEventListener("change", loadReviews);
