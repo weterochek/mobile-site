@@ -9,33 +9,31 @@
 <body>
 	<header>
         <nav>
-            <ul class="navbar">
-                <div class="navbar-left">
-                <li><a href="index.html" class="nav-item">Главная</a></li>
-                <li><a href="#menu" class="nav-item">Меню</a></li>
-                <li><a href="#about" class="nav-item">О нас</a></li>
-            </div>
+            <button class="menu-toggle">☰</button>
             <div class="navbar-center">
                 <a href="index.html"><img src="images/logo.png" alt="Logo" class="navbar-logo"></a>
-              </div>
-              <div class="navbar-right">
-                <li><a href="#contacts" class="nav-item">Контакты</a></li>
-                <li class="cart-container">
-                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
-                    <div id="cartDropdown" class="cart-dropdown">
-                        <h3>Ваша Корзина</h3>
-                        <div id="cartItems"></div>
-                        <p id="totalAmount"></p>
-                        <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
-			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
-                    </div>
-                </li>
-            	<li>
-		<a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
-		<a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
-		</li>
             </div>
+            <ul class="navbar">
+                <div class="menu-content">
+                    <button class="close-menu">✕</button>
+                    <a href="index.html" class="nav-item">Главная</a>
+                    <a href="#menu" class="nav-item">Меню</a>
+		    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+		    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
+                </div>
             </ul>
+            <div class="cart-container">
+                <a href="#cart" id="cartButton" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <div id="cartDropdown" class="cart-dropdown">
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
+                </div>
+            </div>
         </nav>
     </header>
 
