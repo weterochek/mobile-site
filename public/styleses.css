@@ -108,89 +108,6 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
 }
-header nav {
-    display: flex;
-    align-items: center; /* Выравнивание элементов по вертикали */
-    justify-content: space-between; /* Пространство между элементами */
-    padding: 10px 20px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed; /* Панель фиксируется */
-    top: 0; /* Привязывается к верхней части экрана */
-    left: 0;
-    right: 0;
-    z-index: 1000; /* Поверх остальных элементов */
-}
-.content {
-    position: relative;
-    z-index: 1; /* Контент будет ниже панели */
-  }
-.navbar-center {
-    flex: 1; /* Центр занимает всю доступную ширину */
-    display: flex;
-    justify-content: center; /* Логотип по центру */
-    align-items: center;
-    z-index: 1100; /* Логотип будет выше, чем гамбургер-меню */
-}
-.nav-item {
-    position: relative;
-    text-decoration: none;
-    color: black;
-    font-size: 1.2em;
-    padding: 0;
-    transition: color 0.3s ease;
-}
-.nav-item::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background-color: black;
-    transition: width 0.3s ease, left 0.3s ease;
-}
-.nav-item:hover::after {
-    width: 100%;
-    left: 0;
-}
-.navbar-center .navbar-logo {
-    max-height: 35px; /* Увеличить логотип при необходимости */
-}
-.no-scroll {
-    overflow: hidden;
-    height: 100vh; /* Фикс для мобильных */
-    touch-action: none; /* Запрещает свайпы */
-}
-.navbar {
-    display: none; /* Скрываем меню */
-    flex-direction: column;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1000;
-}
-
-.navbar.active {
-    display: flex; /* Показываем меню */
-}
-
-.navbar-logo {
-    height: auto;
-    max-height: 35px;
-    width: auto;
-    display: block;
-    transition: opacity 0.3s ease;
-}
-.navbar li a {
-    padding: 10px 15px; /* Универсальные отступы */
-    font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
-}
 
 .submit-button:hover {
     background-color: #45a049;
@@ -474,44 +391,45 @@ header {
 /* Меню-гамбургер для мобильных устройств */
 .menu-toggle {
     display: none;
+    background: none;
+    border: none;
     font-size: 24px;
     cursor: pointer;
+    color: #333;
+    padding: 10px;
+    z-index: 1200;
 }
 
-@media (max-width: 1024px) {
-    .menu-toggle {
-        display: block;
-    }
+.menu-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 60px 20px;
+}
 
-    .navbar {
-        display: none;
-    }
+.menu-content .nav-item {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
 
-    .navbar.active {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: white;
-        padding: 20px;
-        z-index: 1000;
-    }
+.menu-content .nav-item:hover {
+    color: #4CAF50;
+}
 
-    .navbar-left,
-    .navbar-right {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .navbar-center {
-        position: static;
-        transform: none;
-        margin: 20px 0;
-    }
+.close-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1200;
 }
 
 /* Стили для подвала */
@@ -543,22 +461,36 @@ footer {
 
 /* Стили для выпадающего окна корзины */
 .cart-container {
-    position: relative; /* Для корректного позиционирования всплывающего окна */
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-icon {
+    margin-right: 10px;
+    font-size: 1.5rem;
+    color: #000;
+    text-decoration: none;
+}
+
+.cart-icon:hover {
+    color: #4CAF50;
 }
 
 .cart-dropdown {
+    display: none;
     position: absolute;
-    top: 100%; /* Отображение прямо под кнопкой */
-    left: 50%; /* Центрирование относительно кнопки */
-    transform: translateX(-50%);
+    top: 40px;
+    right: 0;
     background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    z-index: 10;
     padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 350px;
-    display: none; /* Скрыто изначально */
-    border-radius: 8px;
-    z-index: 1000;
 }
+
 .cart-dropdown h3 {
     margin-top: 0;
 }
@@ -868,5 +800,92 @@ button:hover {
     footer {
         padding: 2.5rem;
         font-size: 1.3rem;
+    }
+}
+
+/* Медиа-запросы для мобильной версии */
+@media (max-width: 1024px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1100;
+    }
+
+    .navbar.active {
+        display: block;
+    }
+
+    .menu-content {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .navbar-center {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1200;
+    }
+
+    .cart-container {
+        position: fixed;
+        top: 10px;
+        right: 60px;
+        z-index: 1200;
+    }
+
+    .cart-icon {
+        color: #333;
+    }
+
+    .navbar.active .cart-icon {
+        color: white;
+    }
+}
+
+@media (max-width: 768px) {
+    header nav {
+        padding: 10px;
+    }
+
+    .navbar-logo {
+        max-height: 35px;
+    }
+
+    .menu-toggle {
+        font-size: 1.8rem;
+    }
+
+    .nav-item {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    header nav {
+        justify-content: space-between;
+        padding: 5px;
+    }
+
+    .menu-toggle {
+        font-size: 1.8rem;
+    }
+
+    .navbar-logo {
+        max-height: 30px;
+    }
+
+    .nav-item {
+        font-size: 1.2rem;
     }
 }
