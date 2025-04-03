@@ -259,12 +259,110 @@ header nav {
 
 /* Стили для контейнера отзывов */
 .review-container {
-    max-width: 800px;
-    margin: 80px auto 20px;
-    padding: 20px;
+    max-width: 100%;
+    margin: 20px auto;
+    padding: 15px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.review-author {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.review-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.review-rating {
+    color: #ffd700;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+.review-text {
+    color: #444;
+    line-height: 1.4;
+    font-size: 15px;
+}
+
+#reviewForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#reviewForm label {
+    font-weight: 500;
+    color: #333;
+    font-size: 16px;
+}
+
+#reviewForm select,
+#reviewForm input,
+#reviewForm textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+}
+
+#reviewForm textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#submitReview {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#submitReview:hover {
+    background-color: #45a049;
+}
+
+.review-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.review-filters select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #f9f9f9;
 }
 
 /* Стили для подвала */
@@ -415,16 +513,6 @@ footer {
 
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
-}
-.review-container {
-    width: 50%;
-    max-width: 600px;
-    margin: 20px auto;
-    text-align: center;
-    padding: 20px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .reviews-list-container {
     width: 50%;
