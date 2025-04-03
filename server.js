@@ -13,6 +13,7 @@ const authMiddleware = require('./middleware/authMiddleware');
 const Order = require('./models/Order');
 const User = require('./models/User');
 const Product = require("./models/Products");  
+const Review = require('./models/Review');
 
 
 
@@ -418,6 +419,53 @@ app.get("/", (req, res) => {
 // Проверка соединения
 app.get("/connect", (req, res) => {
   res.send("Соединение с сервером успешно!");
+});
+
+// Маршрут для получения отзывов
+app.get('/api/reviews', async (req, res) => {
+    try {
+        const { rating } = req.query;
+        let query = {};
+        
+        if (rating && rating !== 'all') {
+            query.rating = parseInt(rating);
+        }
+        
+        const reviews = await Review.find(query)
+            .sort({ date: -1 })
+            .populate('userId', 'username');
+            
+        res.json(reviews);
+    } catch (error) {
+        console.error("Ошибка при получении отзывов:", error);
+        res.status(500).json({ message: "Ошибка при получении отзывов" });
+    }
+});
+
+// Маршрут для создания отзыва
+app.post('/api/reviews', authMiddleware, async (req, res) => {
+    try {
+        const { rating, comment, displayName } = req.body;
+        
+        if (!rating || !comment) {
+            return res.status(400).json({ message: "Рейтинг и комментарий обязательны" });
+        }
+        
+        const review = new Review({
+            rating,
+            comment,
+            displayName,
+            userId: req.user.id,
+            username: req.user.username,
+            date: new Date()
+        });
+        
+        await review.save();
+        res.status(201).json(review);
+    } catch (error) {
+        console.error("Ошибка при создании отзыва:", error);
+        res.status(500).json({ message: "Ошибка при создании отзыва" });
+    }
 });
 
 // Обработчик ошибок
