@@ -108,6 +108,89 @@ body {
     cursor: pointer;
     transition: background-color 0.2s;
 }
+header nav {
+    display: flex;
+    align-items: center; /* Выравнивание элементов по вертикали */
+    justify-content: space-between; /* Пространство между элементами */
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Панель фиксируется */
+    top: 0; /* Привязывается к верхней части экрана */
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Поверх остальных элементов */
+}
+.content {
+    position: relative;
+    z-index: 1; /* Контент будет ниже панели */
+  }
+.navbar-center {
+    flex: 1; /* Центр занимает всю доступную ширину */
+    display: flex;
+    justify-content: center; /* Логотип по центру */
+    align-items: center;
+    z-index: 1100; /* Логотип будет выше, чем гамбургер-меню */
+}
+.nav-item {
+    position: relative;
+    text-decoration: none;
+    color: black;
+    font-size: 1.2em;
+    padding: 0;
+    transition: color 0.3s ease;
+}
+.nav-item::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: black;
+    transition: width 0.3s ease, left 0.3s ease;
+}
+.nav-item:hover::after {
+    width: 100%;
+    left: 0;
+}
+.navbar-center .navbar-logo {
+    max-height: 35px; /* Увеличить логотип при необходимости */
+}
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; /* Фикс для мобильных */
+    touch-action: none; /* Запрещает свайпы */
+}
+.navbar {
+    display: none; /* Скрываем меню */
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.navbar.active {
+    display: flex; /* Показываем меню */
+}
+
+.navbar-logo {
+    height: auto;
+    max-height: 35px;
+    width: auto;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+.navbar li a {
+    padding: 10px 15px; /* Универсальные отступы */
+    font-size: clamp(14px, 1.5vw, 18px); /* Шрифт масштабируется от мобильных до больших экранов */
+}
 
 .submit-button:hover {
     background-color: #45a049;
