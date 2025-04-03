@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отзывы</title>
+    <link rel="stylesheet" href="styleses.css">
+</head>
+<body>
+	<header>
+        <nav>
+            <ul class="navbar">
+                <div class="navbar-left">
+                <li><a href="index.html" class="nav-item">Главная</a></li>
+                <li><a href="#menu" class="nav-item">Меню</a></li>
+                <li><a href="#about" class="nav-item">О нас</a></li>
+            </div>
+            <div class="navbar-center">
+                <a href="index.html"><img src="images/logo.png" alt="Logo" class="navbar-logo"></a>
+              </div>
+              <div class="navbar-right">
+                <li><a href="#contacts" class="nav-item">Контакты</a></li>
+                <li class="cart-container">
+                    <a href="#1" class="nav-item" id="cartButton">Корзина</a>
+                    <div id="cartDropdown" class="cart-dropdown">
+                        <h3>Ваша Корзина</h3>
+                        <div id="cartItems"></div>
+                        <p id="totalAmount"></p>
+                        <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
+                    </div>
+                </li>
+            	<li>
+		<a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+		<a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
+		</li>
+            </div>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="review-container">
+        <h2>Отзывы</h2>
+        <p>Оставьте свой отзыв</p>
+
+        <form id="reviewForm">
+            <label for="starRating">Рейтинг:</label>
+            <select id="starRating" name="rating">
+                <option value="5">5 ★★★★★</option>
+                <option value="4">4 ★★★★☆</option>
+                <option value="3">3 ★★★☆☆</option>
+                <option value="2">2 ★★☆☆☆</option>
+                <option value="1">1 ★☆☆☆☆</option>
+            </select>
+
+            <label for="displayName">Имя (необязательно):</label>
+            <input type="text" id="displayName" placeholder="Ваше имя (или оставьте пустым)">
+
+            <label for="comment">Комментарий:</label>
+            <textarea id="comment" rows="1" placeholder="Введите ваш отзыв..." required></textarea>
+
+            <button type="submit" id="submitReview">Отправить</button>
+        </form>
+
+        <h3>Фильтр отзывов:</h3>
+        <div class="review-filters">
+            <div>
+                <label for="filterStars">Фильтр по звёздам:</label>
+                <select id="filterStars">
+                    <option value="all">Все</option>
+                    <option value="5">5 ★</option>
+                    <option value="4">4 ★</option>
+                    <option value="3">3 ★</option>
+                    <option value="2">2 ★</option>
+                    <option value="1">1 ★</option>
+                </select>
+            </div>
+            <div>
+                <label for="filterDate">Фильтр по дате:</label>
+                <select id="filterDate">
+                    <option value="newest">Сначала новые</option>
+                    <option value="oldest">Сначала старые</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="reviewContainer"></div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <div class="footer-item">
+                <h3>Политика конфиденциальности</h3>
+                <p>Национальные Блюда © 2025</p>
+                <h3>Контакты</h3>
+                <p>Телефон: +7 (xxx) xxx-xx-xx</p>
+                <p>Email: ssajt431@gmail.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('reviewForm').addEventListener('submit', submitReview);
+        document.addEventListener('DOMContentLoaded', loadReviews);
+    </script>
+</body>
+</html>
