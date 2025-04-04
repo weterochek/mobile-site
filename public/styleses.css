@@ -745,8 +745,47 @@ buttoon {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-left: 5px solid #28a745;
+footer {
+    flex-shrink: 0;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    margin-top: auto;
 }
-/* Медиазапросы */
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-item {
+    text-align: center;
+}
+
+.footer-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.footer-item p {
+    font-size: 18px;
+    color: #ddd;
+    line-height: 1.5;
+}
+.footer-item p a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.footer-item p a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность */
 @media (max-width: 768px) {
     .footer-links {
         flex-direction: column;
@@ -756,6 +795,7 @@ buttoon {
         width: 100%;
         margin-bottom: 20px;
     }
+}
 }
 /* Медиазапросы */
 @media (max-width: 768px) {
