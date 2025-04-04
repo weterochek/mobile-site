@@ -16,10 +16,9 @@ body {
     max-width: 800px;
     margin: 80px auto 20px;
     padding: 20px;
-    max-height: 600px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #ccc transparent;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 #reviewContainer::-webkit-scrollbar {
@@ -62,9 +61,6 @@ body {
 .review-author {
     font-weight: bold;
     color: #333;
-    display: flex;
-    align-items: center;
-    gap: 10px;
 }
 
 .review-date {
@@ -110,21 +106,48 @@ body {
     min-width: 200px;
 }
 
+/* Стили для пагинации */
+.review-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.page-btn {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f8f9fa;
+    border-color: #ccc;
+    transform: translateY(-1px);
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 0.9rem;
+    color: #666;
+}
+
 /* Медиа-запросы для мобильных устройств */
 @media (max-width: 768px) {
     #reviewContainer {
-        margin: 60px auto 15px;
+        margin: 60px 15px;
         padding: 15px;
-        max-height: calc(100vh - 350px);
-    }
-
-    .review-filters {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .review-filters > div {
-        width: 100%;
     }
 
     .review {
@@ -134,11 +157,16 @@ body {
 
     .review-header {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
-    .review-text {
-        font-size: 0.9rem;
+    .review-date {
+        font-size: 0.8rem;
+    }
+
+    .page-btn {
+        padding: 6px 12px;
+        font-size: 14px;
     }
 }
 
@@ -718,48 +746,7 @@ buttoon {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-left: 5px solid #28a745;
 }
-/* Footer */
-footer {
-    flex-shrink: 0;
-    background-color: #333;
-    color: white;
-    padding: 20px;
-    margin-top: auto;
-}
-
-.footer-links {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.footer-item {
-    text-align: center;
-}
-
-.footer-item h3 {
-    font-size: 20px;
-    margin-bottom: 10px;
-    color: #fff;
-}
-
-.footer-item p {
-    font-size: 18px;
-    color: #ddd;
-    line-height: 1.5;
-}
-.footer-item p a {
-    color: #ddd;
-    text-decoration: none;
-}
-
-.footer-item p a:hover {
-    text-decoration: underline;
-}
-
-/* Адаптивность */
+/* Медиазапросы */
 @media (max-width: 768px) {
     .footer-links {
         flex-direction: column;
