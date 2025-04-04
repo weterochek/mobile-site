@@ -1479,13 +1479,14 @@ function displayReviews(page) {
     
     reviewContainer.innerHTML = '';
     
-    if (!Array.isArray(pageReviews) || pageReviews.length === 0) {
+    if (pageReviews.length === 0) {
         reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
         return;
     }
-    
-    pageReviews.forEach(review => {
-        if (!review) return;
+
+    for (let i = 0; i < pageReviews.length; i++) {
+        const review = pageReviews[i];
+        if (!review) continue;
         
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
@@ -1494,7 +1495,7 @@ function displayReviews(page) {
         const rating = parseInt(review.rating) || 0;
         const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
         const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
-        const displayName = review.displayName || 'Анонимный пользователь';
+        const displayName = review.displayName || review.username || 'Анонимный пользователь';
         const comment = review.comment || '';
         
         reviewElement.innerHTML = `
@@ -1507,7 +1508,7 @@ function displayReviews(page) {
         `;
         
         reviewContainer.appendChild(reviewElement);
-    });
+    }
 }
 
 // Добавляем автоматическую загрузку отзывов при загрузке страницы
