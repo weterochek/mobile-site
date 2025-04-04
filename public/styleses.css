@@ -24,7 +24,9 @@ body {
     flex-direction: column;
     gap: 15px;
 }
-
+.navbar-center .navbar-logo {
+    max-height: 35px;
+}
 #reviewContainer::-webkit-scrollbar {
     width: 6px;
 }
