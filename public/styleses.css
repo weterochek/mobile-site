@@ -420,7 +420,7 @@ footer {
     margin-bottom: 10px;
 }
 
-/* Стили для навигационной панели */
+/* Header Navigation */
 header nav {
     display: flex;
     align-items: center;
@@ -433,6 +433,7 @@ header nav {
     left: 0;
     right: 0;
     z-index: 1000;
+    height: 60px; /* Фиксированная высота */
 }
 
 .content {
@@ -449,8 +450,7 @@ header nav {
 }
 
 .navbar-logo {
-    height: auto;
-    max-height: 35px;
+    height: 35px; /* Фиксированная высота логотипа */
     width: auto;
     display: block;
 }
@@ -480,6 +480,7 @@ header nav {
     left: 0;
 }
 
+/* Mobile Menu */
 .navbar {
     display: none;
     flex-direction: column;
@@ -498,17 +499,15 @@ header nav {
     display: flex;
 }
 
-.navbar-logo {
-    height: auto;
-    max-height: 35px;
-    width: auto;
-    display: block;
-    transition: opacity 0.3s ease;
-}
-
-.navbar li a {
-    padding: 10px 15px;
-    font-size: clamp(14px, 1.5vw, 18px);
+.menu-toggle {
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    z-index: 1001;
+    color: #000;
 }
 
 .close-menu {
@@ -520,41 +519,10 @@ header nav {
     font-size: 2rem;
     color: white;
     cursor: pointer;
+    z-index: 1002;
 }
 
-.close-menu:hover {
-    transform: rotate(15deg) scale(1.1);
-    color: #ccc;
-}
-
-.menu-toggle {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px;
-    margin-top: -5px;
-    z-index: 1001;
-}
-
-.menu-content {
-    width: 100%;
-    text-align: center;
-}
-
-.menu-content .nav-item {
-    display: block;
-    color: white;
-    font-size: 2rem;
-    text-decoration: none;
-    margin: 15px 0;
-}
-
-.menu-content.active {
-    display: flex;
-}
-
-/* Shopping Cart */
+/* Cart */
 .cart-container {
     margin-right: 20px;
     display: flex;
@@ -562,158 +530,38 @@ header nav {
 }
 
 .cart-icon {
-    margin-right: 10px;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #000;
     text-decoration: none;
+    margin-right: 10px;
 }
 
-.cart-icon:hover {
-    color: #ff6600;
-}
-
-.cart-dropdown {
-    position: fixed;
-    top: 0;
-    right: -350px;
-    width: 350px;
-    height: 100vh;
-    background: #fff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    transition: right 0.3s ease;
-    z-index: 1000;
-}
-
-.cart-dropdown.active {
-    right: 0;
-}
-
-.cart-header {
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.cart-header h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    color: #333;
-}
-
-.close-cart {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #666;
-    padding: 5px;
-}
-
-.cart-content {
-    padding: 15px;
-    height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-
-.cart-footer {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 15px;
-    background: #fff;
-    border-top: 1px solid #eee;
-}
-
-.cart-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    font-weight: bold;
-}
-
-.cart-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.cart-buttons button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-}
-
-.clear-cart {
-    background: #f8f9fa;
-    color: #dc3545;
-    border: 1px solid #dc3545 !important;
-}
-
-.clear-cart:hover {
-    background: #dc3545;
-    color: #fff;
-}
-
-/* Media Queries */
 @media (max-width: 768px) {
     header nav {
-        padding: 10px;
+        padding: 5px 15px;
     }
 
     .navbar-logo {
-        max-height: 30px;
+        height: 30px;
     }
 
     .menu-toggle {
-        font-size: 24px;
-        padding: 5px;
-    }
-
-    .menu-content .nav-item {
-        font-size: 20px;
-        padding: 8px 15px;
-    }
-
-    .cart-container {
-        margin-right: 10px;
+        font-size: 1.8rem;
+        margin-left: 0;
     }
 
     .cart-icon {
-        font-size: 24px;
-    }
-
-    .cart-dropdown {
-        width: 100%;
-        right: -100%;
+        font-size: 1.8rem;
     }
 }
 
 @media (max-width: 480px) {
     header nav {
-        padding: 10px;
+        padding: 5px 10px;
     }
 
     .navbar-logo {
-        max-height: 25px;
-    }
-
-    .menu-content .nav-item {
-        font-size: 18px;
-        padding: 6px 12px;
-    }
-
-    .cart-dropdown {
-        width: 100%;
-        right: -100%;
+        height: 25px;
     }
 }
 
