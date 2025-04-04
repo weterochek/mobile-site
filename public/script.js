@@ -1350,7 +1350,18 @@ let allReviews = []; // Массив всех отзывов
 async function loadReviews() {
     try {
         const response = await fetch('https://mobile-site.onrender.com/api/reviews');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         allReviews = await response.json();
+        
+        if (allReviews.length === 0) {
+            const reviewContainer = document.getElementById('reviewContainer');
+            if (reviewContainer) {
+                reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
+            }
+            return;
+        }
         
         // Обновляем пагинацию
         updatePagination();
@@ -1358,6 +1369,10 @@ async function loadReviews() {
         displayReviews(currentPage);
     } catch (error) {
         console.error('Ошибка при загрузке отзывов:', error);
+        const reviewContainer = document.getElementById('reviewContainer');
+        if (reviewContainer) {
+            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
+        }
     }
 }
 
@@ -1405,6 +1420,8 @@ function updatePagination() {
 // Функция отображения отзывов для текущей страницы
 function displayReviews(page) {
     const reviewContainer = document.getElementById('reviewContainer');
+    if (!reviewContainer) return;
+
     const startIndex = (page - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
     const pageReviews = allReviews.slice(startIndex, endIndex);
@@ -1431,29 +1448,38 @@ function displayReviews(page) {
     });
 }
 
-// Добавляем обработчики для кнопок пагинации
+// Добавляем автоматическую загрузку отзывов при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    // Проверяем, находимся ли мы на странице с отзывами
+    if (document.getElementById('reviewContainer')) {
+        loadReviews();
+    }
+    
     const pagination = document.querySelector('.review-pagination');
     if (pagination) {
         const prevButton = pagination.querySelector('[aria-label="Previous"]');
         const nextButton = pagination.querySelector('[aria-label="Next"]');
         
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayReviews(currentPage);
-                updatePagination();
-            }
-        });
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayReviews(currentPage);
+                    updatePagination();
+                }
+            });
+        }
         
-        nextButton.addEventListener('click', () => {
-            const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayReviews(currentPage);
-                updatePagination();
-            }
-        });
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayReviews(currentPage);
+                    updatePagination();
+                }
+            });
+        }
     }
 });
 
