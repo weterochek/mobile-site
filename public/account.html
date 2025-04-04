@@ -40,31 +40,27 @@
             </div>
         </nav>
     </header>
+<div class="main-content">
+    <div class="account-container">
+        <h2>Личный кабинет</h2>
+        <p>Пользователь: <span id="usernameDisplay">Загрузка...</span></p>
+        <p><label>Имя: <input id="nameInput" type="text" disabled> 
+          <button id="editName">Редактировать</button> 
+          <button id="saveName" style="display:none;">Сохранить</button></label></p>
 
-<div class="account-container">
-    <h2>Личный кабинет</h2>
-    <p>Пользователь: <span id="usernameDisplay">Загрузка...</span></p>
-<p><label>Имя: <input id="nameInput" type="text" disabled> 
-  <button id="editName">Редактировать</button> 
-  <button id="saveName" style="display:none;">Сохранить</button></label></p>
+        <p><label>Город: <input id="cityInput" type="text" disabled> 
+          <button id="editCity">Редактировать</button> 
+          <button id="saveCity" style="display:none;">Сохранить</button></label></p>
+        <p><button onclick="logout()">Выйти</button></p>
+    </div>
 
-<p><label>Город: <input id="cityInput" type="text" disabled> 
-  <button id="editCity">Редактировать</button> 
-  <button id="saveCity" style="display:none;">Сохранить</button></label></p>
-    <p><button onclick="logout()">Выйти</button></p>
-  </div>
-</div>
-<h2>Ваши заказы</h2>
-
-<!-- Кнопка для показа/скрытия истории заказов -->
-<button id="toggleHistoryBtn">Показать историю заказов</button>
-<!-- Контейнер для истории заказов -->
-<div id="ordersHistory" style="display: none;">
-  <!-- Сюда будем динамически добавлять все заказы -->
-  <div id="ordersContainer">
-    <!-- Сообщение если заказов нет -->
-    <div class="no-orders" id="noOrdersMessage">У вас еще нет заказов.</div>
-  </div>
+    <h2>Ваши заказы</h2>
+    <button id="toggleHistoryBtn">Показать историю заказов</button>
+    <div id="ordersHistory" style="display: none;">
+        <div id="ordersContainer">
+            <div class="no-orders" id="noOrdersMessage">У вас еще нет заказов.</div>
+        </div>
+    </div>
 </div>
 <footer>
     <div class="footer-links">
