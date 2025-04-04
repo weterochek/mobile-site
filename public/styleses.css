@@ -233,17 +233,6 @@ header nav {
     color: #4CAF50;
 }
 
-/* Стили для мобильного меню */
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #333;
-    padding: 10px;
-    z-index: 1200;
-}
 
 .navbar {
     display: none; /* Скрываем меню */
