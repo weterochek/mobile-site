@@ -1539,7 +1539,20 @@ function displayReviews(page) {
             const rating = review && review.rating ? parseInt(review.rating) : 0;
             const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
             const date = review && review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
-            const displayName = review && (review.displayName || review.username) || 'Анонимный пользователь';
+            
+            // Новая логика отображения имени
+            let displayName;
+            if (review.displayName && review.username) {
+                // Если указано и имя, и ник - показываем оба
+                displayName = `${review.displayName}(${review.username})`;
+            } else if (review.username) {
+                // Если указан только ник - показываем его
+                displayName = review.username;
+            } else {
+                // Если ничего не указано
+                displayName = 'Анонимный пользователь';
+            }
+            
             const comment = review && review.comment ? review.comment : '';
             
             reviewElement.innerHTML = `
