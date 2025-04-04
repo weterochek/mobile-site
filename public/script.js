@@ -1361,17 +1361,15 @@ async function loadReviews() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Сырые данные от сервера:', data); // Отладочный вывод
+        console.log('Сырые данные от сервера:', data);
 
         // Проверяем структуру данных и извлекаем массив отзывов
         let reviews;
         if (Array.isArray(data)) {
-            reviews = data;
+            reviews = [...data]; // Создаем новый массив из полученных данных
         } else if (data && typeof data === 'object') {
             if (Array.isArray(data.reviews)) {
-                reviews = data.reviews;
-            } else if (data.reviews && typeof data.reviews === 'object') {
-                reviews = Object.values(data.reviews);
+                reviews = [...data.reviews];
             } else {
                 reviews = Object.values(data);
             }
@@ -1381,10 +1379,10 @@ async function loadReviews() {
 
         // Проверяем, что reviews действительно массив
         if (!Array.isArray(reviews)) {
-            reviews = [];
+            throw new Error('Не удалось получить массив отзывов');
         }
 
-        console.log('Обработанные отзывы:', reviews); // Отладочный вывод
+        console.log('Обработанные отзывы:', reviews);
         
         if (reviews.length === 0) {
             const reviewContainer = document.getElementById('reviewContainer');
@@ -1506,8 +1504,10 @@ function displayReviews(page) {
         return;
     }
 
-    pageReviews.forEach(review => {
-        if (!review) return;
+    // Используем обычный цикл for вместо forEach
+    for (let i = 0; i < pageReviews.length; i++) {
+        const review = pageReviews[i];
+        if (!review) continue;
         
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
@@ -1529,10 +1529,9 @@ function displayReviews(page) {
         `;
         
         reviewContainer.appendChild(reviewElement);
-    });
+    }
 
-    // Добавим отладочный вывод
-    console.log('Отзывы добавлены в контейнер:', reviewContainer.innerHTML);
+    console.log('Отзывы успешно отображены');
 }
 
 // Добавляем автоматическую загрузку отзывов при загрузке страницы
