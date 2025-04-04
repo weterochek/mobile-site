@@ -1361,17 +1361,26 @@ async function loadReviews() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Ответ от сервера:', data); // Отладочный вывод
+        console.log('Сырые данные от сервера:', data); // Отладочный вывод
 
         // Проверяем структуру данных и извлекаем массив отзывов
         let reviews;
         if (Array.isArray(data)) {
             reviews = data;
-        } else if (data && Array.isArray(data.reviews)) {
-            reviews = data.reviews;
         } else if (data && typeof data === 'object') {
-            reviews = Object.values(data);
+            if (Array.isArray(data.reviews)) {
+                reviews = data.reviews;
+            } else if (data.reviews && typeof data.reviews === 'object') {
+                reviews = Object.values(data.reviews);
+            } else {
+                reviews = Object.values(data);
+            }
         } else {
+            reviews = [];
+        }
+
+        // Проверяем, что reviews действительно массив
+        if (!Array.isArray(reviews)) {
             reviews = [];
         }
 
@@ -1448,44 +1457,53 @@ function updatePagination() {
 // Функция отображения отзывов для текущей страницы
 function displayReviews(page) {
     const reviewContainer = document.getElementById('reviewContainer');
-    if (!reviewContainer || !Array.isArray(allReviews)) {
-        console.error('Контейнер не найден или отзывы не являются массивом');
+    if (!reviewContainer) {
+        console.error('Контейнер отзывов не найден');
         return;
     }
 
-    console.log('Отображение страницы:', page); // Отладочный вывод
-    console.log('Всего отзывов:', allReviews.length); // Отладочный вывод
+    if (!Array.isArray(allReviews)) {
+        console.error('Отзывы не являются массивом:', allReviews);
+        reviewContainer.innerHTML = '<div class="error-message">Ошибка отображения отзывов</div>';
+        return;
+    }
+
+    console.log('Отображение страницы:', page);
+    console.log('Всего отзывов:', allReviews.length);
 
     const startIndex = (page - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
     const pageReviews = allReviews.slice(startIndex, endIndex);
     
-    console.log('Отзывы на текущей странице:', pageReviews); // Отладочный вывод
+    console.log('Отзывы на текущей странице:', pageReviews);
     
     reviewContainer.innerHTML = '';
     
-    if (pageReviews.length === 0) {
+    if (!Array.isArray(pageReviews) || pageReviews.length === 0) {
         reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
         return;
     }
     
     pageReviews.forEach(review => {
-        if (!review) return; // Пропускаем неопределенные отзывы
+        if (!review) return;
         
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
         
+        // Безопасное получение данных
         const rating = parseInt(review.rating) || 0;
-        const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
         const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
+        const displayName = review.displayName || 'Анонимный пользователь';
+        const comment = review.comment || '';
         
         reviewElement.innerHTML = `
             <div class="review-header">
-                <span class="review-author">${review.displayName || 'Анонимный пользователь'}</span>
+                <span class="review-author">${displayName}</span>
                 <span class="review-date">${date}</span>
             </div>
             <div class="review-rating">${stars}</div>
-            <div class="review-text">${review.comment || ''}</div>
+            <div class="review-text">${comment}</div>
         `;
         
         reviewContainer.appendChild(reviewElement);
