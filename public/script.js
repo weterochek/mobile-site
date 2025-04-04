@@ -1361,10 +1361,21 @@ async function loadReviews() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        
-        // Проверяем, что data.reviews существует и является массивом
-        const reviews = Array.isArray(data.reviews) ? data.reviews : 
-                       Array.isArray(data) ? data : [];
+        console.log('Ответ от сервера:', data); // Отладочный вывод
+
+        // Проверяем структуру данных и извлекаем массив отзывов
+        let reviews;
+        if (Array.isArray(data)) {
+            reviews = data;
+        } else if (data && Array.isArray(data.reviews)) {
+            reviews = data.reviews;
+        } else if (data && typeof data === 'object') {
+            reviews = Object.values(data);
+        } else {
+            reviews = [];
+        }
+
+        console.log('Обработанные отзывы:', reviews); // Отладочный вывод
         
         if (reviews.length === 0) {
             const reviewContainer = document.getElementById('reviewContainer');
@@ -1442,9 +1453,14 @@ function displayReviews(page) {
         return;
     }
 
+    console.log('Отображение страницы:', page); // Отладочный вывод
+    console.log('Всего отзывов:', allReviews.length); // Отладочный вывод
+
     const startIndex = (page - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
     const pageReviews = allReviews.slice(startIndex, endIndex);
+    
+    console.log('Отзывы на текущей странице:', pageReviews); // Отладочный вывод
     
     reviewContainer.innerHTML = '';
     
