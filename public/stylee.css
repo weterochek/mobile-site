@@ -407,44 +407,58 @@ nav {
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
 }
+/* Footer */
 footer {
+    flex-shrink: 0;
     background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-}
-
-.accordion-button {
-    background-color: #444;
     color: white;
-    padding: 10px;
-    width: 100%;
-    text-align: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin: 5px 0;
-    transition: background-color 0.3s;
+    padding: 20px;
+    margin-top: auto;
 }
 
-.accordion-button:hover {
-    background-color: #555;
+.footer-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.accordion-content {
-    max-height: 0; /* Начинаем с 0 */
-    overflow: hidden;
-    transition: max-height 0.4s ease-out;
-}
-.accordion-content.open {
-    max-height: 500px; /* Установи нужную высоту */
+.footer-item {
+    text-align: center;
 }
 
-.accordion-button.active {
-    background-color: #666;
+.footer-item h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #fff;
 }
 
+.footer-item p {
+    font-size: 18px;
+    color: #ddd;
+    line-height: 1.5;
+}
+.footer-item p a {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.footer-item p a:hover {
+    text-decoration: underline;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .footer-links {
+        flex-direction: column;
+    }
+
+    .footer-item {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
