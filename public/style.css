@@ -594,6 +594,13 @@ footer {
         font-size: 1.2rem;
     }
 }
+@media (max-width: 768px){
+ {
+      .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+ }
+}
 @media (max-width: 768px) {
     nav {
         flex-wrap: nowrap;
