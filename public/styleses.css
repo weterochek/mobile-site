@@ -532,10 +532,6 @@ header nav {
         padding: 5px 15px;
     }
 
-    .navbar-logo {
-        height: 30px;
-    }
-
     .menu-toggle {
         font-size: 1.8rem;
         margin-left: 0;
@@ -551,9 +547,6 @@ header nav {
         padding: 5px 10px;
     }
 
-    .navbar-logo {
-        height: 25px;
-    }
 }
 
 /* Стили для мобильного меню */
