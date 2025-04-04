@@ -226,20 +226,19 @@ footer {
 .footer-item {
     flex: 1;
     min-width: 250px;
-    margin: 10px;
     text-align: center;
 }
 
 .footer-item h3 {
     color: #fff;
-    margin-bottom: 15px;
-    font-size: 1.2em;
+    font-size: 0.8em;
 }
 
 .footer-item p {
     color: #ddd;
     margin: 5px 0;
     line-height: 1.5;
+    font-size: 0.65em;
 }
 
 @media (max-width: 768px) {
@@ -248,10 +247,6 @@ footer {
         align-items: center;
     }
     
-    .footer-item {
-        margin: 15px 0;
-    }
-}
 
 /* Медиа-запросы для мобильных устройств */
 @media (max-width: 768px) {
@@ -538,7 +533,6 @@ header nav {
     background: none;
     border: none;
     cursor: pointer;
-    margin-left: 10px;
     margin-top: -5px;
     z-index: 1001;
 }
@@ -724,15 +718,6 @@ header nav {
 }
 
 /* Стили для мобильного меню */
-.menu-toggle {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px; /* Сдвиг ближе к логотипу */
-    margin-top: -5px; /* Немного выше */
-    z-index: 1001;
-}
 .menu-content {
     width: 100%;
     text-align: center;
@@ -760,7 +745,7 @@ nav {
 }
 /* Корзина в правом углу */
 .cart-container {
-    margin-right: 20px; /* Сдвиг ближе к логотипу */
+    margin-right: 0px; /* Сдвиг ближе к логотипу */
     display: flex;
     align-items: center;
 }
