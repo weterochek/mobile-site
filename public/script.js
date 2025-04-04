@@ -1391,7 +1391,98 @@ async function submitReview(event) {
     }
 }
 
-// Функция для загрузки отзывов
+let currentPage = 1;
+const reviewsPerPage = 5; // Количество отзывов на странице
+
+// Функция для отображения отзывов
+function displayReviews(reviews) {
+    const reviewContainer = document.getElementById('reviewContainer');
+    reviewContainer.innerHTML = '';
+
+    // Сортировка отзывов по дате (сначала новые)
+    reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Вычисление общего количества страниц
+    const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+    
+    // Получение отзывов для текущей страницы
+    const startIndex = (currentPage - 1) * reviewsPerPage;
+    const endIndex = startIndex + reviewsPerPage;
+    const currentReviews = reviews.slice(startIndex, endIndex);
+
+    // Отображение отзывов
+    currentReviews.forEach(review => {
+        const reviewElement = document.createElement('div');
+        reviewElement.className = 'review';
+        
+        const formattedDate = new Date(review.date).toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        const userName = review.username ? `${review.displayName} (${review.username})` : review.displayName;
+
+        reviewElement.innerHTML = `
+            <div class="review-header">
+                <div class="review-author">${userName}</div>
+                <div class="review-date">${formattedDate}</div>
+            </div>
+            <div class="review-rating">
+                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+            </div>
+            <div class="review-text">${review.comment}</div>
+        `;
+
+        reviewContainer.appendChild(reviewElement);
+    });
+
+    // Добавление пагинации
+    const paginationElement = document.createElement('div');
+    paginationElement.className = 'review-pagination';
+
+    // Кнопка "Предыдущая"
+    const prevButton = document.createElement('button');
+    prevButton.className = 'page-btn';
+    prevButton.textContent = '←';
+    prevButton.disabled = currentPage === 1;
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayReviews(reviews);
+        }
+    };
+
+    // Кнопка "Следующая"
+    const nextButton = document.createElement('button');
+    nextButton.className = 'page-btn';
+    nextButton.textContent = '→';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayReviews(reviews);
+        }
+    };
+
+    // Информация о текущей странице
+    const pageInfo = document.createElement('div');
+    pageInfo.className = 'page-info';
+    pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
+
+    paginationElement.appendChild(prevButton);
+    paginationElement.appendChild(pageInfo);
+    paginationElement.appendChild(nextButton);
+    reviewContainer.appendChild(paginationElement);
+}
+
+// Функция для смены страницы
+function changePage(newPage) {
+    currentPage = newPage;
+    loadReviews();
+}
+
+// Обновленная функция загрузки отзывов
 async function loadReviews() {
     try {
         const filterStars = document.getElementById("filterStars").value;
@@ -1409,11 +1500,11 @@ async function loadReviews() {
         
         let reviews = await response.json();
         
-        // Сортировка по дате
+        // Сортировка по дате (сначала новые)
         reviews.sort((a, b) => {
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
-            return filterDate === "newest" ? dateB - dateA : dateA - dateB;
+            return filterDate === "oldest" ? dateA - dateB : dateB - dateA;
         });
         
         displayReviews(reviews);
@@ -1421,30 +1512,6 @@ async function loadReviews() {
         console.error("Ошибка при загрузке отзывов:", error);
         document.getElementById("reviewContainer").innerHTML = "<p>Произошла ошибка при загрузке отзывов</p>";
     }
-}
-
-// Функция для отображения отзывов
-function displayReviews(reviews) {
-    const container = document.getElementById("reviewContainer");
-    if (!container) return;
-    
-    if (reviews.length === 0) {
-        container.innerHTML = "<p>Пока нет отзывов. Будьте первым!</p>";
-        return;
-    }
-    
-    container.innerHTML = reviews.map(review => `
-        <div class="review">
-            <div class="review-header">
-                <span class="review-author">${review.displayName || review.username}</span>
-                <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
-            </div>
-            <div class="review-rating">
-                ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
-            </div>
-            <div class="review-text">${review.comment}</div>
-        </div>
-    `).join("");
 }
 
 // Обработчики событий для фильтров
