@@ -1572,3 +1572,37 @@ function displayReviews(page) {
         reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при отображении отзывов.</div>';
     }
 }
+
+// Функция для переключения видимости корзины
+function toggleCart() {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        if (cartDropdown.classList.contains('active')) {
+            cartDropdown.classList.remove('active');
+        } else {
+            cartDropdown.classList.add('active');
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Закрытие корзины при клике вне её
+    document.addEventListener('click', function(event) {
+        const cartDropdown = document.getElementById('cartDropdown');
+        const cartButton = document.getElementById('cartButton');
+        
+        if (cartDropdown && cartButton) {
+            if (!cartDropdown.contains(event.target) && !cartButton.contains(event.target)) {
+                cartDropdown.classList.remove('active');
+            }
+        }
+    });
+
+    // Предотвращение закрытия при клике внутри корзины
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        cartDropdown.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    }
+});
