@@ -1493,3 +1493,69 @@ function updatePagination() {
     
     console.log('Пагинация обновлена');
 }
+
+// Функция отображения отзывов для текущей страницы
+function displayReviews(page) {
+    console.log('Отображение отзывов для страницы:', page);
+    
+    const reviewContainer = document.getElementById('reviewContainer');
+    if (!reviewContainer) {
+        console.error('Контейнер отзывов не найден');
+        return;
+    }
+
+    // Проверяем наличие массива отзывов
+    if (!allReviews || !Array.isArray(allReviews)) {
+        console.error('Отзывы не являются массивом:', allReviews);
+        reviewContainer.innerHTML = '<div class="error-message">Ошибка отображения отзывов</div>';
+        return;
+    }
+
+    const startIndex = (page - 1) * reviewsPerPage;
+    const endIndex = startIndex + reviewsPerPage;
+    const pageReviews = allReviews.slice(startIndex, endIndex);
+    
+    console.log('Отзывы для текущей страницы:', pageReviews);
+    
+    reviewContainer.innerHTML = '';
+    
+    if (pageReviews.length === 0) {
+        reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
+        return;
+    }
+
+    try {
+        for (let i = 0; i < pageReviews.length; i++) {
+            const review = pageReviews[i];
+            if (!review) {
+                console.warn('Пропущен пустой отзыв');
+                continue;
+            }
+            
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review';
+            
+            // Безопасное получение данных
+            const rating = review && review.rating ? parseInt(review.rating) : 0;
+            const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
+            const date = review && review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
+            const displayName = review && (review.displayName || review.username) || 'Анонимный пользователь';
+            const comment = review && review.comment ? review.comment : '';
+            
+            reviewElement.innerHTML = `
+                <div class="review-header">
+                    <span class="review-author">${displayName}</span>
+                    <span class="review-date">${date}</span>
+                </div>
+                <div class="review-rating">${stars}</div>
+                <div class="review-text">${comment}</div>
+            `;
+            
+            reviewContainer.appendChild(reviewElement);
+        }
+        console.log('Отзывы успешно отображены');
+    } catch (error) {
+        console.error('Ошибка при отображении отзывов:', error);
+        reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при отображении отзывов.</div>';
+    }
+}
