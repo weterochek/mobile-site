@@ -106,8 +106,8 @@ body {
     width: 100%;
     padding: 1rem;
     background-color: #4CAF50;
-    color: white;
     border: none;
+    color: white;
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
@@ -596,7 +596,7 @@ select, textarea {
 textarea:focus, textarea:not(:placeholder-shown) {
     height: auto;
 }
-button {
+buttoon {
     margin-top: 15px;
     padding: 10px;
     border: none;
