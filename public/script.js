@@ -1318,161 +1318,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Отображение заказов на странице
-function displayOrder(order, container) {
-    const itemsList = order.items.map(item => {
-        if (item.productId && item.productId.name) {
-            return `<li>${item.productId.name} — ${item.quantity} шт. (${item.price} ₽)</li>`;
-        } else {
-            return `<li>Товар не найден</li>`;
-        }
-    }).join('');
-
-    let orderHTML = `
-        <div class="order">
-            <h3>Заказ №${order._id.slice(0, 8)}</h3>
-            <p>Адрес: ${order.address}</p>
-            <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
-            <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
-            <p>Общая сумма: ${order.totalAmount} ₽</p>
-    `;
-
-    if (order.additionalInfo) {
-        orderHTML += `<p>Дополнительная информация: ${order.additionalInfo}</p>`;
-    }
-
-    orderHTML += `<ul>${itemsList}</ul></div><hr>`;
-
-    container.innerHTML += orderHTML;
-}
-
-// Глобальные переменные для пагинации
-// Удаляем дублирующие объявления и оставляем комментарий
-// Эти переменные уже объявлены в начале файла:
-// let currentPage = 1;
-// let reviewsPerPage = 5;
-// let allReviews = [];
-
-// Функция загрузки отзывов с пагинацией
-async function loadReviews() {
-    try {
-        const response = await fetch('https://mobile-site.onrender.com/api/reviews');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('Сырые данные от сервера:', data);
-
-        // Проверяем структуру данных и извлекаем массив отзывов
-        let reviews = [];
-
-        if (Array.isArray(data)) {
-            reviews = [...data]; // Создаем новый массив из полученных данных
-        } else if (data && typeof data === 'object') {
-            if (Array.isArray(data.reviews)) {
-                reviews = [...data.reviews];
-            } else if (typeof data === 'object' && Object.keys(data).length > 0) {
-                reviews = Object.values(data);
-            }
-        }
-
-        // Проверяем, что reviews действительно массив и содержит данные
-        if (!Array.isArray(reviews)) {
-            reviews = [];
-        }
-
-        console.log('Обработанные отзывы:', reviews);
-        
-        // Сохраняем отзывы в глобальную переменную
-        allReviews = reviews;
-        
-        if (reviews.length === 0) {
-            const reviewContainer = document.getElementById('reviewContainer');
-            if (reviewContainer) {
-                reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
-            }
-            return;
-        }
-
-        // Обновляем пагинацию и отображаем первую страницу
-        updatePagination();
-        displayReviews(currentPage);
-        
-    } catch (error) {
-        console.error('Ошибка при загрузке отзывов:', error);
-        const reviewContainer = document.getElementById('reviewContainer');
-        if (reviewContainer) {
-            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
-        }
-    }
-}
-
-// Функция обновления пагинации
-function updatePagination() {
-    if (!Array.isArray(allReviews)) return;
-    
-    const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
-    const pagination = document.querySelector('.review-pagination');
-    if (!pagination) return;
-    
-    // Очищаем существующие кнопки страниц
-    const pageButtons = pagination.querySelectorAll('.page-btn:not([aria-label])');
-    pageButtons.forEach(btn => btn.remove());
-    
-    const prevButton = pagination.querySelector('[aria-label="Previous"]');
-    const nextButton = pagination.querySelector('[aria-label="Next"]');
-    if (!prevButton || !nextButton) return;
-    
-    // Определяем диапазон отображаемых страниц
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + 4);
-    
-    // Корректируем startPage, если endPage уперся в максимум
-    if (endPage === totalPages) {
-        startPage = Math.max(1, endPage - 4);
-    }
-    
-    // Если startPage стал 1, корректируем endPage
-    if (startPage === 1) {
-        endPage = Math.min(totalPages, 5);
-    }
-    
-    // Добавляем кнопки для каждой страницы в диапазоне
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.className = `page-btn${currentPage === i ? ' active' : ''}`;
-        pageBtn.textContent = i;
-        pageBtn.addEventListener('click', () => {
-            currentPage = i;
-            displayReviews(currentPage);
-            updatePagination();
-        });
-        
-        pagination.insertBefore(pageBtn, nextButton);
-    }
-    
-    // Обновляем состояние кнопок "Предыдущая" и "Следующая"
-    prevButton.disabled = currentPage === 1;
-    nextButton.disabled = currentPage === totalPages;
-
-    // Добавляем обработчики для кнопок "Предыдущая" и "Следующая"
-    prevButton.onclick = () => {
-        if (currentPage > 1) {
-            currentPage--;
-            displayReviews(currentPage);
-            updatePagination();
-        }
-    };
-
-    nextButton.onclick = () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayReviews(currentPage);
-            updatePagination();
-        }
-    };
-}
-
 // Функция отображения отзывов для текущей страницы
 function displayReviews(page) {
     const reviewContainer = document.getElementById('reviewContainer');
@@ -1481,7 +1326,8 @@ function displayReviews(page) {
         return;
     }
 
-    if (!Array.isArray(allReviews)) {
+    // Проверяем, что allReviews существует и является массивом
+    if (!allReviews || !Array.isArray(allReviews)) {
         console.error('Отзывы не являются массивом:', allReviews);
         reviewContainer.innerHTML = '<div class="error-message">Ошибка отображения отзывов</div>';
         return;
@@ -1498,12 +1344,13 @@ function displayReviews(page) {
     
     reviewContainer.innerHTML = '';
     
-    if (!Array.isArray(pageReviews) || pageReviews.length === 0) {
+    if (pageReviews.length === 0) {
         reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
         return;
     }
 
     try {
+        // Используем обычный цикл for вместо forEach
         for (let i = 0; i < pageReviews.length; i++) {
             const review = pageReviews[i];
             if (!review) continue;
@@ -1511,12 +1358,12 @@ function displayReviews(page) {
             const reviewElement = document.createElement('div');
             reviewElement.className = 'review';
             
-            // Безопасное получение данных
-            const rating = parseInt(review.rating) || 0;
+            // Безопасное получение данных с проверками на undefined
+            const rating = review && review.rating ? parseInt(review.rating) : 0;
             const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
-            const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
-            const displayName = review.displayName || review.username || 'Анонимный пользователь';
-            const comment = review.comment || '';
+            const date = review && review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
+            const displayName = review && (review.displayName || review.username) || 'Анонимный пользователь';
+            const comment = review && review.comment ? review.comment : '';
             
             reviewElement.innerHTML = `
                 <div class="review-header">
@@ -1684,3 +1531,155 @@ document.addEventListener('DOMContentLoaded', () => {
     // Обновление корзины
     updateCart();
 });
+
+// Функция загрузки отзывов с пагинацией
+async function loadReviews() {
+    try {
+        console.log('Начинаем загрузку отзывов...');
+        const response = await fetch('https://mobile-site.onrender.com/api/reviews');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Получены данные от сервера:', data);
+
+        // Инициализируем массив отзывов
+        let reviews = [];
+
+        // Проверяем различные форматы данных
+        if (Array.isArray(data)) {
+            console.log('Данные уже являются массивом');
+            reviews = [...data];
+        } else if (data && typeof data === 'object') {
+            console.log('Данные являются объектом, проверяем структуру');
+            if (data.reviews && Array.isArray(data.reviews)) {
+                reviews = [...data.reviews];
+            } else if (Object.keys(data).length > 0) {
+                reviews = Object.values(data);
+            }
+        }
+
+        // Проверяем, что получили массив
+        if (!Array.isArray(reviews)) {
+            console.error('Не удалось получить массив отзывов');
+            reviews = [];
+        }
+
+        // Фильтруем невалидные отзывы
+        reviews = reviews.filter(review => review && typeof review === 'object');
+
+        console.log('Обработанные отзывы:', reviews);
+        
+        // Сохраняем в глобальную переменную
+        allReviews = reviews;
+        
+        const reviewContainer = document.getElementById('reviewContainer');
+        if (!reviewContainer) {
+            console.error('Контейнер отзывов не найден');
+            return;
+        }
+
+        if (reviews.length === 0) {
+            reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
+            return;
+        }
+
+        // Обновляем пагинацию и отображаем первую страницу
+        updatePagination();
+        displayReviews(currentPage);
+        
+    } catch (error) {
+        console.error('Ошибка при загрузке отзывов:', error);
+        const reviewContainer = document.getElementById('reviewContainer');
+        if (reviewContainer) {
+            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
+        }
+    }
+}
+
+// Функция обновления пагинации
+function updatePagination() {
+    console.log('Обновление пагинации...');
+    
+    // Проверяем наличие и валидность массива отзывов
+    if (!allReviews || !Array.isArray(allReviews)) {
+        console.error('Массив отзывов отсутствует или невалиден');
+        return;
+    }
+    
+    const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
+    console.log('Всего страниц:', totalPages);
+    
+    const pagination = document.querySelector('.review-pagination');
+    if (!pagination) {
+        console.error('Контейнер пагинации не найден');
+        return;
+    }
+    
+    // Очищаем существующие кнопки страниц
+    const pageButtons = pagination.querySelectorAll('.page-btn:not([aria-label])');
+    pageButtons.forEach(btn => btn.remove());
+    
+    const prevButton = pagination.querySelector('[aria-label="Previous"]');
+    const nextButton = pagination.querySelector('[aria-label="Next"]');
+    
+    if (!prevButton || !nextButton) {
+        console.error('Кнопки навигации не найдены');
+        return;
+    }
+    
+    // Определяем диапазон отображаемых страниц
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + 4);
+    
+    // Корректируем startPage, если endPage уперся в максимум
+    if (endPage === totalPages) {
+        startPage = Math.max(1, endPage - 4);
+    }
+    
+    // Если startPage стал 1, корректируем endPage
+    if (startPage === 1) {
+        endPage = Math.min(totalPages, 5);
+    }
+    
+    console.log('Диапазон страниц:', { startPage, endPage, currentPage });
+    
+    // Добавляем кнопки для каждой страницы в диапазоне
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.className = `page-btn${currentPage === i ? ' active' : ''}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener('click', () => {
+            currentPage = i;
+            displayReviews(currentPage);
+            updatePagination();
+        });
+        
+        pagination.insertBefore(pageBtn, nextButton);
+    }
+    
+    // Обновляем состояние кнопок "Предыдущая" и "Следующая"
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage === totalPages;
+
+    // Добавляем обработчики для кнопок "Предыдущая" и "Следующая"
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayReviews(currentPage);
+            updatePagination();
+        }
+    };
+
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayReviews(currentPage);
+            updatePagination();
+        }
+    };
+    
+    console.log('Пагинация обновлена');
+}
