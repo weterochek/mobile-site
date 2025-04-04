@@ -476,6 +476,11 @@ footer {
         align-items: center;
     }
 }
+@media (max-width: 1024px) {
+    .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+}
 /* Медиазапросы */
 @media (max-width: 768px) {
     header nav {
