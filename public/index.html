@@ -31,27 +31,15 @@
                 </div>
             </ul>
             <div class="cart-container">
-                <a href="#" id="cartButton" class="cart-icon" onclick="toggleCart()">
+                <a href="#cart" id="cartButton" class="cart-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
                 <div id="cartDropdown" class="cart-dropdown">
-                    <div class="cart-header">
-                        <h3>Ваша Корзина</h3>
-                        <button class="close-cart" onclick="toggleCart()">×</button>
-                    </div>
-                    <div class="cart-content">
-                        <div id="cartItems"></div>
-                    </div>
-                    <div class="cart-footer">
-                        <div class="cart-total">
-                            <span>Итого:</span>
-                            <span id="totalAmount">0 ₽</span>
-                        </div>
-                        <div class="cart-buttons">
-                            <button class="checkout-btn" onclick="goToCheckoutPage()">Оформить заказ</button>
-                            <button class="clear-cart" onclick="clearCart()">Очистить корзину</button>
-                        </div>
-                    </div>
+                    <h3>Ваша Корзина</h3>
+                    <div id="cartItems"></div>
+                    <p id="totalAmount"></p>
+                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+                    <button id="clear-cart" class="clear-cart">Очистить корзину</button>
                 </div>
             </div>
         </nav>
