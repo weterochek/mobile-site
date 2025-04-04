@@ -23,11 +23,9 @@
                 <div class="menu-content">
                     <button class="close-menu">✕</button>
                     <a href="index.html" class="nav-item">Главная</a>
-                    <a href="Review.html" class="nav-item">Меню</a>
-                    <a href="#about" class="nav-item">О нас</a>
-                    <a href="#contacts" class="nav-item">Контакты</a>
-                    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
-                    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
+                    <a href="Review.html" class="nav-item">Отзывы</a>
+		    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+		    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
                 </div>
             </ul>
             <div class="cart-container">
@@ -39,74 +37,93 @@
                     <div id="cartItems"></div>
                     <p id="totalAmount"></p>
                     <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
-                    <button id="clear-cart" class="clear-cart">Очистить корзину</button>
+			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
                 </div>
             </div>
         </nav>
     </header>
 
-    <div class="menu-header">
+        <div class="menu-header">
         <h1 class="subtitle">Кухни Мира</h1>
         <p class="subtitlee">
-            Откройте для себя вкус национальных блюд и погрузитесь в мир аутентичных вкусов и ароматов
-        </p>
-    </div>
-    <section class="dishes-grid">
-        <div class="dish-card">
-            <a href="Russian national cuisine.html"><img src="images/Без-имени-1.webp" alt="Блюдо 1">
-                <div class="text2"> Русская<br>   кухня</div>
-                <div class="text-overlay">
-                </div>
-        </div></a>
-        
-        <div class="dish-card">
-            <div class="container">
-                <div class="base-overlay"></div>
-                <a href="French national cuisine.html"><img src="images/Без-имени-2.webp" alt="Блюдо 2">
-                    <div class="text2">Французская<br>      кухня</div>
+        Откройте для себя вкус национальных блюд и погрузитесь в мир аутентичных вкусов и ароматов
+    </p>
+        </div>
+        <section class="dishes-grid">
+            <div class="dish-card">
+                
+                    <a href="Russian national cuisine.html"><img src="images/Без-имени-1.webp" alt="Блюдо 1">
+                    <div class="text2"> Русская<br>   кухня</div>
                     <div class="text-overlay">
                     </div>
+            </div></a>
+                
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <a href="French national cuisine.html"><img src="images/Без-имени-2.webp" alt="Блюдо 2">
+		<div class="text2">Французская<br>      кухня</div>
+                    <div class="text-overlay">
+                    </div>
+					
                 </div>
             </div></a>
-        <div class="dish-card">
-            <div class="container">
-                <div class="base-overlay"></div>
-                <a href="Spain national cuisine.html"><img src="images/Без-имени-3.webp" alt="Блюдо 3">
-                    <div class="text2">Испанская<br>    кухня</div>
+            <div class="dish-card">
+                <div class="container">
+				<div class="base-overlay"></div>
+                    <a href="Spain national cuisine.html"><img src="images/Без-имени-3.webp" alt="Блюдо 3">
+                        <div class="text2">Испанская<br>    кухня</div>
                     <div class="text-overlay">
                     </div>
+					
                 </div>
             </div></a>
-        <div class="dish-card">
-            <div class="container">
-                <div class="base-overlay"></div>
-                <a href="Georgian national cuisine.html"><img src="images/Без-имени-4.webp" alt="Блюдо 4">
-                    <div class="text2">Грузинская<br>     кухня</div>
+            <div class="dish-card">
+		         <div class="container">
+				<div class="base-overlay"></div>
+                    <a href="Georgian national cuisine.html"><img src="images/Без-имени-4.webp" alt="Блюдо 4">
+			    <div class="text2">Грузинская<br>     кухня</div>
                     <div class="text-overlay">
+
                     </div>
+					
                 </div>
             </div></a>
-        <div class="dish-card">
-            <div class="container">
-                <div class="base-overlay"></div>
-                <a href="Italy national cuisine.html"><img src="images/Без-имени-5.webp" alt="Блюдо 4">
-                    <div class="text2">Итальянская<br>     кухня</div>
+            <div class="dish-card">
+		         <div class="container">
+				<div class="base-overlay"></div>
+                    <a href="Italy national cuisine.html"><img src="images/Без-имени-5.webp" alt="Блюдо 4">
+			    <div class="text2">Итальянская<br>     кухня</div>
                     <div class="text-overlay">
+
                     </div>
+					
                 </div>
             </div></a>
-        <div class="dish-card">
-            <div class="container">
-                <div class="base-overlay"></div>
-                <a href="Japan national cuisine.html"><img src="images/Без-имени-6.webp" alt="Блюдо 6">
-                    <div class="text2">Японская<br>   кухня</div>
+            <div class="dish-card">
+		    	<div class="container">
+				<div class="base-overlay"></div>
+                    <a href="Japan national cuisine.html"><img src="images/Без-имени-6.webp" alt="Блюдо 6">
+		    <div class="text2">Японская<br>   кухня</div>
                     <div class="text-overlay">
                     </div>
+					
                 </div>
-            </div>
-        </div></a>
-        <!-- Добавьте дополнительные карточки блюд здесь -->
-    </section>
+                </div>
+            </div></a>
+            <!-- Добавьте дополнительные карточки блюд здесь -->
+        </section>
+
+    
+<!-- Всплывающее окно корзины -->
+ <div class="cart-container">
+<div id="cartDropdown" class="cart-dropdown">
+    <h3>Ваша Корзина</h3>
+    <div id="cartItems"></div>
+    <p id="totalAmount"></p>
+    <button onclick="checkout()">Оформить заказ</button>
+</div>
+</div>
 
     <!-- Footer -->
     <footer>
@@ -121,5 +138,8 @@
         </div>
     </footer>
     <script src="script.js"></script>
+ 
+
+      
 </body>
 </html>
