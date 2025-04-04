@@ -210,6 +210,7 @@ header nav {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1100;
 }
 
 .navbar-logo {
@@ -343,41 +344,6 @@ header nav {
 }
 
 /* Медиа-запросы для мобильной версии */
-@media (max-width: 1024px) {
-    .menu-toggle {
-        display: block;
-        font-size: 24px;
-        margin-left: 10px;
-    }
-
-    .navbar-center {
-        position: fixed;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1200;
-    }
-
-    .cart-container {
-        position: fixed;
-        top: 10px;
-        right: 20px;
-        z-index: 1200;
-    }
-
-    .cart-icon {
-        color: #333;
-        font-size: 24px;
-    }
-
-    .navbar.active .cart-icon {
-        color: white;
-    }
-
-    .menu-content {
-        padding-top: 60px;
-    }
-}
 
 @media (max-width: 768px) {
     header nav {
@@ -652,9 +618,6 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    background: #218838;
-}
 
 #reviews {
     max-height: 400px;
