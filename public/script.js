@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         fetch("https://mobile-site.onrender.com/account", {
-            method: "GET", // ✅ Добавляем явное указание метода
+            method: "GET",
             credentials: "include", // ✅ Передаем cookies
             headers: {
                 "Authorization": `Bearer ${token}` // ✅ Передаем токен
@@ -1318,198 +1318,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// Функция отображения отзывов для текущей страницы
-function displayReviews(page) {
-    const reviewContainer = document.getElementById('reviewContainer');
-    if (!reviewContainer) {
-        console.error('Контейнер отзывов не найден');
-        return;
-    }
-
-    // Проверяем, что allReviews существует и является массивом
-    if (!allReviews || !Array.isArray(allReviews)) {
-        console.error('Отзывы не являются массивом:', allReviews);
-        reviewContainer.innerHTML = '<div class="error-message">Ошибка отображения отзывов</div>';
-        return;
-    }
-
-    console.log('Отображение страницы:', page);
-    console.log('Всего отзывов:', allReviews.length);
-
-    const startIndex = (page - 1) * reviewsPerPage;
-    const endIndex = startIndex + reviewsPerPage;
-    const pageReviews = allReviews.slice(startIndex, endIndex);
-    
-    console.log('Отзывы на текущей странице:', pageReviews);
-    
-    reviewContainer.innerHTML = '';
-    
-    if (pageReviews.length === 0) {
-        reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
-        return;
-    }
-
-    try {
-        // Используем обычный цикл for вместо forEach
-        for (let i = 0; i < pageReviews.length; i++) {
-            const review = pageReviews[i];
-            if (!review) continue;
-            
-            const reviewElement = document.createElement('div');
-            reviewElement.className = 'review';
-            
-            // Безопасное получение данных с проверками на undefined
-            const rating = review && review.rating ? parseInt(review.rating) : 0;
-            const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
-            const date = review && review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
-            const displayName = review && (review.displayName || review.username) || 'Анонимный пользователь';
-            const comment = review && review.comment ? review.comment : '';
-            
-            reviewElement.innerHTML = `
-                <div class="review-header">
-                    <span class="review-author">${displayName}</span>
-                    <span class="review-date">${date}</span>
-                </div>
-                <div class="review-rating">${stars}</div>
-                <div class="review-text">${comment}</div>
-            `;
-            
-            reviewContainer.appendChild(reviewElement);
-        }
-        console.log('Отзывы успешно отображены');
-    } catch (error) {
-        console.error('Ошибка при отображении отзывов:', error);
-        reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при отображении отзывов.</div>';
-    }
-}
-
-// Добавляем автоматическую загрузку отзывов при загрузке страницы
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Проверка загрузки отзывов...');
-    const reviewContainer = document.getElementById('reviewContainer');
-    
-    if (reviewContainer) {
-        console.log('Найден контейнер для отзывов, начинаем загрузку...');
-        loadReviews();
-    } else {
-        console.error('Контейнер для отзывов не найден!');
-    }
-});
-
-// Функции для работы с корзиной
-function toggleCart() {
-    const cartDropdown = document.getElementById('cartDropdown');
-    if (cartDropdown) {
-        cartDropdown.classList.toggle('active');
-    }
-}
-
-function updateCart() {
-    const cartItems = document.getElementById('cartItems');
-    const totalAmount = document.getElementById('totalAmount');
-    if (!cartItems || !totalAmount) return;
-
-    cartItems.innerHTML = '';
-    let total = 0;
-
-    for (const productId in cart) {
-        const item = cart[productId];
-        const itemTotal = item.price * item.quantity;
-        total += itemTotal;
-
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item';
-        cartItem.innerHTML = `
-            <div class="cart-item-details">
-                <div class="cart-item-title">${item.name}</div>
-                <div class="cart-item-price">${item.price} ₽</div>
-                <div class="cart-item-quantity">
-                    <button class="quantity-btn" onclick="decrementItem('${productId}')">-</button>
-                    <span>${item.quantity}</span>
-                    <button class="quantity-btn" onclick="incrementItem('${productId}', ${item.price})">+</button>
-                </div>
-            </div>
-        `;
-        cartItems.appendChild(cartItem);
-    }
-
-    totalAmount.textContent = `Итого: ${total} ₽`;
-}
-
 // Функции для работы с отзывами
-function displayReviews(reviews) {
-    const container = document.getElementById('reviewContainer');
-    if (!container) return;
-
-    container.innerHTML = '';
-    if (reviews.length === 0) {
-        container.innerHTML = '<p>Пока нет отзывов. Будьте первым!</p>';
-        return;
-    }
-
-    reviews.forEach(review => {
-        const reviewElement = document.createElement('div');
-        reviewElement.className = 'review';
-        
-        // Форматируем имя пользователя
-        const displayName = review.displayName ? `${review.displayName} (${review.username})` : review.username;
-        
-        reviewElement.innerHTML = `
-            <div class="review-header">
-                <span class="review-author">${displayName}</span>
-                <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
-            </div>
-            <div class="review-rating">
-                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
-            </div>
-            <div class="review-text">${review.comment}</div>
-        `;
-        container.appendChild(reviewElement);
-    });
-}
-
-async function submitReview(event) {
-    event.preventDefault();
-    
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-        alert('Пожалуйста, войдите в систему, чтобы оставить отзыв');
-        return;
-    }
-
-    const rating = document.getElementById('starRating').value;
-    const comment = document.getElementById('comment').value;
-    const displayName = document.getElementById('displayName').value;
-
-    if (!rating || !comment) {
-        alert('Пожалуйста, заполните все обязательные поля');
-        return;
-    }
-
-    try {
-        const response = await fetch('https://mobile-site.onrender.com/api/reviews', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                rating: parseInt(rating),
-                comment,
-                displayName: displayName || null
-            })
-        });
-
-        if (!response.ok) throw new Error('Ошибка при отправке отзыва');
-
-        document.getElementById('reviewForm').reset();
-        await loadReviews();
-        alert('Спасибо за ваш отзыв!');
-    } catch (error) {
-        console.error('Ошибка при отправке отзыва:', error);
-        alert('Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.');
-    }
-}
+// Удаляем старую версию функции displayReviews и оставляем только новую версию выше
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
@@ -1526,7 +1336,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Загрузка отзывов
-    loadReviews();
+    const reviewContainer = document.getElementById('reviewContainer');
+    if (reviewContainer) {
+        loadReviews();
+    }
 
     // Обновление корзины
     updateCart();
@@ -1546,34 +1359,28 @@ async function loadReviews() {
         console.log('Получены данные от сервера:', data);
 
         // Инициализируем массив отзывов
-        let reviews = [];
-
-        // Проверяем различные форматы данных
         if (Array.isArray(data)) {
             console.log('Данные уже являются массивом');
-            reviews = [...data];
+            allReviews = [...data];
         } else if (data && typeof data === 'object') {
             console.log('Данные являются объектом, проверяем структуру');
             if (data.reviews && Array.isArray(data.reviews)) {
-                reviews = [...data.reviews];
+                allReviews = [...data.reviews];
             } else if (Object.keys(data).length > 0) {
-                reviews = Object.values(data);
+                allReviews = Object.values(data);
             }
         }
 
         // Проверяем, что получили массив
-        if (!Array.isArray(reviews)) {
+        if (!Array.isArray(allReviews)) {
             console.error('Не удалось получить массив отзывов');
-            reviews = [];
+            allReviews = [];
         }
 
         // Фильтруем невалидные отзывы
-        reviews = reviews.filter(review => review && typeof review === 'object');
+        allReviews = allReviews.filter(review => review && typeof review === 'object');
 
-        console.log('Обработанные отзывы:', reviews);
-        
-        // Сохраняем в глобальную переменную
-        allReviews = reviews;
+        console.log('Обработанные отзывы:', allReviews);
         
         const reviewContainer = document.getElementById('reviewContainer');
         if (!reviewContainer) {
@@ -1581,14 +1388,17 @@ async function loadReviews() {
             return;
         }
 
-        if (reviews.length === 0) {
+        if (allReviews.length === 0) {
             reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
             return;
         }
 
+        // Сбрасываем текущую страницу на первую
+        currentPage = 1;
+        
         // Обновляем пагинацию и отображаем первую страницу
         updatePagination();
-        displayReviews(currentPage);
+        displayReviews(1); // Явно передаем номер страницы
         
     } catch (error) {
         console.error('Ошибка при загрузке отзывов:', error);
