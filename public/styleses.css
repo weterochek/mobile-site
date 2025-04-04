@@ -435,7 +435,17 @@ header nav {
     position: relative;
     z-index: 1;
 }
-
+@media (max-width: 480px) {
+    .navbar.active {
+        justify-content: space-evenly;
+    }
+}
+@media (max-width: 768px){
+    {
+     .navbar.active {
+        justify-content: space-evenly;   
+    }
+}
 .navbar-center {
     flex: 1;
     display: flex;
