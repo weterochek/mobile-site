@@ -1360,7 +1360,11 @@ async function loadReviews() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const reviews = await response.json(); // Изменено: используем временную переменную
+        const data = await response.json();
+        
+        // Проверяем, что data.reviews существует и является массивом
+        const reviews = Array.isArray(data.reviews) ? data.reviews : 
+                       Array.isArray(data) ? data : [];
         
         if (reviews.length === 0) {
             const reviewContainer = document.getElementById('reviewContainer');
@@ -1370,7 +1374,8 @@ async function loadReviews() {
             return;
         }
         
-        allReviews = reviews; // Присваиваем значение глобальной переменной
+        // Сохраняем отзывы в глобальную переменную
+        allReviews = reviews;
         
         // Обновляем пагинацию
         updatePagination();
@@ -1432,7 +1437,10 @@ function updatePagination() {
 // Функция отображения отзывов для текущей страницы
 function displayReviews(page) {
     const reviewContainer = document.getElementById('reviewContainer');
-    if (!reviewContainer || !Array.isArray(allReviews)) return;
+    if (!reviewContainer || !Array.isArray(allReviews)) {
+        console.error('Контейнер не найден или отзывы не являются массивом');
+        return;
+    }
 
     const startIndex = (page - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
@@ -1440,12 +1448,20 @@ function displayReviews(page) {
     
     reviewContainer.innerHTML = '';
     
+    if (pageReviews.length === 0) {
+        reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
+        return;
+    }
+    
     pageReviews.forEach(review => {
+        if (!review) return; // Пропускаем неопределенные отзывы
+        
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
         
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-        const date = new Date(review.date).toLocaleDateString('ru-RU');
+        const rating = parseInt(review.rating) || 0;
+        const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
         
         reviewElement.innerHTML = `
             <div class="review-header">
@@ -1453,7 +1469,7 @@ function displayReviews(page) {
                 <span class="review-date">${date}</span>
             </div>
             <div class="review-rating">${stars}</div>
-            <div class="review-text">${review.comment}</div>
+            <div class="review-text">${review.comment || ''}</div>
         `;
         
         reviewContainer.appendChild(reviewElement);
