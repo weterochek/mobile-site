@@ -1,6 +1,11 @@
+// Глобальные переменные
 let productMap = {};// Будет заполнен динамически
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
- (() => {
+let currentPage = 1;
+let reviewsPerPage = 5;
+let allReviews = [];
+
+(() => {
     const userAgent = navigator.userAgent.toLowerCase();
     const currentURL = window.location.href;
 
@@ -1342,9 +1347,11 @@ function displayOrder(order, container) {
 }
 
 // Глобальные переменные для пагинации
-let currentPage = 1;
-const reviewsPerPage = 5; // Количество отзывов на странице
-let allReviews = []; // Массив всех отзывов
+// Удаляем дублирующие объявления и оставляем комментарий
+// Эти переменные уже объявлены в начале файла:
+// let currentPage = 1;
+// let reviewsPerPage = 5;
+// let allReviews = [];
 
 // Функция загрузки отзывов с пагинацией
 async function loadReviews() {
