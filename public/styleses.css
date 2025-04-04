@@ -1,3 +1,8 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -215,9 +220,11 @@ header nav {
 }
 
 .nav-item {
+    position: relative;
     text-decoration: none;
     color: black;
-    padding: 10px 15px;
+    font-size: 1.2em;
+    padding: 0;
     transition: color 0.3s ease;
 }
 
@@ -238,43 +245,28 @@ header nav {
 }
 
 .navbar {
-    display: none;
+    display: none; /* Скрываем меню */
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 1100;
-}
-
-.navbar.active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.menu-content {
-    height: 100vh;
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-    padding: 20px;
-    margin-top: -50px; /* Компенсация отступа от верхней панели */
+    height: 100%;
+    z-index: 1000;
 }
 
+.navbar.active { 
+    display: flex;
+}
 .menu-content .nav-item {
+    display: block;
     color: white;
+    font-size: 2rem;
     text-decoration: none;
-    font-size: 24px;
-    padding: 10px 20px;
-    transition: color 0.3s ease;
-    text-align: center;
-    width: 100%;
-    max-width: 300px;
+    margin: 15px 0;
 }
 
 .menu-content .nav-item:hover {
