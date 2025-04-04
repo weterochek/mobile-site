@@ -1360,15 +1360,17 @@ async function loadReviews() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        allReviews = await response.json();
+        const reviews = await response.json(); // Изменено: используем временную переменную
         
-        if (allReviews.length === 0) {
+        if (reviews.length === 0) {
             const reviewContainer = document.getElementById('reviewContainer');
             if (reviewContainer) {
                 reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
             }
             return;
         }
+        
+        allReviews = reviews; // Присваиваем значение глобальной переменной
         
         // Обновляем пагинацию
         updatePagination();
@@ -1385,8 +1387,11 @@ async function loadReviews() {
 
 // Функция обновления пагинации
 function updatePagination() {
+    if (!Array.isArray(allReviews)) return;
+    
     const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
     const pagination = document.querySelector('.review-pagination');
+    if (!pagination) return;
     
     // Очищаем существующие кнопки страниц
     const pageButtons = pagination.querySelectorAll('.page-btn:not([aria-label])');
@@ -1394,6 +1399,7 @@ function updatePagination() {
     
     const prevButton = pagination.querySelector('[aria-label="Previous"]');
     const nextButton = pagination.querySelector('[aria-label="Next"]');
+    if (!prevButton || !nextButton) return;
     
     // Определяем диапазон отображаемых страниц
     let startPage = Math.max(1, currentPage - 2);
@@ -1412,10 +1418,9 @@ function updatePagination() {
         pageBtn.addEventListener('click', () => {
             currentPage = i;
             displayReviews(currentPage);
-            updatePagination(); // Обновляем всю пагинацию при смене страницы
+            updatePagination();
         });
         
-        // Вставляем кнопку перед кнопкой "Следующая"
         pagination.insertBefore(pageBtn, nextButton);
     }
     
@@ -1427,7 +1432,7 @@ function updatePagination() {
 // Функция отображения отзывов для текущей страницы
 function displayReviews(page) {
     const reviewContainer = document.getElementById('reviewContainer');
-    if (!reviewContainer) return;
+    if (!reviewContainer || !Array.isArray(allReviews)) return;
 
     const startIndex = (page - 1) * reviewsPerPage;
     const endIndex = startIndex + reviewsPerPage;
