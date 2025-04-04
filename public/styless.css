@@ -516,7 +516,14 @@ footer {
         font-size: 1.2rem;
     }
 }
-
+@media (max-width: 768px){
+ {
+      .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+ }
+}
+                       
 /* Принудительное расположение в два ряда для экранов до 480px */
 @media (max-width: 480px) {
     .grid-dishes {
