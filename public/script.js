@@ -1,7 +1,3 @@
-// Глобальные переменные для пагинации
-let currentPage = 1;
-const reviewsPerPage = 5;
-
 let productMap = {};// Будет заполнен динамически
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
  (() => {
@@ -1395,126 +1391,183 @@ async function submitReview(event) {
     }
 }
 
+// Функция для загрузки отзывов
+async function loadReviews() {
+    try {
+        const response = await fetch('https://mobile-site.onrender.com/api/reviews');
+        if (!response.ok) throw new Error('Ошибка загрузки отзывов');
+        
+        const reviews = await response.json();
+        displayReviews(reviews);
+    } catch (error) {
+        console.error('Ошибка при загрузке отзывов:', error);
+        const container = document.getElementById('reviewContainer');
+        if (container) {
+            container.innerHTML = '<p>Произошла ошибка при загрузке отзывов</p>';
+        }
+    }
+}
+
 // Функция для отображения отзывов
 function displayReviews(reviews) {
-    const reviewContainer = document.getElementById('reviewContainer');
-    reviewContainer.innerHTML = '';
-
-    // Сортировка отзывов по дате (сначала новые)
-    reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Вычисление общего количества страниц
-    const totalPages = Math.ceil(reviews.length / reviewsPerPage);
+    const container = document.getElementById("reviewContainer");
+    if (!container) return;
     
-    // Получение отзывов для текущей страницы
-    const startIndex = (currentPage - 1) * reviewsPerPage;
-    const endIndex = startIndex + reviewsPerPage;
-    const currentReviews = reviews.slice(startIndex, endIndex);
+    if (reviews.length === 0) {
+        container.innerHTML = "<p>Пока нет отзывов. Будьте первым!</p>";
+        return;
+    }
+    
+    container.innerHTML = reviews.map(review => `
+        <div class="review">
+            <div class="review-header">
+                <span class="review-author">${review.displayName || review.username}</span>
+                <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
+            </div>
+            <div class="review-rating">
+                ${"★".repeat(review.rating)}${"☆".repeat(5 - review.rating)}
+            </div>
+            <div class="review-text">${review.comment}</div>
+        </div>
+    `).join("");
+}
 
-    // Отображение отзывов
-    currentReviews.forEach(review => {
+// Обработчики событий для фильтров
+document.getElementById("filterStars")?.addEventListener("change", loadReviews);
+document.getElementById("filterDate")?.addEventListener("change", loadReviews);
+
+// Функции для работы с корзиной
+function toggleCart() {
+    const cartDropdown = document.getElementById('cartDropdown');
+    if (cartDropdown) {
+        cartDropdown.classList.toggle('active');
+    }
+}
+
+function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    const totalAmount = document.getElementById('totalAmount');
+    if (!cartItems || !totalAmount) return;
+
+    cartItems.innerHTML = '';
+    let total = 0;
+
+    for (const productId in cart) {
+        const item = cart[productId];
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        const cartItem = document.createElement('div');
+        cartItem.className = 'cart-item';
+        cartItem.innerHTML = `
+            <div class="cart-item-details">
+                <div class="cart-item-title">${item.name}</div>
+                <div class="cart-item-price">${item.price} ₽</div>
+                <div class="cart-item-quantity">
+                    <button class="quantity-btn" onclick="decrementItem('${productId}')">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="quantity-btn" onclick="incrementItem('${productId}', ${item.price})">+</button>
+                </div>
+            </div>
+        `;
+        cartItems.appendChild(cartItem);
+    }
+
+    totalAmount.textContent = `Итого: ${total} ₽`;
+}
+
+// Функции для работы с отзывами
+function displayReviews(reviews) {
+    const container = document.getElementById('reviewContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    if (reviews.length === 0) {
+        container.innerHTML = '<p>Пока нет отзывов. Будьте первым!</p>';
+        return;
+    }
+
+    reviews.forEach(review => {
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
         
-        const formattedDate = new Date(review.date).toLocaleDateString('ru-RU', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-
-        const userName = review.username ? `${review.displayName} (${review.username})` : review.displayName;
-
+        // Форматируем имя пользователя
+        const displayName = review.displayName ? `${review.displayName} (${review.username})` : review.username;
+        
         reviewElement.innerHTML = `
             <div class="review-header">
-                <div class="review-author">${userName}</div>
-                <div class="review-date">${formattedDate}</div>
+                <span class="review-author">${displayName}</span>
+                <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
             </div>
             <div class="review-rating">
                 ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
             </div>
             <div class="review-text">${review.comment}</div>
         `;
-
-        reviewContainer.appendChild(reviewElement);
+        container.appendChild(reviewElement);
     });
-
-    // Добавление пагинации
-    const paginationElement = document.createElement('div');
-    paginationElement.className = 'review-pagination';
-
-    // Кнопка "Предыдущая"
-    const prevButton = document.createElement('button');
-    prevButton.className = 'page-btn';
-    prevButton.textContent = '←';
-    prevButton.disabled = currentPage === 1;
-    prevButton.onclick = () => {
-        if (currentPage > 1) {
-            currentPage--;
-            displayReviews(reviews);
-        }
-    };
-
-    // Кнопка "Следующая"
-    const nextButton = document.createElement('button');
-    nextButton.className = 'page-btn';
-    nextButton.textContent = '→';
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.onclick = () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayReviews(reviews);
-        }
-    };
-
-    // Информация о текущей странице
-    const pageInfo = document.createElement('div');
-    pageInfo.className = 'page-info';
-    pageInfo.textContent = `Страница ${currentPage} из ${totalPages}`;
-
-    paginationElement.appendChild(prevButton);
-    paginationElement.appendChild(pageInfo);
-    paginationElement.appendChild(nextButton);
-    reviewContainer.appendChild(paginationElement);
 }
 
-// Функция для смены страницы
-function changePage(newPage) {
-    currentPage = newPage;
-    loadReviews();
-}
+async function submitReview(event) {
+    event.preventDefault();
+    
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        alert('Пожалуйста, войдите в систему, чтобы оставить отзыв');
+        return;
+    }
 
-// Обновленная функция загрузки отзывов
-async function loadReviews() {
+    const rating = document.getElementById('starRating').value;
+    const comment = document.getElementById('comment').value;
+    const displayName = document.getElementById('displayName').value;
+
+    if (!rating || !comment) {
+        alert('Пожалуйста, заполните все обязательные поля');
+        return;
+    }
+
     try {
-        const filterStars = document.getElementById("filterStars").value;
-        const filterDate = document.getElementById("filterDate").value;
-        
-        let url = "https://mobile-site.onrender.com/api/reviews";
-        if (filterStars !== "all") {
-            url += `?rating=${filterStars}`;
-        }
-        
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Ошибка при загрузке отзывов");
-        }
-        
-        let reviews = await response.json();
-        
-        // Сортировка по дате (сначала новые)
-        reviews.sort((a, b) => {
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return filterDate === "oldest" ? dateA - dateB : dateB - dateA;
+        const response = await fetch('https://mobile-site.onrender.com/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                rating: parseInt(rating),
+                comment,
+                displayName: displayName || null
+            })
         });
-        
-        displayReviews(reviews);
+
+        if (!response.ok) throw new Error('Ошибка при отправке отзыва');
+
+        document.getElementById('reviewForm').reset();
+        await loadReviews();
+        alert('Спасибо за ваш отзыв!');
     } catch (error) {
-        console.error("Ошибка при загрузке отзывов:", error);
-        document.getElementById("reviewContainer").innerHTML = "<p>Произошла ошибка при загрузке отзывов</p>";
+        console.error('Ошибка при отправке отзыва:', error);
+        alert('Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.');
     }
 }
 
-// Обработчики событий для фильтров
-document.getElementById("filterStars")?.addEventListener("change", loadReviews);
-document.getElementById("filterDate")?.addEventListener("change", loadReviews);
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    // Инициализация корзины
+    const cartButton = document.getElementById('cartButton');
+    if (cartButton) {
+        cartButton.addEventListener('click', toggleCart);
+    }
+
+    // Инициализация отзывов
+    const reviewForm = document.getElementById('reviewForm');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', submitReview);
+    }
+
+    // Загрузка отзывов
+    loadReviews();
+
+    // Обновление корзины
+    updateCart();
+});
