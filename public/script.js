@@ -1435,6 +1435,11 @@ function updatePagination() {
         startPage = Math.max(1, endPage - 4);
     }
     
+    // Если startPage стал 1, корректируем endPage
+    if (startPage === 1) {
+        endPage = Math.min(totalPages, 5);
+    }
+    
     // Добавляем кнопки для каждой страницы в диапазоне
     for (let i = startPage; i <= endPage; i++) {
         const pageBtn = document.createElement('button');
@@ -1452,6 +1457,23 @@ function updatePagination() {
     // Обновляем состояние кнопок "Предыдущая" и "Следующая"
     prevButton.disabled = currentPage === 1;
     nextButton.disabled = currentPage === totalPages;
+
+    // Добавляем обработчики для кнопок "Предыдущая" и "Следующая"
+    prevButton.onclick = () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayReviews(currentPage);
+            updatePagination();
+        }
+    };
+
+    nextButton.onclick = () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayReviews(currentPage);
+            updatePagination();
+        }
+    };
 }
 
 // Функция отображения отзывов для текущей страницы
@@ -1484,9 +1506,8 @@ function displayReviews(page) {
         return;
     }
 
-    for (let i = 0; i < pageReviews.length; i++) {
-        const review = pageReviews[i];
-        if (!review) continue;
+    pageReviews.forEach(review => {
+        if (!review) return;
         
         const reviewElement = document.createElement('div');
         reviewElement.className = 'review';
@@ -1508,41 +1529,22 @@ function displayReviews(page) {
         `;
         
         reviewContainer.appendChild(reviewElement);
-    }
+    });
+
+    // Добавим отладочный вывод
+    console.log('Отзывы добавлены в контейнер:', reviewContainer.innerHTML);
 }
 
 // Добавляем автоматическую загрузку отзывов при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
-    // Проверяем, находимся ли мы на странице с отзывами
-    if (document.getElementById('reviewContainer')) {
-        loadReviews();
-    }
+    console.log('Проверка загрузки отзывов...');
+    const reviewContainer = document.getElementById('reviewContainer');
     
-    const pagination = document.querySelector('.review-pagination');
-    if (pagination) {
-        const prevButton = pagination.querySelector('[aria-label="Previous"]');
-        const nextButton = pagination.querySelector('[aria-label="Next"]');
-        
-        if (prevButton) {
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    displayReviews(currentPage);
-                    updatePagination();
-                }
-            });
-        }
-        
-        if (nextButton) {
-            nextButton.addEventListener('click', () => {
-                const totalPages = Math.ceil(allReviews.length / reviewsPerPage);
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    displayReviews(currentPage);
-                    updatePagination();
-                }
-            });
-        }
+    if (reviewContainer) {
+        console.log('Найден контейнер для отзывов, начинаем загрузку...');
+        loadReviews();
+    } else {
+        console.error('Контейнер для отзывов не найден!');
     }
 });
 
