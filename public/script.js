@@ -1,3 +1,7 @@
+// Глобальные переменные для пагинации
+let currentPage = 1;
+const reviewsPerPage = 5;
+
 let productMap = {};// Будет заполнен динамически
 let cart = JSON.parse(localStorage.getItem('cart')) || {};
  (() => {
@@ -1390,9 +1394,6 @@ async function submitReview(event) {
         alert("Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.");
     }
 }
-
-let currentPage = 1;
-const reviewsPerPage = 5; // Количество отзывов на странице
 
 // Функция для отображения отзывов
 function displayReviews(reviews) {
