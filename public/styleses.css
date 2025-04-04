@@ -12,9 +12,7 @@ body {
     display: flex;
     flex-direction: column;
 }
-.navbar-center .navbar-logo {
-    max-height: 35px;
-}
+
 #reviewContainer {
     width: 100%;
     max-width: 800px;
@@ -185,7 +183,6 @@ body {
 .review-container {
     padding: 20px;
     padding-top: 100px;
-    padding-bottom: 200px;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
@@ -252,7 +249,6 @@ footer {
     .review-container {
         padding: 15px;
         padding-top: 80px;
-        padding-bottom: 250px;
     }
 
     #reviewContainer {
@@ -283,7 +279,6 @@ footer {
     .review-container {
         padding: 10px;
         padding-top: 70px;
-        padding-bottom: 200px;
     }
 
     #reviewContainer {
@@ -505,7 +500,7 @@ header nav {
     border: none;
     cursor: pointer;
     padding: 5px;
-    margin-left: 10px;
+    margin-top: -5px;
     z-index: 1001;
     color: #000;
 }
@@ -523,14 +518,10 @@ header nav {
 }
 
 /* Cart */
-.cart-container {
-    margin-right: 20px;
-    display: flex;
-    align-items: center;
-}
+
 
 .cart-icon {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     color: #000;
     text-decoration: none;
     margin-right: 10px;
@@ -566,15 +557,6 @@ header nav {
 }
 
 /* Стили для мобильного меню */
-.menu-toggle {
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    margin-left: 10px; /* Сдвиг ближе к логотипу */
-    margin-top: -5px; /* Немного выше */
-    z-index: 1001;
-}
 .menu-content {
     width: 100%;
     text-align: center;
@@ -602,7 +584,6 @@ nav {
 }
 /* Корзина в правом углу */
 .cart-container {
-    margin-right: 20px; /* Сдвиг ближе к логотипу */
     display: flex;
     align-items: center;
 }
