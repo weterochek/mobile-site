@@ -249,16 +249,7 @@ header nav {
     filter: brightness(70%);
 }
 
-/* Footer */
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-}
-footer p {
-    margin: 0;
-}
+
 .menu-toggle {
     font-size: 1.5rem;
     background: none;
@@ -458,13 +449,7 @@ nav {
     max-width: 600px;
     margin: 0 auto;
 }
-/* Footer */
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-}
+
 
 .accordion-button {
     background-color: #444;
@@ -497,15 +482,49 @@ footer {
     background-color: #666;
 }
 
-/* Адаптивность */
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; /* Привязываем к низу */
+    position: relative; /* Убираем fixed */
+    z-index: 10;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-item {
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+}
+
+.footer-item h3 {
+    color: #fff;
+    font-size: 0.8em;
+}
+
+.footer-item p {
+    color: #ddd;
+    margin: 5px 0;
+    line-height: 1.5;
+    font-size: 0.65em;
+}
+
 @media (max-width: 768px) {
     .footer-links {
         flex-direction: column;
-    }
-
-    .footer-item {
-        width: 100%;
-        margin-bottom: 20px;
+        align-items: center;
     }
 }
 /* Медиазапросы */
