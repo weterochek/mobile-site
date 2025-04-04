@@ -1364,25 +1364,27 @@ async function loadReviews() {
         console.log('Сырые данные от сервера:', data);
 
         // Проверяем структуру данных и извлекаем массив отзывов
-        let reviews;
+        let reviews = [];
+
         if (Array.isArray(data)) {
             reviews = [...data]; // Создаем новый массив из полученных данных
         } else if (data && typeof data === 'object') {
             if (Array.isArray(data.reviews)) {
                 reviews = [...data.reviews];
-            } else {
+            } else if (typeof data === 'object' && Object.keys(data).length > 0) {
                 reviews = Object.values(data);
             }
-        } else {
+        }
+
+        // Проверяем, что reviews действительно массив и содержит данные
+        if (!Array.isArray(reviews)) {
             reviews = [];
         }
 
-        // Проверяем, что reviews действительно массив
-        if (!Array.isArray(reviews)) {
-            throw new Error('Не удалось получить массив отзывов');
-        }
-
         console.log('Обработанные отзывы:', reviews);
+        
+        // Сохраняем отзывы в глобальную переменную
+        allReviews = reviews;
         
         if (reviews.length === 0) {
             const reviewContainer = document.getElementById('reviewContainer');
@@ -1391,14 +1393,11 @@ async function loadReviews() {
             }
             return;
         }
-        
-        // Сохраняем отзывы в глобальную переменную
-        allReviews = reviews;
-        
-        // Обновляем пагинацию
+
+        // Обновляем пагинацию и отображаем первую страницу
         updatePagination();
-        // Отображаем первую страницу
         displayReviews(currentPage);
+        
     } catch (error) {
         console.error('Ошибка при загрузке отзывов:', error);
         const reviewContainer = document.getElementById('reviewContainer');
@@ -1499,39 +1498,42 @@ function displayReviews(page) {
     
     reviewContainer.innerHTML = '';
     
-    if (pageReviews.length === 0) {
+    if (!Array.isArray(pageReviews) || pageReviews.length === 0) {
         reviewContainer.innerHTML = '<div class="no-reviews">На этой странице нет отзывов.</div>';
         return;
     }
 
-    // Используем обычный цикл for вместо forEach
-    for (let i = 0; i < pageReviews.length; i++) {
-        const review = pageReviews[i];
-        if (!review) continue;
-        
-        const reviewElement = document.createElement('div');
-        reviewElement.className = 'review';
-        
-        // Безопасное получение данных
-        const rating = parseInt(review.rating) || 0;
-        const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
-        const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
-        const displayName = review.displayName || review.username || 'Анонимный пользователь';
-        const comment = review.comment || '';
-        
-        reviewElement.innerHTML = `
-            <div class="review-header">
-                <span class="review-author">${displayName}</span>
-                <span class="review-date">${date}</span>
-            </div>
-            <div class="review-rating">${stars}</div>
-            <div class="review-text">${comment}</div>
-        `;
-        
-        reviewContainer.appendChild(reviewElement);
+    try {
+        for (let i = 0; i < pageReviews.length; i++) {
+            const review = pageReviews[i];
+            if (!review) continue;
+            
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review';
+            
+            // Безопасное получение данных
+            const rating = parseInt(review.rating) || 0;
+            const stars = '★'.repeat(Math.min(5, Math.max(0, rating))) + '☆'.repeat(5 - Math.min(5, Math.max(0, rating)));
+            const date = review.date ? new Date(review.date).toLocaleDateString('ru-RU') : 'Дата не указана';
+            const displayName = review.displayName || review.username || 'Анонимный пользователь';
+            const comment = review.comment || '';
+            
+            reviewElement.innerHTML = `
+                <div class="review-header">
+                    <span class="review-author">${displayName}</span>
+                    <span class="review-date">${date}</span>
+                </div>
+                <div class="review-rating">${stars}</div>
+                <div class="review-text">${comment}</div>
+            `;
+            
+            reviewContainer.appendChild(reviewElement);
+        }
+        console.log('Отзывы успешно отображены');
+    } catch (error) {
+        console.error('Ошибка при отображении отзывов:', error);
+        reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при отображении отзывов.</div>';
     }
-
-    console.log('Отзывы успешно отображены');
 }
 
 // Добавляем автоматическую загрузку отзывов при загрузке страницы
