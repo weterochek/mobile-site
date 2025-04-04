@@ -9,6 +9,11 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #fdfdfd;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
     #toggleHistoryBtn {
   display: block;
@@ -123,7 +128,7 @@ hr {
     }
   .account-container {
     max-width: 400px;
-    margin: 150px auto;
+    margin: 80px auto 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
@@ -421,6 +426,10 @@ nav {
 
 #cartModal h3, #cartModal button {
     margin-bottom: 10px;
+}
+.main-content {
+    flex: 1 0 auto;
+    padding-top: 60px;
 }
 /* Footer */
 footer {
