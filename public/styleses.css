@@ -832,7 +832,13 @@ buttoon {
     max-height: 500px;
     padding: 15px;
 }
-
+@media (max-width: 768px){
+ {
+      .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+ }
+}
 @media (max-width: 768px) {
     .accordion {
         padding: 0 15px;
