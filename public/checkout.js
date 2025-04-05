@@ -14,59 +14,53 @@ document.addEventListener("DOMContentLoaded", () => {
     cart = JSON.parse(localStorage.getItem('cart')) || {};
 
     // Отображаем товары в корзине
-    function renderCartItems(items) {
-        const cartItemsContainer = document.querySelector('.cart-items');
+    function renderCartItems() {
         cartItemsContainer.innerHTML = '';
         let totalAmount = 0;
 
-        items.forEach(item => {
-            const cartItem = document.createElement('div');
-            cartItem.className = 'cart-item';
-            cartItem.innerHTML = `
+        for (const productId in cart) {
+            const item = cart[productId];
+            const itemElement = document.createElement('div');
+            itemElement.className = 'cart-item';
+            itemElement.innerHTML = `
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control decrease-quantity" data-id="${item.id}">-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${productId}" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-control increase-quantity" data-id="${item.id}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
+                    <button class="quantity-control increase-quantity" data-id="${productId}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
-
-            cartItemsContainer.appendChild(cartItem);
+            cartItemsContainer.appendChild(itemElement);
             totalAmount += item.price * item.quantity;
-        });
+        }
 
         totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
     }
 
     // Обработчики для изменения количества товаров
-    document.querySelector('.cart-items').addEventListener('click', (event) => {
+    cartItemsContainer.addEventListener('click', (event) => {
         const target = event.target;
         if (!target.classList.contains('quantity-control')) return;
 
         const productId = target.dataset.id;
-        const item = cart[productId];
-        if (!item) return;
+        if (!cart[productId]) return;
 
         if (target.classList.contains('increase-quantity')) {
-            if (item.quantity < 100) {
-                item.quantity++;
-                updateCart(productId, item.name, item.price, item.quantity);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
+            // Проверяем, не превышает ли текущее количество максимальное
+            if (cart[productId].quantity < 100) {
+                cart[productId].quantity++;
             }
         } else if (target.classList.contains('decrease-quantity')) {
-            if (item.quantity > 1) {
-                item.quantity--;
-                updateCart(productId, item.name, item.price, item.quantity);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
+            if (cart[productId].quantity > 1) {
+                cart[productId].quantity--;
             } else {
-                removeFromCart(productId);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
+                delete cart[productId];
             }
         }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCartItems();
     });
 
     // Загрузка данных пользователя
@@ -197,7 +191,7 @@ const orderData = {
                 // Очистка корзины после успешного оформления
                 cart = {};  // Очищаем корзину
                 localStorage.removeItem('cart');  // Удаляем корзину из localStorage
-                renderCartItems(Object.values(cart));  // Обновляем отображение корзины
+                renderCartItems();  // Обновляем отображение корзины
                 window.location.href = "account.html";  // Перенаправление на страницу спасибо
             } catch (error) {
                 console.error("Ошибка при оформлении заказа:", error);
@@ -214,6 +208,6 @@ const orderData = {
     }
 
     // Инициализация
-    renderCartItems(Object.values(cart));
+    renderCartItems();
     loadUserData();
 });
