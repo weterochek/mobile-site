@@ -126,7 +126,7 @@ form button:hover {
 /* Стили для товаров в корзине */
 .cart-item {
     display: grid;
-    grid-template-columns: minmax(100px, 2fr) 100px 130px;
+    grid-template-columns: 2fr auto auto;
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
@@ -143,7 +143,6 @@ form button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-right: 10px;
 }
 
 .item-price {
@@ -151,19 +150,19 @@ form button:hover {
     color: #333;
     white-space: nowrap;
     text-align: right;
+    margin-right: 15px;
 }
 
 .quantity-controls {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: 8px;
     white-space: nowrap;
 }
 
 .quantity-control {
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,10 +171,9 @@ form button:hover {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     padding: 0;
     line-height: 1;
-    transition: all 0.2s;
 }
 
 .quantity-control:hover:not(:disabled) {
@@ -189,9 +187,9 @@ form button:hover {
 }
 
 .quantity {
-    min-width: 35px;
+    min-width: 30px;
     text-align: center;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 /* Адаптивность для мобильных устройств */
@@ -211,6 +209,7 @@ form button:hover {
     }
 
     .quantity-controls {
+        width: 120px;
         gap: 5px;
     }
 
