@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control decrease-quantity" data-id="${productId}" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${productId}">-</button>
                     <span class="quantity">${item.quantity}</span>
                     <button class="quantity-control increase-quantity" data-id="${productId}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
