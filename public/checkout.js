@@ -23,14 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const itemElement = document.createElement('div');
             itemElement.className = 'cart-item';
             itemElement.innerHTML = `
-                <span>${item.name}</span>
-                <span>${item.price} ₽</span>
-                <span>
-                    <button class="decrease-quantity" data-id="${productId}">-</button>
-                    ${item.quantity}
-                    <button class="increase-quantity" data-id="${productId}">+</button>
-                </span>
-                <span>${item.price * item.quantity} ₽</span>
+                <div class="item-info">${item.name}</div>
+                <div class="item-price">${item.price} ₽</div>
+                <div class="quantity-controls">
+                    <button class="quantity-control decrease-quantity" data-id="${productId}">-</button>
+                    <span class="quantity">${item.quantity}</span>
+                    <button class="quantity-control increase-quantity" data-id="${productId}">+</button>
+                </div>
             `;
             cartItemsContainer.appendChild(itemElement);
             totalAmount += item.price * item.quantity;
