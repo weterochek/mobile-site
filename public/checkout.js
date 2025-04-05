@@ -52,9 +52,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 cart[productId].quantity++;
             }
         } else if (target.classList.contains('decrease-quantity')) {
-            if (cart[productId].quantity > 1) {
-                cart[productId].quantity--;
-            } else {
+            cart[productId].quantity--;
+            if (cart[productId].quantity <= 0) {
                 delete cart[productId];
             }
         }
