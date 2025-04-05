@@ -125,11 +125,12 @@ form button:hover {
 
 /* Стили для товаров в корзине */
 .cart-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(100px, 2fr) 100px 130px;
     align-items: center;
-    justify-content: space-between;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
+    gap: 15px;
 }
 
 .cart-item:last-child {
@@ -137,29 +138,32 @@ form button:hover {
 }
 
 .item-info {
-    flex: 1;
     font-size: 15px;
     color: #333;
-    margin-right: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 10px;
 }
 
 .item-price {
     font-size: 15px;
     color: #333;
-    margin-right: 15px;
     white-space: nowrap;
+    text-align: right;
 }
 
 .quantity-controls {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
     white-space: nowrap;
 }
 
 .quantity-control {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -168,17 +172,24 @@ form button:hover {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     padding: 0;
     line-height: 1;
+    transition: all 0.2s;
 }
 
-.quantity-control:hover {
+.quantity-control:hover:not(:disabled) {
     background-color: #45a049;
 }
 
+.quantity-control:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
 .quantity {
-    min-width: 20px;
+    min-width: 35px;
     text-align: center;
     font-size: 15px;
 }
@@ -186,17 +197,17 @@ form button:hover {
 /* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .cart-item {
+        grid-template-columns: minmax(80px, 1.5fr) 80px 120px;
+        gap: 10px;
         padding: 8px 0;
     }
 
     .item-info {
         font-size: 14px;
-        margin-right: 10px;
     }
 
     .item-price {
         font-size: 14px;
-        margin-right: 10px;
     }
 
     .quantity-controls {
@@ -204,14 +215,14 @@ form button:hover {
     }
 
     .quantity-control {
-        width: 22px;
-        height: 22px;
-        font-size: 12px;
+        width: 26px;
+        height: 26px;
+        font-size: 14px;
     }
 
     .quantity {
+        min-width: 30px;
         font-size: 14px;
-        min-width: 16px;
     }
 }
 
