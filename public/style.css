@@ -303,54 +303,54 @@ nav {
 }
 
 .cart-dropdown {
-    display: none;
-    position: absolute;
-    top: 40px;
-    right: 0;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    right: -300px;
     width: 300px;
-    z-index: 10;
+    height: 100vh;
+    background: #fff;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 1000;
     padding: 15px;
 }
 
-.cart-dropdown h3 {
-    margin: 0;
-    font-size: 18px;
-    margin-bottom: 10px;
+.cart-dropdown.active {
+    right: 0;
 }
 
-/* Показать всплывающее окно при наведении */
-.cart-container:hover .cart-dropdown {
-    display: block;
-}
-/* Стиль кнопок "+" и "-" */
-.quantity-control {
-    background-color: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #333;
-    padding: 5px 10px;
-    font-size: 16px;
-    cursor: pointer;
-    display: inline-block;
+#cartItems {
+    max-height: 250px; /* Уменьшаем высоту, чтобы скролл появлялся раньше */
+    overflow-y: auto;
+    margin: 10px 0;
+    padding-right: 5px;
 }
 
-/* Стиль отображения количества товара */
-.quantity-display {
-    font-size: 16px;
-    margin: 0 10px;
-    display: inline-block;
-    color: #333;
+/* Стилизация скроллбара */
+#cartItems::-webkit-scrollbar {
+    width: 4px;
 }
 
-/* Стили для кнопок + и - в корзине */
+#cartItems::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+#cartItems::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+
+#cartItems::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 .cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
 }
 
 .cart-item .item-info {
@@ -604,6 +604,15 @@ footer {
 
     .nav-item {
         font-size: 1.2rem;
+    }
+
+    .cart-dropdown {
+        width: 280px;
+        right: -280px;
+    }
+
+    #cartItems {
+        max-height: 200px; /* Еще меньше для мобильных */
     }
 }
 @media (max-width: 768px){
