@@ -123,34 +123,43 @@ form button:hover {
     background-color: #bbb;
 }
 
-/* Стили для товаров на странице оформления */
+/* Стили для товаров в корзине */
 .cart-item {
-    display: grid;
-    grid-template-columns: 2fr 100px 80px;
+    display: flex;
     align-items: center;
-    padding: 12px 0;
+    justify-content: space-between;
+    padding: 10px 0;
     border-bottom: 1px solid #eee;
-    gap: 10px;
 }
 
 .cart-item:last-child {
     border-bottom: none;
 }
 
-.cart-item .item-info {
+.item-info {
+    flex: 1;
     font-size: 15px;
     color: #333;
+    margin-right: 15px;
 }
 
-.cart-item .cart-buttons {
+.item-price {
+    font-size: 15px;
+    color: #333;
+    margin-right: 15px;
+    white-space: nowrap;
+}
+
+.quantity-controls {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
+    white-space: nowrap;
 }
 
 .quantity-control {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,7 +169,6 @@ form button:hover {
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.2s;
     padding: 0;
     line-height: 1;
 }
@@ -170,18 +178,41 @@ form button:hover {
 }
 
 .quantity {
-    font-size: 14px;
     min-width: 20px;
     text-align: center;
-    margin: 0 2px;
+    font-size: 15px;
 }
 
-/* Цена товара */
-.item-price {
-    font-size: 15px;
-    font-weight: 500;
-    text-align: right;
-    color: #333;
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .cart-item {
+        padding: 8px 0;
+    }
+
+    .item-info {
+        font-size: 14px;
+        margin-right: 10px;
+    }
+
+    .item-price {
+        font-size: 14px;
+        margin-right: 10px;
+    }
+
+    .quantity-controls {
+        gap: 5px;
+    }
+
+    .quantity-control {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+    }
+
+    .quantity {
+        font-size: 14px;
+        min-width: 16px;
+    }
 }
 
 /* Итоговая сумма */
@@ -193,38 +224,6 @@ form button:hover {
     margin: 15px 0;
     padding-top: 10px;
     border-top: 1px solid #eee;
-}
-
-/* Адаптивность для мобильных устройств */
-@media (max-width: 480px) {
-    .cart-item {
-        grid-template-columns: 1.5fr 90px 70px;
-        padding: 8px 0;
-        gap: 8px;
-    }
-
-    .cart-item .item-info {
-        font-size: 13px;
-    }
-
-    .quantity-control {
-        width: 24px;
-        height: 24px;
-        font-size: 14px;
-    }
-
-    .cart-item .quantity {
-        font-size: 13px;
-        min-width: 16px;
-    }
-
-    .item-price {
-        font-size: 13px;
-    }
-
-    #totalAmount {
-        font-size: 14px;
-    }
 }
 
 /* Адаптивность */
