@@ -122,18 +122,12 @@ window.onload = function () {
 };
 document.addEventListener("DOMContentLoaded", function () {
     const cartItems = document.getElementById("cartItems");
-    if (cartItems) {
-        cartItems.style.maxHeight = "600px"; // Изменяем высоту для 10 товаров
-        cartItems.style.overflowY = "auto"; // Добавляем скролл при необходимости
-    }
-    
-   const cartDropdown = document.getElementById("cartDropdown");
+    const cartDropdown = document.getElementById("cartDropdown");
 
-if (cartDropdown) {
-    cartDropdown.style.display = "none"; // Убираем корзину по умолчанию
-    cartDropdown.style.flexDirection = "column";
-    cartDropdown.style.maxHeight = "80vh";
-}
+    if (cartDropdown) {
+        cartDropdown.style.display = "none"; // Убираем корзину по умолчанию
+        cartDropdown.style.flexDirection = "column";
+    }
     
     const cartFooter = document.createElement("div");
     cartFooter.id = "cartFooter";
@@ -155,19 +149,13 @@ if (cartDropdown) {
         cartDropdown.appendChild(cartFooter);
     }
 });
-document.addEventListener("DOMContentLoaded", async function () {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token && !sessionStorage.getItem("authChecked")) {
-    sessionStorage.setItem("authChecked", "true");
-    await refreshAccessToken();
-}
-
+document.addEventListener("DOMContentLoaded", function () {
     const cartButton = document.getElementById("cartButton");
     const cartDropdown = document.getElementById("cartDropdown");
 
     if (cartButton && cartDropdown) {
         cartButton.addEventListener("click", function (event) {
+            event.preventDefault();
             event.stopPropagation();
             cartDropdown.style.display = cartDropdown.style.display === "block" ? "none" : "block";
         });
@@ -187,8 +175,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
 
         cartDropdown.prepend(closeCartButton);
-    } else {
-        console.warn("❌ cartButton или cartDropdown не найдены!");
+
+        // Закрытие корзины при клике вне её области
+        document.addEventListener("click", function(event) {
+            if (!cartDropdown.contains(event.target) && !cartButton.contains(event.target)) {
+                cartDropdown.style.display = "none";
+            }
+        });
     }
 });
 
