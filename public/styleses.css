@@ -587,8 +587,7 @@ nav {
 }
 /* Корзина в правом углу */
 .cart-container {
-    display: flex;
-    align-items: center;
+    position: relative; /* Для корректного позиционирования всплывающего окна */
 }
 
 .cart-icon {
@@ -603,29 +602,102 @@ nav {
 }
 
 .cart-dropdown {
-    display: none;
     position: absolute;
-    top: 40px;
-    right: 0;
+    top: 100%; /* Отображение прямо под кнопкой */
+    right: -395%;
+    transform: translateX(-50%);
     background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    z-index: 10;
     padding: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 350px;
+    display: none; /* Скрыто изначально */
+    border-radius: 8px;
+    z-index: 1000;
 }
 
 .cart-dropdown h3 {
-    margin: 0;
-    font-size: 18px;
-    margin-bottom: 10px;
+    margin-top: 0;
 }
 
-/* Показать всплывающее окно при наведении */
-.cart-container:hover .cart-dropdown {
-    display: block;
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.9em;
 }
+
+.cart-dropdown button {
+    background-color: #9C9C9C;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 5px 5px 0 0;
+}
+
+/* Стили для кнопок + и - в корзине */
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.cart-item .item-info {
+    flex-grow: 1;
+    padding-right: 10px;
+    text-align: left;
+}
+
+.cart-item .cart-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100px;
+}
+
+.cart-item .quantity {
+    padding: 0 5px;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Стилизация скроллбара */
+#cartItems {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#cartItems::-webkit-scrollbar {
+    width: 4px;
+}
+
+#cartItems::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#cartItems::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
+}
+
+#cartItems::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Медиа-запросы для мобильных устройств */
+@media (max-width: 768px) {
+    .cart-dropdown {
+        width: 300px;
+        max-height: 80vh;
+    }
+    
+    #cartItems {
+        max-height: 300px;
+    }
+}
+
 /* Стиль кнопок "+" и "-" */
 .quantity-control {
     background-color: #f8f9fa;
@@ -643,34 +715,6 @@ nav {
     margin: 0 10px;
     display: inline-block;
     color: #333;
-}
-
-/* Стили для кнопок + и - в корзине */
-.cart-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-}
-
-.cart-item .item-info {
-    flex-grow: 1;
-    padding-right: 10px;
-    text-align: left; /* Выравнивание текста по левому краю */
-    font-size: 0.79em;
-}
-
-.cart-item .cart-buttons {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    width: 75px; /* Задаем фиксированную ширину для кнопок */
-}
-
-.cart-item .quantity {
-    padding: 0 5px;
-    min-width: 30px; /* Задаем минимальную ширину для количества */
-    text-align: center; /* Центрируем текст количества */
 }
 
 /* Стили для выпадающего окна */
