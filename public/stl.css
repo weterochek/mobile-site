@@ -125,45 +125,104 @@ form button:hover {
 
 /* Стили для товаров на странице оформления */
 .cart-item {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 2fr 100px 80px;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    gap: 10px;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
 }
 
 .cart-item .item-info {
-    flex-grow: 1;
-    font-size: 1.1rem;
+    font-size: 15px;
+    color: #333;
 }
 
 .cart-item .cart-buttons {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 8px;
 }
 
 .cart-item .quantity {
-    font-size: 1rem;
+    font-size: 14px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Кнопки управления количеством */
+.quantity-control {
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.quantity-control:hover {
+    background-color: #45a049;
+}
+
+/* Цена товара */
+.item-price {
+    font-size: 15px;
+    font-weight: 500;
+    text-align: right;
+    color: #333;
+}
+
+/* Итоговая сумма */
+#totalAmount {
+    font-size: 16px;
     font-weight: bold;
+    color: #4CAF50;
+    text-align: right;
+    margin: 15px 0;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
 }
-textarea::placeholder {
-    color: gray;
-    font-style: italic;
-}
-/* Адаптивность */
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 2rem;
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .cart-item {
+        grid-template-columns: 1.5fr 90px 70px;
+        padding: 8px 0;
+        gap: 8px;
     }
 
-    form input,
-    form textarea {
-        font-size: 0.9rem;
+    .cart-item .item-info {
+        font-size: 13px;
     }
 
-    form button {
-        font-size: 0.9rem;
+    .quantity-control {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+
+    .cart-item .quantity {
+        font-size: 13px;
+        min-width: 16px;
+    }
+
+    .item-price {
+        font-size: 13px;
+    }
+
+    #totalAmount {
+        font-size: 14px;
     }
 }
 
@@ -353,5 +412,139 @@ textarea::placeholder {
     form button {
         padding: 12px;
         font-size: 1.1rem; /* Делаем кнопки больше */
+    }
+}
+
+/* Стили для страницы оформления заказа */
+.order-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.cart-items-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.order-total {
+    border-top: 2px solid #eee;
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.total-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: right;
+    margin: 0;
+}
+
+.customer-info {
+    background: white;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.primary-button,
+.secondary-button {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.primary-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.primary-button:hover {
+    background-color: #45a049;
+}
+
+.secondary-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.secondary-button:hover {
+    background-color: #e9e9e9;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .order-container,
+    .customer-info {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .total-amount {
+        font-size: 16px;
     }
 }
