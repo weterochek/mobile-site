@@ -24,23 +24,20 @@
                     <button class="close-menu">✕</button>
                     <a href="index.html" class="nav-item">Главная</a>
                     <a href="Review.html" class="nav-item">Отзывы</a>
-                    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
-                    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
+		    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
+		    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
                 </div>
             </ul>
             <div class="cart-container">
-                <a href="#" id="cartButton" class="cart-icon">
+                <a href="#cart" id="cartButton" class="cart-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
                 <div id="cartDropdown" class="cart-dropdown">
-                    <button class="close-cart">✕</button>
                     <h3>Ваша Корзина</h3>
                     <div id="cartItems"></div>
-                    <p id="totalAmount">Итого: 0 ₽</p>
-                    <div class="cart-buttons">
-                        <button onclick="goToCheckoutPage()" class="checkout-btn">К Оформлению заказа</button>
-                        <button id="clear-cart" class="clear-cart">Очистить корзину</button>
-                    </div>
+                    <p id="totalAmount"></p>
+                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
                 </div>
             </div>
         </nav>
@@ -116,6 +113,17 @@
             </div></a>
             <!-- Добавьте дополнительные карточки блюд здесь -->
         </section>
+
+    
+<!-- Всплывающее окно корзины -->
+ <div class="cart-container">
+<div id="cartDropdown" class="cart-dropdown">
+    <h3>Ваша Корзина</h3>
+    <div id="cartItems"></div>
+    <p id="totalAmount"></p>
+    <button onclick="checkout()">Оформить заказ</button>
+</div>
+</div>
 
     <!-- Footer -->
     <footer>
