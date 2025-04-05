@@ -26,9 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control decrease-quantity" data-id="${productId}" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${productId}">-</button>
                     <span class="quantity">${item.quantity}</span>
                     <button class="quantity-control increase-quantity" data-id="${productId}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
+                    <button class="remove-item" data-id="${productId}" title="Удалить товар">×</button>
                 </div>
             `;
             cartItemsContainer.appendChild(itemElement);
@@ -41,20 +42,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // Обработчики для изменения количества товаров
     cartItemsContainer.addEventListener('click', (event) => {
         const target = event.target;
-        if (!target.classList.contains('quantity-control')) return;
-
         const productId = target.dataset.id;
-        if (!cart[productId]) return;
+        if (!productId || !cart[productId]) return;
 
         if (target.classList.contains('increase-quantity')) {
-            // Проверяем, не превышает ли текущее количество максимальное
             if (cart[productId].quantity < 100) {
                 cart[productId].quantity++;
             }
         } else if (target.classList.contains('decrease-quantity')) {
-            if (cart[productId].quantity > 1) {
-                cart[productId].quantity--;
-            } else {
+            cart[productId].quantity--;
+            if (cart[productId].quantity === 0) {
+                if (confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
+                    delete cart[productId];
+                } else {
+                    cart[productId].quantity = 1;
+                }
+            }
+        } else if (target.classList.contains('remove-item')) {
+            if (confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
                 delete cart[productId];
             }
         }
