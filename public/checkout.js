@@ -59,32 +59,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
             cartItemsContainer.appendChild(cartItem);
+
+            // Добавляем обработчики для кнопок
+            const increaseBtn = cartItem.querySelector('.increase-quantity');
+            const decreaseBtn = cartItem.querySelector('.decrease-quantity');
+
+            increaseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (item.quantity < 100) {
+                    item.quantity++;
+                    cart[item.id] = item;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    renderCartItems();
+                }
+            });
+
+            decreaseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (item.quantity > 1) {
+                    item.quantity--;
+                    cart[item.id] = item;
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    renderCartItems();
+                } else {
+                    delete cart[item.id];
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    renderCartItems();
+                }
+            });
         });
 
         updateTotalAmount();
     }
-
-    // Обработчик кликов по кнопкам + и -
-    cartItemsContainer.addEventListener('click', function(event) {
-        const target = event.target;
-        
-        // Проверяем, что клик был по кнопке
-        if (!target.classList.contains('quantity-control')) return;
-        
-        event.preventDefault();
-        event.stopPropagation();
-        
-        const productId = target.dataset.id;
-        const item = cart[productId];
-        
-        if (!item) return;
-        
-        if (target.classList.contains('increase-quantity') && item.quantity < 100) {
-            updateCart(productId, item.name, item.price, item.quantity + 1);
-        } else if (target.classList.contains('decrease-quantity')) {
-            updateCart(productId, item.name, item.price, item.quantity - 1);
-        }
-    });
 
     // Загрузка данных пользователя
     async function loadUserData() {
