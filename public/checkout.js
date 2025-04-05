@@ -26,36 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control minus" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${item.id}">-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-control plus" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
+                    <button class="quantity-control increase-quantity" data-id="${item.id}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
-
-            const minusButton = cartItem.querySelector('.minus');
-            const plusButton = cartItem.querySelector('.plus');
-
-            minusButton.addEventListener('click', () => {
-                if (item.quantity > 1) {
-                    item.quantity--;
-                    updateCart(item.id, item.name, item.price, item.quantity);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
-                } else {
-                    removeFromCart(item.id);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
-                }
-            });
-
-            plusButton.addEventListener('click', () => {
-                if (item.quantity < 100) {
-                    item.quantity++;
-                    updateCart(item.id, item.name, item.price, item.quantity);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
-                }
-            });
 
             cartItemsContainer.appendChild(cartItem);
             totalAmount += item.price * item.quantity;
@@ -65,26 +40,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Обработчики для изменения количества товаров
-    cartItemsContainer.addEventListener('click', (event) => {
+    document.querySelector('.cart-items').addEventListener('click', (event) => {
         const target = event.target;
         if (!target.classList.contains('quantity-control')) return;
 
         const productId = target.dataset.id;
-        if (!cart[productId]) return;
+        const item = cart[productId];
+        if (!item) return;
 
         if (target.classList.contains('increase-quantity')) {
-            if (cart[productId].quantity < 100) {
-                cart[productId].quantity++;
+            if (item.quantity < 100) {
+                item.quantity++;
+                updateCart(productId, item.name, item.price, item.quantity);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
             }
         } else if (target.classList.contains('decrease-quantity')) {
-            cart[productId].quantity--;
-            if (cart[productId].quantity === 0) {
-                delete cart[productId];
+            if (item.quantity > 1) {
+                item.quantity--;
+                updateCart(productId, item.name, item.price, item.quantity);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
+            } else {
+                removeFromCart(productId);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
             }
         }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderCartItems(Object.values(cart));
     });
 
     // Загрузка данных пользователя
