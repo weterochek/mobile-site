@@ -249,16 +249,7 @@ header nav {
     filter: brightness(70%);
 }
 
-/* Footer */
-footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem;
-}
-footer p {
-    margin: 0;
-}
+
 .menu-toggle {
     font-size: 1.5rem;
     background: none;
@@ -312,69 +303,239 @@ nav {
 }
 
 .cart-dropdown {
-    position: fixed;
-    top: 0;
-    right: -300px; /* Уменьшенная ширина для мобильной версии */
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
-    height: 100vh;
-    background: #fff;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-    transition: right 0.3s ease;
-    z-index: 1000;
+    z-index: 10;
     padding: 15px;
 }
 
-.cart-dropdown.active {
-    right: 0;
+.cart-dropdown h3 {
+    margin: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
-#cartItems {
-    max-height: 400px; /* Фиксированная высота для скролла */
-    overflow-y: auto; /* Добавляем вертикальный скролл */
-    margin: 10px 0;
-    padding-right: 5px; /* Отступ для скроллбара */
+/* Показать всплывающее окно при наведении */
+.cart-container:hover .cart-dropdown {
+    display: block;
+}
+/* Стиль кнопок "+" и "-" */
+.quantity-control {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
 }
 
-/* Стилизация скроллбара */
-#cartItems::-webkit-scrollbar {
-    width: 4px; /* Тонкий скроллбар для мобильных */
+/* Стиль отображения количества товара */
+.quantity-display {
+    font-size: 16px;
+    margin: 0 10px;
+    display: inline-block;
+    color: #333;
 }
 
-#cartItems::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 2px;
-}
-
-#cartItems::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 2px;
-}
-
-#cartItems::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
+/* Стили для кнопок + и - в корзине */
 .cart-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #eee;
+    padding: 5px 0;
 }
 
-.cart-item:last-child {
-    border-bottom: none;
+.cart-item .item-info {
+    flex-grow: 1;
+    padding-right: 10px;
+    text-align: left; /* Выравнивание текста по левому краю */
+    font-size: 0.85em;
 }
 
-/* Медиа-запрос для мобильных устройств */
-@media (max-width: 480px) {
-    .cart-dropdown {
-        width: 280px; /* Еще меньше для маленьких экранов */
-        right: -280px;
+.cart-item .cart-buttons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 75px; /* Задаем фиксированную ширину для кнопок */
+}
+
+.cart-item .quantity {
+    padding: 0 5px;
+    min-width: 30px; /* Задаем минимальную ширину для количества */
+    text-align: center; /* Центрируем текст количества */
+}
+
+/* Стили для выпадающего окна */
+.cabinet-dropdown {
+    position: fixed; /* Позиция относительно родителя */
+    top: 100%; /* Находится под кнопкой */
+    left: 0; /* Прижать к левой стороне */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 15px;
+    max-width: calc(100vw - 20px); /* Чтобы вмещался по ширине экрана */
+    max-height: calc(100vh - 20px); /* Чтобы вмещался по высоте экрана */
+    overflow-y: auto; /* Скролл для содержимого, если его слишком много */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border-radius: 8px;
+}
+
+.cabinet-dropdown h2 {
+    padding: 8px; /* Отступы внутри заголовка */
+}
+
+.cabinet-dropdown span {
+    margin-left: auto; /* Сдвиг крестика вправо */
+}
+
+.cabinet-dropdown h2, .cabinet-dropdown h3, .cabinet-dropdown p {
+    margin: 0 0 10px;
+}
+
+.cabinet-dropdown button {
+    background-color: #8D917A;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#cartModal h3, #cartModal button {
+    margin-bottom: 10px;
+}
+.menu-header {
+    text-align: center;
+}
+.menu-header .subtitle {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 20%;
+}
+.menu-headeer .subtitlee {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 90px;
+    margin: 0px 15px;
+}
+#menu p {
+    text-align: center;
+    padding-top: 10px;
+    line-height: 1.4;
+    margin: 0px 20px;
+}
+
+.about {
+    background-color: #fafafa;
+    padding: 0.5rem;
+    text-align: center;
+}
+.about h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.about p {
+    font-size: 0.8rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+
+.accordion-button {
+    background-color: #444;
+    color: white;
+    padding: 10px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+}
+
+.accordion-button:hover {
+    background-color: #555;
+}
+
+.accordion-content {
+    max-height: 0; /* Начинаем с 0 */
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+.accordion-content.open {
+    max-height: 500px; /* Установи нужную высоту */
+}
+
+.accordion-button.active {
+    background-color: #666;
+}
+
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+    width: 100%;
+    margin-top: auto; /* Привязываем к низу */
+    position: relative; /* Убираем fixed */
+    z-index: 10;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-item {
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+}
+
+.footer-item h3 {
+    color: #fff;
+    font-size: 0.8em;
+}
+
+.footer-item p {
+    color: #ddd;
+    margin: 5px 0;
+    line-height: 1.5;
+    font-size: 0.65em;
+}
+
+@media (max-width: 768px) {
+    .footer-links {
+        flex-direction: column;
+        align-items: center;
     }
-
-    #cartItems {
-        max-height: 300px; /* Меньшая высота на мобильных */
+}
+@media (max-width: 768px){
+ {
+      .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+ }
+@media (max-width: 1024px) {
+    .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
     }
 }
 
@@ -444,6 +605,13 @@ nav {
     .nav-item {
         font-size: 1.2rem;
     }
+}
+@media (max-width: 768px){
+ {
+      .navbar.active {
+        justify-content: space-evenly; /* Равномерное распределение элементов */
+    }
+ }
 }
 @media (max-width: 768px) {
     nav {
