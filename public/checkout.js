@@ -4,6 +4,26 @@ function getToken() {
     return localStorage.getItem("accessToken");
 }
 
+// Функции для работы с корзиной
+function updateCart(id, name, price, quantity) {
+    cart[id] = { id, name, price, quantity };
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function removeFromCart(id) {
+    delete cart[id];
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function getCartItems() {
+    return Object.values(cart);
+}
+
+function updateTotalAmount() {
+    const totalAmount = Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0);
+    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const cartItemsContainer = document.getElementById("cartItems");
     const totalAmountElement = document.getElementById("totalAmount");
