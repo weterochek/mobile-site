@@ -4,109 +4,70 @@ function getToken() {
     return localStorage.getItem("accessToken");
 }
 
-// Функции для работы с корзиной
-function updateCart(id, name, price, quantity) {
-    if (quantity > 0) {
-        cart[id] = { id, name, price, quantity };
-    } else {
-        delete cart[id];
-    }
-    localStorage.setItem('cart', JSON.stringify(cart));
-    renderCartItems();
-}
-
-function removeFromCart(id) {
-    delete cart[id];
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-function getCartItems() {
-    return Object.values(cart);
-}
-
-function updateTotalAmount() {
-    const totalAmount = Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const totalAmountElement = document.getElementById("totalAmount");
-    if (totalAmountElement) {
-        totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
-    }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
-    // Загружаем корзину из localStorage при загрузке страницы
-    cart = JSON.parse(localStorage.getItem('cart')) || {};
-    
     const cartItemsContainer = document.getElementById("cartItems");
+    const totalAmountElement = document.getElementById("totalAmount");
     const checkoutForm = document.getElementById("checkoutForm");
     const backToShoppingButton = document.getElementById("backToShopping");
 
-    function renderCartItems() {
-        if (!cartItemsContainer) return;
-        
-        // Очищаем контейнер перед добавлением элементов
+    // Загружаем корзину из localStorage
+    cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    // Отображаем товары в корзине
+    function renderCartItems(items) {
+        const cartItemsContainer = document.querySelector('.cart-items');
         cartItemsContainer.innerHTML = '';
-        
-        // Получаем все товары из корзины
-        const items = Object.values(cart);
-        
-        if (items.length === 0) {
-            cartItemsContainer.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
-            updateTotalAmount();
-            return;
-        }
-        
-        // Создаем элементы для каждого товара
+        let totalAmount = 0;
+
         items.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
-            cartItem.dataset.id = item.id; // Добавляем id для идентификации элемента
             cartItem.innerHTML = `
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button type="button" class="quantity-control decrease-quantity" data-id="${item.id}">-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${item.id}">-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button type="button" class="quantity-control increase-quantity" data-id="${item.id}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
+                    <button class="quantity-control increase-quantity" data-id="${item.id}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
+
             cartItemsContainer.appendChild(cartItem);
+            totalAmount += item.price * item.quantity;
         });
 
-        // Добавляем обработчики событий после создания всех элементов
-        cartItemsContainer.addEventListener('click', handleQuantityChange);
-        
-        // Обновляем общую сумму
-        updateTotalAmount();
+        totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
     }
 
-    // Обработчик изменения количества
-    function handleQuantityChange(event) {
+    // Обработчики для изменения количества товаров
+    document.querySelector('.cart-items').addEventListener('click', (event) => {
         const target = event.target;
         if (!target.classList.contains('quantity-control')) return;
-        
-        event.preventDefault();
-        event.stopPropagation();
-        
+
         const productId = target.dataset.id;
         const item = cart[productId];
-        
         if (!item) return;
-        
-        if (target.classList.contains('increase-quantity') && item.quantity < 100) {
-            item.quantity++;
-            cart[productId] = item;
+
+        if (target.classList.contains('increase-quantity')) {
+            if (item.quantity < 100) {
+                item.quantity++;
+                updateCart(productId, item.name, item.price, item.quantity);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
+            }
         } else if (target.classList.contains('decrease-quantity')) {
             if (item.quantity > 1) {
                 item.quantity--;
-                cart[productId] = item;
+                updateCart(productId, item.name, item.price, item.quantity);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
             } else {
-                delete cart[productId];
+                removeFromCart(productId);
+                renderCartItems(getCartItems());
+                updateTotalAmount();
             }
         }
-        
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderCartItems();
-    }
+    });
 
     // Загрузка данных пользователя
     async function loadUserData() {
@@ -236,7 +197,7 @@ const orderData = {
                 // Очистка корзины после успешного оформления
                 cart = {};  // Очищаем корзину
                 localStorage.removeItem('cart');  // Удаляем корзину из localStorage
-                renderCartItems();  // Обновляем отображение корзины
+                renderCartItems(Object.values(cart));  // Обновляем отображение корзины
                 window.location.href = "account.html";  // Перенаправление на страницу спасибо
             } catch (error) {
                 console.error("Ошибка при оформлении заказа:", error);
@@ -252,7 +213,7 @@ const orderData = {
         });
     }
 
-    // Инициализация страницы
-    renderCartItems();
+    // Инициализация
+    renderCartItems(Object.values(cart));
     loadUserData();
 });
