@@ -528,7 +528,6 @@ footer {
     }
 }
 @media (max-width: 768px){
- {
       .navbar.active {
         justify-content: space-evenly; /* Равномерное распределение элементов */
     }
@@ -538,6 +537,7 @@ footer {
         justify-content: space-evenly; /* Равномерное распределение элементов */
     }
 }
+
 
 /* Медиазапросы */
 @media (max-width: 768px) {
@@ -607,11 +607,9 @@ footer {
     }
 }
 @media (max-width: 768px){
- {
-      .navbar.active {
+    .navbar.active {
         justify-content: space-evenly; /* Равномерное распределение элементов */
     }
- }
 }
 @media (max-width: 768px) {
     nav {
