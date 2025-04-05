@@ -14,27 +14,52 @@ document.addEventListener("DOMContentLoaded", () => {
     cart = JSON.parse(localStorage.getItem('cart')) || {};
 
     // Отображаем товары в корзине
-    function renderCartItems() {
+    function renderCartItems(items) {
+        const cartItemsContainer = document.querySelector('.cart-items');
         cartItemsContainer.innerHTML = '';
         let totalAmount = 0;
 
-        for (const productId in cart) {
-            const item = cart[productId];
-            const itemElement = document.createElement('div');
-            itemElement.className = 'cart-item';
-            itemElement.innerHTML = `
+        items.forEach(item => {
+            const cartItem = document.createElement('div');
+            cartItem.className = 'cart-item';
+            cartItem.innerHTML = `
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control decrease-quantity" data-id="${productId}">-</button>
+                    <button class="quantity-control minus" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-control increase-quantity" data-id="${productId}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
-                    <button class="remove-item" data-id="${productId}" title="Удалить товар">×</button>
+                    <button class="quantity-control plus" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
-            cartItemsContainer.appendChild(itemElement);
+
+            const minusButton = cartItem.querySelector('.minus');
+            const plusButton = cartItem.querySelector('.plus');
+
+            minusButton.addEventListener('click', () => {
+                if (item.quantity > 1) {
+                    item.quantity--;
+                    updateCart(item.id, item.name, item.price, item.quantity);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                } else {
+                    removeFromCart(item.id);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                }
+            });
+
+            plusButton.addEventListener('click', () => {
+                if (item.quantity < 100) {
+                    item.quantity++;
+                    updateCart(item.id, item.name, item.price, item.quantity);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                }
+            });
+
+            cartItemsContainer.appendChild(cartItem);
             totalAmount += item.price * item.quantity;
-        }
+        });
 
         totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
     }
@@ -42,8 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // Обработчики для изменения количества товаров
     cartItemsContainer.addEventListener('click', (event) => {
         const target = event.target;
+        if (!target.classList.contains('quantity-control')) return;
+
         const productId = target.dataset.id;
-        if (!productId || !cart[productId]) return;
+        if (!cart[productId]) return;
 
         if (target.classList.contains('increase-quantity')) {
             if (cart[productId].quantity < 100) {
@@ -52,20 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (target.classList.contains('decrease-quantity')) {
             cart[productId].quantity--;
             if (cart[productId].quantity === 0) {
-                if (confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
-                    delete cart[productId];
-                } else {
-                    cart[productId].quantity = 1;
-                }
-            }
-        } else if (target.classList.contains('remove-item')) {
-            if (confirm('Вы уверены, что хотите удалить этот товар из корзины?')) {
                 delete cart[productId];
             }
         }
 
         localStorage.setItem('cart', JSON.stringify(cart));
-        renderCartItems();
+        renderCartItems(Object.values(cart));
     });
 
     // Загрузка данных пользователя
@@ -196,7 +215,7 @@ const orderData = {
                 // Очистка корзины после успешного оформления
                 cart = {};  // Очищаем корзину
                 localStorage.removeItem('cart');  // Удаляем корзину из localStorage
-                renderCartItems();  // Обновляем отображение корзины
+                renderCartItems(Object.values(cart));  // Обновляем отображение корзины
                 window.location.href = "account.html";  // Перенаправление на страницу спасибо
             } catch (error) {
                 console.error("Ошибка при оформлении заказа:", error);
@@ -213,6 +232,6 @@ const orderData = {
     }
 
     // Инициализация
-    renderCartItems();
+    renderCartItems(Object.values(cart));
     loadUserData();
 });
