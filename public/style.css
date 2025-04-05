@@ -303,7 +303,7 @@ nav {
 .cart-dropdown {
     position: absolute;
     top: 100%; /* Отображение прямо под кнопкой */
-    left: 50%; /* Центрирование относительно кнопки */
+    right: -395%;
     transform: translateX(-50%);
     background-color: #fff;
     padding: 15px;
