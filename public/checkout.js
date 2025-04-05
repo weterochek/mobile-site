@@ -26,9 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
                 <div class="quantity-controls">
-                    <button class="quantity-control decrease-quantity" data-id="${productId}">-</button>
+                    <button class="quantity-control decrease-quantity" data-id="${productId}" ${item.quantity <= 1 ? 'disabled' : ''}>-</button>
                     <span class="quantity">${item.quantity}</span>
-                    <button class="quantity-control increase-quantity" data-id="${productId}">+</button>
+                    <button class="quantity-control increase-quantity" data-id="${productId}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
             cartItemsContainer.appendChild(itemElement);
@@ -41,13 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // Обработчики для изменения количества товаров
     cartItemsContainer.addEventListener('click', (event) => {
         const target = event.target;
-        const productId = target.getAttribute('data-id');
+        if (!target.classList.contains('quantity-control')) return;
+
+        const productId = target.dataset.id;
+        if (!cart[productId]) return;
 
         if (target.classList.contains('increase-quantity')) {
-            cart[productId].quantity++;
+            // Проверяем, не превышает ли текущее количество максимальное
+            if (cart[productId].quantity < 100) {
+                cart[productId].quantity++;
+            }
         } else if (target.classList.contains('decrease-quantity')) {
-            cart[productId].quantity--;
-            if (cart[productId].quantity === 0) {
+            if (cart[productId].quantity > 1) {
+                cart[productId].quantity--;
+            } else {
                 delete cart[productId];
             }
         }
