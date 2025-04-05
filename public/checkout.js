@@ -61,27 +61,83 @@ document.addEventListener("DOMContentLoaded", () => {
     async function loadUserData() {
         const token = getToken();
         if (!token) {
-            alert("Вы не авторизованы! Пожалуйста, войдите в аккаунт.");
-            window.location.href = "login.html";
+            console.log("Пользователь не авторизован");
             return;
         }
+
         try {
             const response = await fetch("https://mobile-site.onrender.com/account", {
                 method: "GET",
+                credentials: "include",
                 headers: {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
             });
+
+            if (response.status === 401) {
+                // Если токен истек или недействителен, пробуем обновить его
+                const refreshResult = await refreshToken();
+                if (refreshResult) {
+                    // Если обновление успешно, повторяем запрос с новым токеном
+                    const newToken = getToken();
+                    const newResponse = await fetch("https://mobile-site.onrender.com/account", {
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            "Authorization": `Bearer ${newToken}`,
+                            "Content-Type": "application/json"
+                        }
+                    });
+                    if (newResponse.ok) {
+                        const userData = await newResponse.json();
+                        updateFormWithUserData(userData);
+                        return;
+                    }
+                }
+                // Если обновление не удалось, продолжаем без данных пользователя
+                console.log("Не удалось обновить токен");
+                return;
+            }
+
             if (!response.ok) {
                 throw new Error("Ошибка при загрузке данных профиля");
             }
+
             const userData = await response.json();
-            document.getElementById("customerName").value = userData.name || "";
-            document.getElementById("customerAddress").value = userData.city || "";
+            updateFormWithUserData(userData);
         } catch (error) {
             console.error("Ошибка загрузки данных профиля:", error);
-            alert("Не удалось загрузить данные профиля.");
+        }
+    }
+
+    // Функция для обновления токена
+    async function refreshToken() {
+        try {
+            const response = await fetch("https://mobile-site.onrender.com/refresh", {
+                method: "POST",
+                credentials: "include"
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('accessToken', data.accessToken);
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error("Ошибка при обновлении токена:", error);
+            return false;
+        }
+    }
+
+    // Функция для обновления формы данными пользователя
+    function updateFormWithUserData(userData) {
+        if (userData.name) {
+            document.getElementById("customerName").value = userData.name;
+        }
+        if (userData.city) {
+            document.getElementById("customerAddress").value = userData.city;
         }
     }
 
