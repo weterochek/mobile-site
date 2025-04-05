@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Отображаем товары в корзине
     function renderCartItems(items) {
-        const cartItemsContainer = document.querySelector('.cart-items');
         cartItemsContainer.innerHTML = '';
         let totalAmount = 0;
 
@@ -40,34 +39,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Обработчики для изменения количества товаров
-    document.querySelector('.cart-items').addEventListener('click', (event) => {
-        const target = event.target;
-        if (!target.classList.contains('quantity-control')) return;
+    if (cartItemsContainer) {
+        cartItemsContainer.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!target.classList.contains('quantity-control')) return;
 
-        const productId = target.dataset.id;
-        const item = cart[productId];
-        if (!item) return;
+            const productId = target.dataset.id;
+            const item = cart[productId];
+            if (!item) return;
 
-        if (target.classList.contains('increase-quantity')) {
-            if (item.quantity < 100) {
-                item.quantity++;
-                updateCart(productId, item.name, item.price, item.quantity);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
+            if (target.classList.contains('increase-quantity')) {
+                if (item.quantity < 100) {
+                    item.quantity++;
+                    updateCart(productId, item.name, item.price, item.quantity);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                }
+            } else if (target.classList.contains('decrease-quantity')) {
+                if (item.quantity > 1) {
+                    item.quantity--;
+                    updateCart(productId, item.name, item.price, item.quantity);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                } else {
+                    removeFromCart(productId);
+                    renderCartItems(getCartItems());
+                    updateTotalAmount();
+                }
             }
-        } else if (target.classList.contains('decrease-quantity')) {
-            if (item.quantity > 1) {
-                item.quantity--;
-                updateCart(productId, item.name, item.price, item.quantity);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
-            } else {
-                removeFromCart(productId);
-                renderCartItems(getCartItems());
-                updateTotalAmount();
-            }
-        }
-    });
+        });
+    }
 
     // Загрузка данных пользователя
     async function loadUserData() {
