@@ -43,12 +43,23 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderCartItems() {
         if (!cartItemsContainer) return;
         
+        // Очищаем контейнер перед добавлением элементов
         cartItemsContainer.innerHTML = '';
+        
+        // Получаем все товары из корзины
         const items = Object.values(cart);
         
+        if (items.length === 0) {
+            cartItemsContainer.innerHTML = '<div class="empty-cart">Корзина пуста</div>';
+            updateTotalAmount();
+            return;
+        }
+        
+        // Создаем элементы для каждого товара
         items.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
+            cartItem.dataset.id = item.id; // Добавляем id для идентификации элемента
             cartItem.innerHTML = `
                 <div class="item-info">${item.name}</div>
                 <div class="item-price">${item.price} ₽</div>
@@ -59,39 +70,42 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
             cartItemsContainer.appendChild(cartItem);
-
-            // Добавляем обработчики для кнопок
-            const increaseBtn = cartItem.querySelector('.increase-quantity');
-            const decreaseBtn = cartItem.querySelector('.decrease-quantity');
-
-            increaseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (item.quantity < 100) {
-                    item.quantity++;
-                    cart[item.id] = item;
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    renderCartItems();
-                }
-            });
-
-            decreaseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (item.quantity > 1) {
-                    item.quantity--;
-                    cart[item.id] = item;
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    renderCartItems();
-                } else {
-                    delete cart[item.id];
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    renderCartItems();
-                }
-            });
         });
 
+        // Добавляем обработчики событий после создания всех элементов
+        cartItemsContainer.addEventListener('click', handleQuantityChange);
+        
+        // Обновляем общую сумму
         updateTotalAmount();
+    }
+
+    // Обработчик изменения количества
+    function handleQuantityChange(event) {
+        const target = event.target;
+        if (!target.classList.contains('quantity-control')) return;
+        
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const productId = target.dataset.id;
+        const item = cart[productId];
+        
+        if (!item) return;
+        
+        if (target.classList.contains('increase-quantity') && item.quantity < 100) {
+            item.quantity++;
+            cart[productId] = item;
+        } else if (target.classList.contains('decrease-quantity')) {
+            if (item.quantity > 1) {
+                item.quantity--;
+                cart[productId] = item;
+            } else {
+                delete cart[productId];
+            }
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCartItems();
     }
 
     // Загрузка данных пользователя
