@@ -21,7 +21,10 @@ function getCartItems() {
 
 function updateTotalAmount() {
     const totalAmount = Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0);
-    document.getElementById("totalAmount").textContent = `Итого: ${totalAmount} ₽`;
+    const totalAmountElement = document.getElementById("totalAmount");
+    if (totalAmountElement) {
+        totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -33,11 +36,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Загружаем корзину из localStorage
     cart = JSON.parse(localStorage.getItem('cart')) || {};
 
-    // Отображаем товары в корзине
-    function renderCartItems(items) {
+    function renderCartItems() {
+        if (!cartItemsContainer) return;
+        
         cartItemsContainer.innerHTML = '';
-        let totalAmount = 0;
-
+        const items = Object.values(cart);
+        
         items.forEach(item => {
             const cartItem = document.createElement('div');
             cartItem.className = 'cart-item';
@@ -50,12 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     <button type="button" class="quantity-control increase-quantity" data-id="${item.id}" ${item.quantity >= 100 ? 'disabled' : ''}>+</button>
                 </div>
             `;
-
             cartItemsContainer.appendChild(cartItem);
-            totalAmount += item.price * item.quantity;
         });
 
-        totalAmountElement.textContent = `Итого: ${totalAmount} ₽`;
+        updateTotalAmount();
     }
 
     // Обработчики для изменения количества товаров
@@ -72,21 +74,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (item.quantity < 100) {
                     item.quantity++;
                     updateCart(productId, item.name, item.price, item.quantity);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
                 }
             } else if (target.classList.contains('decrease-quantity')) {
                 if (item.quantity > 1) {
                     item.quantity--;
                     updateCart(productId, item.name, item.price, item.quantity);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
                 } else {
                     removeFromCart(productId);
-                    renderCartItems(getCartItems());
-                    updateTotalAmount();
                 }
             }
+            renderCartItems();
         });
     }
 
@@ -218,7 +215,7 @@ const orderData = {
                 // Очистка корзины после успешного оформления
                 cart = {};  // Очищаем корзину
                 localStorage.removeItem('cart');  // Удаляем корзину из localStorage
-                renderCartItems(Object.values(cart));  // Обновляем отображение корзины
+                renderCartItems();  // Обновляем отображение корзины
                 window.location.href = "account.html";  // Перенаправление на страницу спасибо
             } catch (error) {
                 console.error("Ошибка при оформлении заказа:", error);
@@ -234,7 +231,7 @@ const orderData = {
         });
     }
 
-    // Инициализация
-    renderCartItems(Object.values(cart));
+    // Инициализация страницы
+    renderCartItems();
     loadUserData();
 });
