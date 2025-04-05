@@ -351,7 +351,7 @@ nav {
     flex-grow: 1;
     padding-right: 10px;
     text-align: left; /* Выравнивание текста по левому краю */
-    font-size: 0.85em;
+    font-size: 0.79em;
 }
 
 .cart-item .cart-buttons {
