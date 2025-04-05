@@ -145,20 +145,12 @@ form button:hover {
 .cart-item .cart-buttons {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
+    gap: 5px;
 }
 
-.cart-item .quantity {
-    font-size: 14px;
-    min-width: 20px;
-    text-align: center;
-}
-
-/* Кнопки управления количеством */
 .quantity-control {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -167,12 +159,21 @@ form button:hover {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     transition: background-color 0.2s;
+    padding: 0;
+    line-height: 1;
 }
 
 .quantity-control:hover {
     background-color: #45a049;
+}
+
+.quantity {
+    font-size: 14px;
+    min-width: 20px;
+    text-align: center;
+    margin: 0 2px;
 }
 
 /* Цена товара */
