@@ -370,7 +370,8 @@ footer {
 .submit-button {
     display: block;
     width: 100%;
-    padding: 1rem;
+    padding: 0.7rem;
+    margin-top: 20px;
     background-color: #4CAF50;
     border: none;
     color: white;
