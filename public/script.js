@@ -1369,7 +1369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Проверяем авторизацию
                 const token = localStorage.getItem('accessToken');
                 if (!token) {
-                    throw new Error("Вы не авторизованы!");
+                    throw new Error("Для отправки отзыва необходимо авторизоваться");
                 }
 
                 // Отправляем отзыв
@@ -1383,7 +1383,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `Ошибка ${response.status}: ${response.statusText}`);
                 }
 
                 // Получаем ответ
