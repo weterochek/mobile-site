@@ -118,11 +118,21 @@
                 submitButton: !!submitButton
             });
             
-            // Добавляем простой обработчик для проверки
-            if (submitButton) {
-                submitButton.addEventListener('click', function() {
-                    console.log('Button clicked!');
-                    alert('Button clicked!');
+            // Загружаем отзывы
+            loadReviews();
+            
+            // Добавляем обработчик отправки
+            if (reviewForm && submitButton) {
+                reviewForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    console.log('Form submit event');
+                    submitReview();
+                });
+                
+                submitButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    console.log('Button click event');
+                    submitReview();
                 });
             }
         });
