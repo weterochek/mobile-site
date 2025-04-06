@@ -105,8 +105,27 @@
 
     <script src="script.js"></script>
     <script>
-        document.getElementById('reviewForm').addEventListener('submit', submitReview);
-        document.addEventListener('DOMContentLoaded', loadReviews);
+        // Тестовый скрипт для проверки загрузки
+        console.log('Review.html script loaded');
+        
+        // Проверяем наличие элементов
+        window.addEventListener('load', function() {
+            console.log('Page loaded, checking elements...');
+            const reviewForm = document.getElementById('reviewForm');
+            const submitButton = document.getElementById('submitReview');
+            console.log('Elements found:', {
+                reviewForm: !!reviewForm,
+                submitButton: !!submitButton
+            });
+            
+            // Добавляем простой обработчик для проверки
+            if (submitButton) {
+                submitButton.addEventListener('click', function() {
+                    console.log('Button clicked!');
+                    alert('Button clicked!');
+                });
+            }
+        });
     </script>
 </body>
 </html>
