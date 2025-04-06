@@ -156,11 +156,11 @@ form button:hover {
 }
 
 .quantity-controls {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(3, 30px);
     align-items: center;
-    gap: 4px;
-    width: auto;
+    justify-content: end;
+    gap: 8px;
 }
 
 .quantity-control {
@@ -190,34 +190,30 @@ form button:hover {
 }
 
 .quantity {
-    min-width: 30px;
+    width: 30px;
     text-align: center;
     font-size: 16px;
-    margin: 0;
 }
 
 /* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .cart-item {
-        grid-template-columns: 1fr auto 110px;
+        grid-template-columns: 1fr 110px;
         gap: 10px;
-        padding: 8px 0;
     }
 
     .quantity-controls {
-        width: 110px;
+        grid-template-columns: repeat(3, 26px);
         gap: 5px;
     }
 
     .quantity-control {
         width: 26px;
         height: 26px;
-        font-size: 14px;
     }
 
     .quantity {
-        min-width: 26px;
-        font-size: 14px;
+        width: 26px;
     }
 
     .item-info {
@@ -229,7 +225,6 @@ form button:hover {
         margin-right: 10px;
     }
 }
-
 /* Итоговая сумма */
 #totalAmount {
     font-size: 16px;
