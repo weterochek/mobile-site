@@ -181,31 +181,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         cartDropdown.prepend(closeCartButton);
 
-        // Закрытие корзины при клике вне её области
-        document.addEventListener("click", function(event) {
-            const cartDropdown = document.getElementById('cartDropdown');
-            const cartButton = document.getElementById('cartButton');
-            
-            if (cartDropdown && cartButton) {
-                // Проверяем, был ли клик на кнопках управления количеством
-                const isQuantityControl = event.target.closest('.cart-buttons');
-                
-                // Закрываем корзину только если клик был вне корзины, вне кнопки корзины и не на элементах управления количеством
-                if (!cartDropdown.contains(event.target) && 
-                    !cartButton.contains(event.target) && 
-                    !isQuantityControl) {
-                    cartDropdown.classList.remove('active');
-                }
-            }
-        });
-
         // Предотвращение закрытия при клике внутри корзины
-        const cartDropdown = document.getElementById('cartDropdown');
-        if (cartDropdown) {
-            cartDropdown.addEventListener('click', function(event) {
-                event.stopPropagation();
-            });
-        }
+        cartDropdown.addEventListener("click", function(event) {
+            event.stopPropagation();
+        });
     }
 });
 
