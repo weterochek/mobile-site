@@ -1456,64 +1456,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Функция загрузки отзывов с пагинацией
 async function loadReviews() {
+    console.log('Starting loadReviews function');
     try {
-        console.log('Начинаем загрузку отзывов...');
         const response = await fetch('https://mobile-site.onrender.com/api/reviews');
+        console.log('Reviews fetch response:', response.status);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Failed to load reviews: ${response.status}`);
         }
-
-        const data = await response.json();
-        console.log('Получены данные от сервера:', data);
-
-        // Инициализируем массив отзывов
-        if (Array.isArray(data)) {
-            console.log('Данные уже являются массивом');
-            allReviews = [...data];
-        } else if (data && typeof data === 'object') {
-            console.log('Данные являются объектом, проверяем структуру');
-            if (data.reviews && Array.isArray(data.reviews)) {
-                allReviews = [...data.reviews];
-            } else if (Object.keys(data).length > 0) {
-                allReviews = Object.values(data);
-            }
-        }
-
-        // Проверяем, что получили массив
-        if (!Array.isArray(allReviews)) {
-            console.error('Не удалось получить массив отзывов');
-            allReviews = [];
-        }
-
-        // Фильтруем невалидные отзывы
-        allReviews = allReviews.filter(review => review && typeof review === 'object');
-
-        console.log('Обработанные отзывы:', allReviews);
+        
+        const reviews = await response.json();
+        console.log('Reviews loaded:', reviews);
         
         const reviewContainer = document.getElementById('reviewContainer');
         if (!reviewContainer) {
-            console.error('Контейнер отзывов не найден');
+            console.error('Review container not found');
             return;
         }
-
-        if (allReviews.length === 0) {
+        
+        if (!reviews || reviews.length === 0) {
             reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
             return;
         }
-
-        // Сбрасываем текущую страницу на первую
-        currentPage = 1;
         
-        // Обновляем пагинацию и отображаем первую страницу
-        updatePagination();
-        displayReviews(1); // Явно передаем номер страницы
+        let reviewsHTML = '';
+        reviews.forEach(review => {
+            reviewsHTML += `
+                <div class="review">
+                    <div class="review-header">
+                        <span class="review-author">${review.displayName || 'Аноним'}</span>
+                        <span class="review-date">${new Date(review.date).toLocaleDateString()}</span>
+                    </div>
+                    <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                    <div class="review-text">${review.comment}</div>
+                </div>
+            `;
+        });
+        
+        reviewContainer.innerHTML = reviewsHTML;
+        console.log('Reviews displayed');
         
     } catch (error) {
-        console.error('Ошибка при загрузке отзывов:', error);
+        console.error('Error loading reviews:', error);
         const reviewContainer = document.getElementById('reviewContainer');
         if (reviewContainer) {
-            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
+            reviewContainer.innerHTML = '<div class="error-message">Ошибка загрузки отзывов</div>';
         }
     }
 }
@@ -1720,4 +1707,146 @@ document.addEventListener("DOMContentLoaded", function() {
             event.stopPropagation();
         });
     }
+});
+
+// Функция для инициализации формы отзыва
+function initializeReviewForm() {
+    console.log('Инициализация формы отзыва...');
+    
+    // Получаем элементы формы
+    const reviewForm = document.getElementById('reviewForm');
+    const submitButton = document.getElementById('submitReview');
+    
+    console.log('Найденные элементы:', {
+        reviewForm: reviewForm ? 'да' : 'нет',
+        submitButton: submitButton ? 'да' : 'нет'
+    });
+
+    if (!reviewForm || !submitButton) {
+        console.error('Не найдены необходимые элементы формы');
+        return;
+    }
+
+    // Добавляем обработчик на форму
+    reviewForm.addEventListener('submit', function(event) {
+        console.log('Событие submit формы');
+        event.preventDefault();
+        handleReviewSubmit();
+    });
+
+    // Добавляем обработчик на кнопку
+    submitButton.addEventListener('click', function(event) {
+        console.log('Событие click кнопки');
+        event.preventDefault();
+        handleReviewSubmit();
+    });
+}
+
+// Функция обработки отправки отзыва
+async function handleReviewSubmit() {
+    console.log('Starting submitReview function');
+    
+    if (isSubmittingReview) {
+        console.log("Review already submitting, ignoring");
+        return;
+    }
+
+    const submitButton = document.getElementById('submitReview');
+    const reviewForm = document.getElementById('reviewForm');
+    
+    if (!submitButton || !reviewForm) {
+        console.error('Form elements not found');
+        return;
+    }
+
+    try {
+        console.log('Setting submission state');
+        isSubmittingReview = true;
+        submitButton.disabled = true;
+        submitButton.textContent = "Отправляем...";
+
+        const formData = new FormData(reviewForm);
+        const reviewData = {
+            rating: formData.get('rating'),
+            comment: formData.get('comment'),
+            displayName: formData.get('displayName') || ''
+        };
+        
+        console.log('Form data collected:', reviewData);
+
+        const token = localStorage.getItem('accessToken');
+        console.log('Auth token:', token ? 'present' : 'missing');
+        
+        if (!token) {
+            throw new Error("Для отправки отзыва необходимо авторизоваться");
+        }
+
+        console.log('Sending review to server...');
+        const response = await fetch('https://mobile-site.onrender.com/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(reviewData)
+        });
+
+        console.log('Server response:', {
+            status: response.status,
+            ok: response.ok
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Server error:', errorData);
+            throw new Error(errorData.message || `Ошибка ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('Review submitted successfully:', result);
+        
+        reviewForm.reset();
+        console.log('Form reset');
+        
+        await loadReviews();
+        console.log('Reviews reloaded');
+        
+        alert("Спасибо! Ваш отзыв успешно отправлен.");
+
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        alert(error.message || "Ошибка при отправке отзыва. Попробуйте позже.");
+    } finally {
+        console.log('Cleaning up submission state');
+        isSubmittingReview = false;
+        if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = "Отправить";
+        }
+    }
+}
+
+// Инициализация при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM загружен, начинаем инициализацию...');
+    
+    // Инициализация корзины
+    const cartButton = document.getElementById('cartButton');
+    if (cartButton) {
+        cartButton.addEventListener('click', toggleCart);
+    }
+
+    // Инициализация формы отзыва
+    initializeReviewForm();
+    
+    // Дополнительная проверка через setTimeout
+    setTimeout(() => {
+        console.log('Проверка элементов формы через 1 секунду...');
+        const reviewForm = document.getElementById('reviewForm');
+        const submitButton = document.getElementById('submitReview');
+        console.log('Элементы через 1 секунду:', {
+            reviewForm: reviewForm ? 'да' : 'нет',
+            submitButton: submitButton ? 'да' : 'нет'
+        });
+    }, 1000);
 });
