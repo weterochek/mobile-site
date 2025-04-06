@@ -4,6 +4,7 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
 let currentPage = 1;
 let reviewsPerPage = 5;
 let allReviews = [];
+let isSubmittingReview = false; // Добавляем флаг отправки отзыва
 
 (() => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -1337,7 +1338,77 @@ document.addEventListener('DOMContentLoaded', () => {
     // Инициализация отзывов
     const reviewForm = document.getElementById('reviewForm');
     if (reviewForm) {
-        reviewForm.addEventListener('submit', submitReview);
+        reviewForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Проверяем, не отправляется ли уже отзыв
+            if (isSubmittingReview) {
+                console.log("Отзыв уже отправляется...");
+                return;
+            }
+
+            // Получаем кнопку отправки
+            const submitButton = document.getElementById('submitReview');
+            
+            try {
+                // Устанавливаем флаг отправки и блокируем кнопку
+                isSubmittingReview = true;
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = "Отправляем...";
+                }
+
+                // Получаем данные формы
+                const formData = new FormData(reviewForm);
+                const reviewData = {
+                    rating: formData.get('rating'),
+                    comment: formData.get('comment'),
+                    displayName: formData.get('displayName') || ''
+                };
+
+                // Проверяем авторизацию
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    throw new Error("Вы не авторизованы!");
+                }
+
+                // Отправляем отзыв
+                const response = await fetch('https://mobile-site.onrender.com/api/reviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(reviewData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
+                }
+
+                // Получаем ответ
+                const result = await response.json();
+                
+                // Очищаем форму
+                reviewForm.reset();
+                
+                // Обновляем список отзывов
+                await loadReviews();
+                
+                alert("Спасибо! Ваш отзыв успешно отправлен.");
+
+            } catch (error) {
+                console.error("Ошибка при отправке отзыва:", error);
+                alert(error.message || "Ошибка при отправке отзыва. Попробуйте позже.");
+            } finally {
+                // Сбрасываем флаг отправки и разблокируем кнопку
+                isSubmittingReview = false;
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Отправить";
+                }
+            }
+        });
     }
 
     // Загрузка отзывов
