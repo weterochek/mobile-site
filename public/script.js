@@ -1329,6 +1329,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM загружен, инициализация обработчиков...');
+    
     // Инициализация корзины
     const cartButton = document.getElementById('cartButton');
     if (cartButton) {
@@ -1337,26 +1339,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Инициализация отзывов
     const reviewForm = document.getElementById('reviewForm');
-    if (reviewForm) {
-        reviewForm.addEventListener('submit', async function(event) {
+    const submitButton = document.getElementById('submitReview');
+    
+    console.log('Проверка элементов формы:', {
+        reviewForm: !!reviewForm,
+        submitButton: !!submitButton
+    });
+    
+    if (reviewForm && submitButton) {
+        console.log('Добавляем обработчик на кнопку отправки отзыва...');
+        
+        // Добавляем обработчик клика на кнопку вместо submit формы
+        submitButton.addEventListener('click', async function(event) {
+            console.log('Нажата кнопка отправки отзыва');
             event.preventDefault();
 
             // Проверяем, не отправляется ли уже отзыв
             if (isSubmittingReview) {
-                console.log("Отзыв уже отправляется...");
+                console.log("Отзыв уже отправляется, игнорируем повторное нажатие");
                 return;
             }
-
-            // Получаем кнопку отправки
-            const submitButton = document.getElementById('submitReview');
             
             try {
+                console.log('Начинаем процесс отправки отзыва...');
+                
                 // Устанавливаем флаг отправки и блокируем кнопку
                 isSubmittingReview = true;
-                if (submitButton) {
-                    submitButton.disabled = true;
-                    submitButton.textContent = "Отправляем...";
-                }
+                submitButton.disabled = true;
+                submitButton.textContent = "Отправляем...";
+                console.log('Кнопка заблокирована');
 
                 // Получаем данные формы
                 const formData = new FormData(reviewForm);
@@ -1365,13 +1376,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     comment: formData.get('comment'),
                     displayName: formData.get('displayName') || ''
                 };
+                
+                console.log('Данные формы:', reviewData);
 
                 // Проверяем авторизацию
                 const token = localStorage.getItem('accessToken');
+                console.log('Токен авторизации:', token ? 'присутствует' : 'отсутствует');
+                
                 if (!token) {
                     throw new Error("Для отправки отзыва необходимо авторизоваться");
                 }
 
+                console.log('Отправляем запрос на сервер...');
                 // Отправляем отзыв
                 const response = await fetch('https://mobile-site.onrender.com/api/reviews', {
                     method: 'POST',
@@ -1382,19 +1398,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(reviewData)
                 });
 
+                console.log('Ответ сервера:', {
+                    status: response.status,
+                    ok: response.ok
+                });
+
                 if (!response.ok) {
                     const errorData = await response.json();
+                    console.error('Ошибка сервера:', errorData);
                     throw new Error(errorData.message || `Ошибка ${response.status}: ${response.statusText}`);
                 }
 
                 // Получаем ответ
                 const result = await response.json();
+                console.log('Успешный ответ сервера:', result);
                 
                 // Очищаем форму
                 reviewForm.reset();
+                console.log('Форма очищена');
                 
                 // Обновляем список отзывов
                 await loadReviews();
+                console.log('Список отзывов обновлен');
                 
                 alert("Спасибо! Ваш отзыв успешно отправлен.");
 
@@ -1402,13 +1427,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Ошибка при отправке отзыва:", error);
                 alert(error.message || "Ошибка при отправке отзыва. Попробуйте позже.");
             } finally {
+                console.log('Завершение процесса отправки отзыва');
                 // Сбрасываем флаг отправки и разблокируем кнопку
                 isSubmittingReview = false;
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.textContent = "Отправить";
-                }
+                submitButton.disabled = false;
+                submitButton.textContent = "Отправить";
+                console.log('Кнопка разблокирована');
             }
+        });
+        
+        console.log('Обработчик кнопки успешно добавлен');
+    } else {
+        console.error('Не найдены необходимые элементы формы:', {
+            reviewForm: !!reviewForm,
+            submitButton: !!submitButton
         });
     }
 
