@@ -1,4 +1,5 @@
 let cart = {};
+let isSubmittingOrder = false;
 
 function getToken() {
     return localStorage.getItem("accessToken");
@@ -152,23 +153,40 @@ document.addEventListener("DOMContentLoaded", () => {
         checkoutForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            // Проверяем, не отправляется ли уже заказ
+            if (isSubmittingOrder) {
+                console.log("Заказ уже отправляется...");
+                return;
+            }
+
             const token = getToken();
             if (!token) {
                 alert("Вы не авторизованы!");
                 return;
             }
 
-            // Формируем данные заказа
-const orderData = {
-    address: document.getElementById("customerAddress").value,
-    additionalInfo: document.getElementById("additionalInfo").value,
-    deliveryTime: document.getElementById("deliveryTime").value, // добавляем!
-    items: Object.keys(cart).map(productId => ({
-        productId: productId,
-        quantity: cart[productId].quantity
-    }))
-};
+            // Получаем кнопку отправки
+            const submitButton = checkoutForm.querySelector('button[type="submit"]');
+            
             try {
+                // Устанавливаем флаг отправки и блокируем кнопку
+                isSubmittingOrder = true;
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = "Оформляем заказ...";
+                }
+
+                // Формируем данные заказа
+                const orderData = {
+                    address: document.getElementById("customerAddress").value,
+                    additionalInfo: document.getElementById("additionalInfo").value,
+                    deliveryTime: document.getElementById("deliveryTime").value,
+                    items: Object.keys(cart).map(productId => ({
+                        productId: productId,
+                        quantity: cart[productId].quantity
+                    }))
+                };
+
                 const response = await fetch("https://mobile-site.onrender.com/api/order", {
                     method: "POST",
                     headers: {
@@ -179,9 +197,7 @@ const orderData = {
                 });
 
                 if (!response.ok) {
-                    console.error(`Ошибка ${response.status}:`, response.statusText);
-                    alert("Ошибка при оформлении заказа.");
-                    return;
+                    throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
                 }
 
                 const responseData = await response.json();
@@ -192,9 +208,17 @@ const orderData = {
                 localStorage.removeItem('cart');  // Удаляем корзину из localStorage
                 renderCartItems();  // Обновляем отображение корзины
                 window.location.href = "account.html";  // Перенаправление на страницу спасибо
+
             } catch (error) {
                 console.error("Ошибка при оформлении заказа:", error);
                 alert("Ошибка при оформлении заказа.");
+            } finally {
+                // Сбрасываем флаг отправки и разблокируем кнопку
+                isSubmittingOrder = false;
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = "Оформить заказ";
+                }
             }
         });
     }
