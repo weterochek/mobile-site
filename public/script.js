@@ -157,7 +157,8 @@ document.addEventListener("DOMContentLoaded", function () {
         cartButton.addEventListener("click", function (event) {
             event.preventDefault();
             event.stopPropagation();
-            cartDropdown.style.display = cartDropdown.style.display === "block" ? "none" : "block";
+            cartDropdown.classList.toggle("active");
+            cartDropdown.style.display = cartDropdown.classList.contains("active") ? "block" : "none";
         });
 
         // Закрытие корзины при клике на крестик
@@ -165,23 +166,46 @@ document.addEventListener("DOMContentLoaded", function () {
         closeCartButton.innerHTML = "✖";
         closeCartButton.style.cursor = "pointer";
         closeCartButton.style.position = "absolute";
-        closeCartButton.style.top = "10px";
-        closeCartButton.style.right = "10px";
-        closeCartButton.style.fontSize = "1.2em";
-        closeCartButton.style.color = "black";
+        closeCartButton.style.top = "15px";
+        closeCartButton.style.right = "15px";
+        closeCartButton.style.fontSize = "24px";
+        closeCartButton.style.color = "#333";
+        closeCartButton.style.zIndex = "1002";
         closeCartButton.addEventListener("click", function (event) {
             event.stopPropagation();
-            cartDropdown.style.display = "none";
+            cartDropdown.classList.remove("active");
+            setTimeout(() => {
+                cartDropdown.style.display = "none";
+            }, 300);
         });
 
         cartDropdown.prepend(closeCartButton);
 
         // Закрытие корзины при клике вне её области
         document.addEventListener("click", function(event) {
-            if (!cartDropdown.contains(event.target) && !cartButton.contains(event.target)) {
-                cartDropdown.style.display = "none";
+            const cartDropdown = document.getElementById('cartDropdown');
+            const cartButton = document.getElementById('cartButton');
+            
+            if (cartDropdown && cartButton) {
+                // Проверяем, был ли клик на кнопках управления количеством
+                const isQuantityControl = event.target.closest('.cart-buttons');
+                
+                // Закрываем корзину только если клик был вне корзины, вне кнопки корзины и не на элементах управления количеством
+                if (!cartDropdown.contains(event.target) && 
+                    !cartButton.contains(event.target) && 
+                    !isQuantityControl) {
+                    cartDropdown.classList.remove('active');
+                }
             }
         });
+
+        // Предотвращение закрытия при клике внутри корзины
+        const cartDropdown = document.getElementById('cartDropdown');
+        if (cartDropdown) {
+            cartDropdown.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        }
     }
 });
 
@@ -1585,7 +1609,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const cartButton = document.getElementById('cartButton');
         
         if (cartDropdown && cartButton) {
-            if (!cartDropdown.contains(event.target) && !cartButton.contains(event.target)) {
+            // Проверяем, был ли клик на кнопках управления количеством
+            const isQuantityControl = event.target.closest('.cart-buttons');
+            
+            // Закрываем корзину только если клик был вне корзины, вне кнопки корзины и не на элементах управления количеством
+            if (!cartDropdown.contains(event.target) && 
+                !cartButton.contains(event.target) && 
+                !isQuantityControl) {
                 cartDropdown.classList.remove('active');
             }
         }
