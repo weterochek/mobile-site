@@ -252,7 +252,11 @@ function updateControls(productId) {
     if (cart[productId] && cart[productId].quantity > 0) {
         if (addButton) addButton.style.display = "none";
         if (removeButton) removeButton.style.display = "inline-block";
-        if (addButtonControl) addButtonControl.style.display = "inline-block";
+        if (addButtonControl) {
+            addButtonControl.style.display = "inline-block";
+            // Делаем кнопку + неактивной, если достигнут лимит
+            addButtonControl.disabled = cart[productId].quantity >= 100;
+        }
         if (quantityDisplay) {
             quantityDisplay.style.display = "inline-block";
             quantityDisplay.textContent = cart[productId].quantity;
@@ -573,10 +577,15 @@ function checkForEmptyCart(productName) {
 // Увеличение количества товара
 function incrementItem(productId, price) {
     if (cart[productId]) {
+        // Проверяем, не превышен ли лимит в 100 единиц
+        if (cart[productId].quantity >= 100) {
+            alert('Достигнут максимальный лимит товара (100 шт.)');
+            return;
+        }
         cart[productId].quantity += 1;
         saveCart();
-        updateControls(productId);  // Обновляем кнопки и количество
-        updateCartDisplay();  // Обновляем отображение корзины
+        updateControls(productId);
+        updateCartDisplay();
     }
 }
 
