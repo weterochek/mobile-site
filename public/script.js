@@ -4,6 +4,7 @@ let cart = JSON.parse(localStorage.getItem('cart')) || {};
 let currentPage = 1;
 let reviewsPerPage = 5;
 let allReviews = [];
+let isSubmitting = false;
 
 (() => {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -1617,3 +1618,65 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+async function submitReview(event) {
+    event.preventDefault();
+    
+    if (isSubmitting) {
+        return;
+    }
+    
+    const submitButton = document.getElementById('submitReview');
+    const starRating = document.getElementById('starRating');
+    const comment = document.getElementById('comment');
+    const displayName = document.getElementById('displayName');
+    
+    if (!comment.value.trim()) {
+        alert('Пожалуйста, введите комментарий');
+        return;
+    }
+    
+    try {
+        isSubmitting = true;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Отправка...';
+        
+        const response = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+            body: JSON.stringify({
+                rating: parseInt(starRating.value),
+                comment: comment.value.trim(),
+                displayName: displayName.value.trim() || null
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Ошибка при отправке отзыва');
+        }
+        
+        const result = await response.json();
+        
+        // Очищаем форму
+        comment.value = '';
+        displayName.value = '';
+        starRating.value = '5';
+        
+        // Показываем сообщение об успехе
+        alert('Отзыв успешно отправлен!');
+        
+        // Перезагружаем отзывы
+        await loadReviews();
+        
+    } catch (error) {
+        console.error('Ошибка при отправке отзыва:', error);
+        alert('Произошла ошибка при отправке отзыва. Пожалуйста, попробуйте позже.');
+    } finally {
+        isSubmitting = false;
+        submitButton.disabled = false;
+        submitButton.textContent = 'Отправить';
+    }
+}
