@@ -1160,22 +1160,14 @@ function openCabinet() {
 }
 
 // Инициализация авторизации и кнопок при загрузке страницы
-// 1. Надёжный вызов checkAuthStatus — после полной загрузки
-window.addEventListener("load", () => {
-  if (typeof checkAuthStatus === "function") {
-    console.log("✅ checkAuthStatus вызван через window.load");
-    checkAuthStatus();
-  }
-});
-
-// 2. Остальной код, который не зависит от наличия DOM-элементов "внизу"
 document.addEventListener("DOMContentLoaded", function () {
+    checkAuthStatus();
+
     const logoutButton = document.getElementById('logoutButton');
     if (logoutButton && window.location.pathname !== '/account.html') {
         logoutButton.style.display = 'none';
     }
 });
-
 // Расчет баланса на основе корзины
 function calculateBalance() {
     let balance = 0;
