@@ -11,35 +11,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<header>
-        <nav>
-            <button class="menu-toggle">☰</button>
-            <div class="navbar-center">
-                <a href="index.html"><img src="images/logo.png" alt="Logo" class="navbar-logo"></a>
-            </div>
-            <ul class="navbar">
-                <div class="menu-content">
-                    <button class="close-menu">✕</button>
-                    <a href="index.html" class="nav-item">Главная</a>
-                    <a href="Review.html" class="nav-item">Отзывы</a>
-		    <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">Вход</a>
-		    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
-                </div>
-            </ul>
-            <div class="cart-container">
-                <a href="#cart" id="cartButton" class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </a>
-                <div id="cartDropdown" class="cart-dropdown">
-                    <h3>Ваша Корзина</h3>
-                    <div id="cartItems"></div>
-                    <p id="totalAmount"></p>
-                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
-			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
-                </div>
-            </div>
-        </nav>
-    </header>
 <div class="main-content">
     <div class="account-container">
         <h2>Личный кабинет</h2>
@@ -74,5 +45,37 @@
     </div>
 </footer>
 <script src="script.js"></script>
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <img id="homeIcon" src="images/free-icon-home-1946488.png" alt="Главная" />
+    <span>Главная</span>
+  </a>
+  <a href="Review.html" class="nav-item">
+    <img id="reviewsIcon" src="images/free-icon-good-feedback-3594679.png" alt="Отзывы" />
+    <span>Отзывы</span>
+  </a>
+  <a href="#" class="nav-item" id="cartButton">
+    <img id="cartIcon" src="images/free-icon-basket-7087821.png" alt="Корзина" />
+    <span>Корзина</span>
+  </a>
+  <a href="#" class="nav-item" id="authButton" onclick="handleAuthClick()">
+    <img id="authIcon" src="images/free-icon-avatar-6386976.png" alt="Вход" />
+    <span>Вход</span>
+  </a>
+
+  <a href="#" class="nav-item" id="cabinetButton" onclick="openCabinet()" style="display: none;">
+    <img id="cabinetIcon" src="images/free-icon-avatar-6386976.png" alt="Кабинет" />
+    <span>Кабинет</span>
+  </a>
+
+</nav>
+
+<div id="cartDropdown" class="cart-dropdown">
+  <h3>Ваша Корзина</h3>
+  <div id="cartItems"></div>
+  <p id="totalAmount"></p>
+  <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
+  <button id="clear-cart" class="clear-cart">Очистить корзину</button>
+</div>
 </body>
 </html>
