@@ -1385,7 +1385,6 @@ function updateReviewSummary() {
     if (avgEl) avgEl.textContent = ` ${avg} / 5`;
     if (countEl) countEl.textContent = `Отзывы: ${total}`;
 }
-
 function applyFilters() {
     const starValue = document.getElementById("filterStars").value;
     const dateValue = document.getElementById("filterDate").value;
@@ -1432,7 +1431,6 @@ function displayReviewsForPage(page, reviewsPerPage, filteredReviews) {
         reviewContainer.appendChild(reviewElement);
     }
 }
-
 function createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews) {
     const paginationContainer = document.getElementById('pagination');
     paginationContainer.innerHTML = '';
@@ -1719,15 +1717,11 @@ async function submitReview(event) {
         
         const result = await response.json();
         
-        // Очищаем форму
         comment.value = '';
         displayName.value = '';
         starRating.value = '5';
         
-        // Показываем сообщение об успехе
         alert('Отзыв успешно отправлен!');
-        
-        // Перезагружаем отзывы
         await loadReviews();
         
     } catch (error) {
