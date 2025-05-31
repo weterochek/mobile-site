@@ -11,6 +11,79 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-bottom: 60px;
+}
+
+input[type="text"],
+textarea {
+  border: 1px solid #ccc;
+  border-radius: 12px;      /* ← вот тут скругление */
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.review-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.review-header-flex h2 {
+  margin: 0;
+}
+.rating-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #fff; /* Или #000 под светлую тему */
+  font-family: Arial, sans-serif;
+}
+
+.star-icon {
+  font-size: 32px;
+  color: #9c9c9c;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.rating-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.rating-score {
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+}
+
+.rating-count {
+  font-size: 14px;
+  opacity: 0.8;
+    color: black;
+}
+
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #999;
+}
+.rating-stars i {
+  font-size: 24px;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.rating-stars i.selected {
+  color: #FFD700; /* золотой */
 }
 
 #reviewContainer {
@@ -37,6 +110,15 @@ body {
 #reviewContainer::-webkit-scrollbar-thumb {
     background-color: #ccc;
     border-radius: 3px;
+}
+.review-summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .review {
@@ -120,6 +202,49 @@ body {
     min-width: 200px;
 }
 
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #ccc;
+  padding: 6px 0;
+  box-shadow: 0 -2px 9px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #222;
+  font-size: 14px;
+  flex: 1 1 0;       /* добавлено */
+  gap: 4px;          /* для согласованности */
+}
+#cabinetButton {
+  display: none;
+}
+.bottom-nav .nav-item img {
+  width: 28px;  /* Больше иконки */
+  height: 28px;
+  margin-bottom: 4px;
+}
+
+.bottom-nav .nav-item span {
+  font-size: 13px;
+  line-height: 1.2;
+}
+.bottom-nav .nav-item img.active-icon {
+  transform: scale(1.25);
+  transition: transform 0.2s ease;
+}
+
 /* Стили для пагинации */
 .review-pagination {
     display: flex;
@@ -149,9 +274,9 @@ body {
 }
 
 .page-btn.active {
-    background-color: #28a745;
+    background-color: #9c9c9c;
     color: white;
-    border-color: #28a745;
+    border-color: #9c9c9c;
 }
 
 .page-btn:hover:not(:disabled) {
@@ -372,17 +497,17 @@ footer {
     width: 100%;
     padding: 0.7rem;
     margin-top: 20px;
-    background-color: #4CAF50;
+    background-color: #9c9c9c;
     border: none;
     color: white;
-    border-radius: 4px;
+    border-radius: 12px;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
 }
 
 .submit-button:hover {
-    background-color: #45a049;
+    background-color: #9c9c9c;
 }
 
 /* Стили для списка отзывов */
@@ -442,7 +567,7 @@ header nav {
     }
 }
 @media (max-width: 768px){
-    {
+    
      .navbar.active {
         justify-content: space-evenly;   
     }
@@ -603,18 +728,32 @@ nav {
 }
 
 .cart-dropdown {
-    position: absolute;
-    top: 100%; /* Отображение прямо под кнопкой */
-    right: -395%;
-    transform: translateX(-50%);
+    position: fixed;
+    bottom: 60px; /* выше нижней навигации */
+    left: 0;
+    width: 100%;
+    max-height: 70vh;
     background-color: #fff;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
     padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 350px;
-    display: none; /* Скрыто изначально */
-    border-radius: 8px;
-    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    z-index: 1001;
+    animation: slideUp 0.3s ease;
 }
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.cart-dropdown.active {
+    display: flex;
+}
+
 
 .cart-dropdown h3 {
     margin-top: 0;
@@ -829,7 +968,7 @@ buttoon {
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    border-left: 5px solid #28a745;
+    border-left: 5px solid #9c9c9c;
 }
 
 @media (max-width: 1024px) {
@@ -843,7 +982,7 @@ buttoon {
         justify-content: space-evenly; /* Равномерное распределение элементов */
     }
  }
-}
+
 @media (max-width: 768px) {
     .accordion {
         padding: 0 15px;
