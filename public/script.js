@@ -26,22 +26,22 @@ let isSubmitting = false;
     } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia-e0hb.onrender.com")) {
         console.log("🟢 Должен быть редирект на десктопную версию...");
         sessionStorage.setItem("redirected", "true");
-        window.location.href = "https://makadamia.onrender.com";
+        window.location.href = "https://makadamia-e0hb.onrender.com";
     } else {
         console.log("🔴 Условие редиректа не выполнено.");
     }
 })();
 
 (async () => {
-    console.log("🔄 Мгновенная проверка и обновление токена...");
+    if (localStorage.getItem("logoutFlag") === "true") {
+        console.warn("⛔ Refresh отменён: пользователь вышел вручную");
+        return;
+    }
 
     const token = localStorage.getItem("accessToken");
 
-    if (!token) {
-        console.log("⏳ Access-токен отсутствует, обновляем немедленно...");
-        await refreshAccessToken();
-    } else if (isTokenExpired(token)) {
-        console.log("⚠️ Access-токен истёк, обновляем...");
+    if (!token || isTokenExpired(token)) {
+        console.log("🔄 Пробуем обновить токен при старте...");
         await refreshAccessToken();
     } else {
         console.log("✅ Access-токен активен, обновление не требуется.");
@@ -85,11 +85,117 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+window.addEventListener("load", () => {
+  const path = window.location.pathname.toLowerCase();
 
+  // Удалить все активные иконки
+  document.querySelectorAll(".bottom-nav .nav-item img").forEach(img => {
+    img.classList.remove("active-icon");
+  });
 
+  // Назначить активную иконку в зависимости от страницы
+  if (path.includes("index.html") || path.includes("cuisine")) {
+    document.getElementById("homeIcon")?.classList.add("active-icon");
+  } else if (path.includes("review.html")) {
+    document.getElementById("reviewsIcon")?.classList.add("active-icon");
+  } else if (path.includes("account.html")) {
+    document.getElementById("cabinetIcon")?.classList.add("active-icon");
+  }
+});
 
+document.addEventListener("DOMContentLoaded", () => {
+  highlightActiveIcon(); // ← вызываем при полной загрузке DOM
+
+  // Поведение иконки корзины
+  const cartButton = document.getElementById("cartButton");
+  const cartIcon = document.getElementById("cartIcon");
+  const cartDropdown = document.getElementById("cartDropdown");
+
+  console.log("Кнопка:", cartButton);
+  console.log("Корзина:", cartDropdown);
+
+  if (cartButton && cartDropdown && cartIcon) {
+    cartButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      console.log("Клик по корзине");
+
+const isVisible = cartDropdown.style.display === "flex";
+
+if (isVisible) {
+  cartDropdown.style.display = "none";
+  cartIcon?.classList.remove("active-icon");
+  console.log("Корзина скрыта");
+} else {
+  cartDropdown.style.display = "flex";
+  cartIcon?.classList.add("active-icon");
+  console.log("Корзина показана");
+}
+    });
+
+    document.addEventListener("click", (event) => {
+      if (
+        !cartDropdown.contains(event.target) &&
+        !cartButton.contains(event.target)
+      ) {
+        cartDropdown.classList.remove("active");
+        cartIcon.classList.remove("active-icon");
+        console.log("Закрытие корзины");
+      }
+    });
+
+    cartDropdown.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+  } else {
+    console.log("🚫 Не найден один из элементов");
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const stars = document.querySelectorAll('#ratingStars i');
+  const ratingInput = document.getElementById('starRating');
+
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      const rating = parseInt(star.getAttribute('data-value'));
+      ratingInput.value = rating;
+
+      // Обновляем визуал
+      stars.forEach((s, i) => {
+        if (i < rating) {
+          s.classList.add('selected');
+        } else {
+          s.classList.remove('selected');
+        }
+      });
+    });
+  });
+});
+function loadCartFromLocalStorage() {
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+        cart = JSON.parse(storedCart);
+    } else {
+        cart = {};
+    }
+    updateCartDisplay();
+}
+const path = window.location.pathname;
+
+if (path.includes("index.html") || path === "/" || path.includes("national cuisine")) {
+  const homeIcon = document.getElementById("homeIcon");
+  if (homeIcon) {
+    homeIcon.classList.add("active-icon");
+  }
+}
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🔄 Дополнительная проверка токена после загрузки DOM...");
+
+    if (localStorage.getItem("logoutFlag") === "true") {
+        console.warn("⛔ DOMContentLoaded: пользователь вышел — токен не обновляем");
+        return;
+    }
 
     const token = localStorage.getItem("accessToken");
     if (!token || isTokenExpired(token)) {
@@ -299,8 +405,8 @@ function displayUserOrders(orders) {
                 <h3>Заказ №${order._id.slice(0, 8)}</h3>
                 <p>Адрес: ${order.address}</p>
                 <p>Дата оформления: ${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString()}</p>
+                <p><strong>Телефон:</strong> ${order.phone || 'не указан'}</p>
                 <p>Время доставки: ${order.deliveryTime || 'Не указано'}</p>
-                <p>Телефон: ${order.phone || 'не указан'}</p>
                 <p>Общая сумма: ${order.totalAmount} ₽</p>
         `;
 
@@ -871,13 +977,6 @@ async function fetchWithAuth(url, options = {}) {
 }
 document.addEventListener('DOMContentLoaded', async () => {
     const accessToken = localStorage.getItem('accessToken');  // Получаем токен из localStorage
-
-    if (accessToken) {
-        document.getElementById('authButton').textContent = 'Личный кабинет';  // Изменяем кнопку
-        await loadUserData(accessToken);  // Загружаем данные пользователя
-    } else {
-        document.getElementById('authButton').textContent = 'Вход';  // Если токен отсутствует, отображаем "Вход"
-    }
 });
 
 
@@ -890,8 +989,22 @@ function getTokenExp(token) {
     }
 }
 
-
 async function refreshAccessToken() {
+    if (localStorage.getItem("logoutFlag") === "true") {
+        console.warn("⛔ Пропускаем refresh — пользователь вышел вручную");
+
+        // Чистим всё при ручном выходе
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("username");
+        localStorage.removeItem("userData");
+
+        // 💡 флаг можно удалить, если не нужен на следующей загрузке
+        localStorage.removeItem("logoutFlag");
+
+        return null;
+    }
+
     console.log("🔄 Запрос на обновление access-токена...");
 
     try {
@@ -908,7 +1021,7 @@ async function refreshAccessToken() {
                 console.error("⏳ Refresh-токен окончательно истек. Требуется повторный вход!");
                 logout();
             }
-            
+
             return null;
         }
 
@@ -967,24 +1080,27 @@ function isTokenExpired(token) {
 
 // Запускаем проверку токена раз в минуту
 setInterval(async () => {
-    const token = localStorage.getItem("accessToken");
+  if (localStorage.getItem("logoutFlag") === "true") {
+    console.warn("⛔ [Interval] Пользователь вышел — токен не обновляем");
+    return;
+  }
 
-    if (!token) {
-        console.warn("⚠️ Нет accessToken, пробуем обновить...");
-        await refreshAccessToken();
-        return;
-    }
+  const token = localStorage.getItem("accessToken");
 
-    const exp = getTokenExp(token);
-    const now = Math.floor(Date.now() / 1000);
+  if (!token) {
+    console.warn("⚠️ Нет accessToken, пробуем обновить...");
+    await refreshAccessToken();
+    return;
+  }
 
-    if (!exp || (exp - now) < 300) { // Если токен просрочен или скоро истечёт
-        console.log("⏳ Access-токен истекает, обновляем...");
-        await refreshAccessToken();
-    }
-}, 30000); // Проверяем каждые 30 секунд
+  const exp = getTokenExp(token);
+  const now = Math.floor(Date.now() / 1000);
 
-
+  if (!exp || (exp - now) < 300) {
+    console.log("⏳ Access-токен истекает, обновляем...");
+    await refreshAccessToken();
+  }
+}, 30000);
 
 function editField(field) {
     const input = document.getElementById(field + "Input");
@@ -1091,51 +1207,84 @@ document.getElementById('saveCity').addEventListener('click', async () => {
 });
 // Проверка состояния авторизации
 function checkAuthStatus() {
-    const token = localStorage.getItem("accessToken"); // Должно быть accessToken
+    // 🛑 1. Пропустить авторизацию, если пользователь явно вышел
+    if (localStorage.getItem("logoutFlag") === "true") {
+        console.warn("🚫 Обнаружен logoutFlag. Пропускаем автоавторизацию.");
+        return;
+    }
+
+    // 📦 2. Получаем данные из хранилища
+    const token = localStorage.getItem("accessToken");
     const username = localStorage.getItem("username");
+
+    // 🧩 3. Ищем кнопки в DOM
     const authButton = document.getElementById("authButton");
     const cabinetButton = document.getElementById("cabinetButton");
 
+    // ✅ Проверка, есть ли кнопки на странице
     if (!authButton || !cabinetButton) {
         console.warn("❌ Не найдены кнопки 'Вход' или 'Личный кабинет'!");
         return;
     }
 
-    if (token && username && !isTokenExpired(token)) { 
+    // 🧠 4. Проверяем токен и имя пользователя
+    if (token && username && !isTokenExpired(token)) {
         console.log("✅ Пользователь авторизован");
+
+        // Скрываем кнопку "Вход"
         authButton.style.display = "none";
-        cabinetButton.style.display = "inline-block";
+        authButton.classList.remove("nav-item-visible");
+
+        // Показываем кнопку "Кабинет"
+        cabinetButton.style.display = "flex";
+        cabinetButton.classList.add("nav-item-visible");
+
+        // 💡 Привязываем действия на кнопки (если нужно)
+        cabinetButton.onclick = () => {
+            window.location.href = "/account.html";
+        };
     } else {
         console.log("⚠️ Пользователь не авторизован");
-        authButton.style.display = "inline-block";
+
+        // Скрываем кнопку "Кабинет"
         cabinetButton.style.display = "none";
+        cabinetButton.classList.remove("nav-item-visible");
+
+        // Показываем кнопку "Вход"
+        authButton.style.display = "flex";
+        authButton.classList.add("nav-item-visible");
+
+        // 💡 Назначаем обработчик входа (если не через <a>)
+        authButton.onclick = () => {
+            window.location.href = "/login.html";
+        };
+
+        // 🧹 Очистка состояния
         sessionStorage.removeItem("authChecked");
     }
 }
-
 async function logout() {
     console.log("🚪 Выход из аккаунта...");
 
     try {
         await fetch("https://mobile-site.onrender.com/logout", {
             method: "POST",
-            credentials: "include" // Передаем cookies
+            credentials: "include"
         });
 
-        // Очищаем локальное хранилище
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userId");
         localStorage.removeItem("username");
+        localStorage.removeItem("userData"); // ← добавили
+        localStorage.setItem("logoutFlag", "true"); // ← добавили
 
         console.log("✅ Выход выполнен успешно!");
     } catch (error) {
         console.error("❌ Ошибка при выходе:", error);
     } finally {
-        // Перенаправляем пользователя на страницу входа
         window.location.href = "/index.html";
     }
 }
-
 
 
 function handleAuthClick() {
@@ -1162,14 +1311,21 @@ function openCabinet() {
 }
 
 // Инициализация авторизации и кнопок при загрузке страницы
-document.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("load", () => {
+  if (typeof checkAuthStatus === "function") {
+    console.log("✅ checkAuthStatus вызван через window.load");
     checkAuthStatus();
+  }
+});
 
+// 2. Остальной код, который не зависит от наличия DOM-элементов "внизу"
+document.addEventListener("DOMContentLoaded", function () {
     const logoutButton = document.getElementById('logoutButton');
     if (logoutButton && window.location.pathname !== '/account.html') {
         logoutButton.style.display = 'none';
     }
 });
+
 // Расчет баланса на основе корзины
 function calculateBalance() {
     let balance = 0;
@@ -1354,22 +1510,70 @@ document.addEventListener('DOMContentLoaded', () => {
 // Функция загрузки отзывов с пагинацией
 async function loadReviews() {
     try {
-        const response = await fetch('/reviews');
+        console.log('Начинаем загрузку отзывов...');
+        const response = await fetch('https://mobile-site.onrender.com/api/reviews');
+        
         if (!response.ok) {
-            throw new Error('Failed to load reviews');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const reviews = await response.json();
+        const data = await response.json();
+        console.log('Получены данные от сервера:', data);
 
-        allReviews = reviews;
+        // Инициализируем массив отзывов
+        if (Array.isArray(data)) {
+            console.log('Данные уже являются массивом');
+            allReviews = [...data];
+        } else if (data && typeof data === 'object') {
+            console.log('Данные являются объектом, проверяем структуру');
+            if (data.reviews && Array.isArray(data.reviews)) {
+                allReviews = [...data.reviews];
+            } else if (Object.keys(data).length > 0) {
+                allReviews = Object.values(data);
+            }
+        }
+
+        // Проверяем, что получили массив
+        if (!Array.isArray(allReviews)) {
+            console.error('Не удалось получить массив отзывов');
+            allReviews = [];
+        }
+
+        // Фильтруем невалидные отзывы
+        allReviews = allReviews.filter(review => review && typeof review === 'object');
+
+        console.log('Обработанные отзывы:', allReviews);
+        
+        const reviewContainer = document.getElementById('reviewContainer');
+        if (!reviewContainer) {
+            console.error('Контейнер отзывов не найден');
+            return;
+        }
+
+        if (allReviews.length === 0) {
+            reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
+            return;
+        }
+
+        // Сбрасываем текущую страницу на первую
+        currentPage = 1;
+        
+        // Обновляем пагинацию и отображаем первую страницу
+        updatePagination();
+        displayReviews(1); // Явно передаем номер страницы
         updateReviewSummary();
-        applyFilters(); // Фильтрация + пагинация
+        const starsFilter = document.getElementById("filterStars");
+const dateFilter = document.getElementById("filterDate");
 
+if (starsFilter && dateFilter) {
+    starsFilter.addEventListener("change", applyFilters);
+    dateFilter.addEventListener("change", applyFilters);
+}
     } catch (error) {
         console.error('Ошибка при загрузке отзывов:', error);
         const reviewContainer = document.getElementById('reviewContainer');
         if (reviewContainer) {
-            reviewContainer.innerHTML = '<p class="error">Ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</p>';
+            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
         }
     }
 }
@@ -1385,6 +1589,7 @@ function updateReviewSummary() {
     if (avgEl) avgEl.textContent = ` ${avg} / 5`;
     if (countEl) countEl.textContent = `Отзывы: ${total}`;
 }
+
 function applyFilters() {
     const starValue = document.getElementById("filterStars").value;
     const dateValue = document.getElementById("filterDate").value;
@@ -1403,73 +1608,36 @@ function applyFilters() {
 
     displayFilteredReviews(filtered);
 }
-filterStars.addEventListener("change", applyFilters);
-filterDate.addEventListener("change", applyFilters);
-function displayReviewsForPage(page, reviewsPerPage, filteredReviews) {
-    const reviewContainer = document.getElementById('reviewContainer');
-    reviewContainer.innerHTML = '';
-    const startIndex = (page - 1) * reviewsPerPage;
-    const endIndex = Math.min(startIndex + reviewsPerPage, filteredReviews.length);
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const review = filteredReviews[i];
-        const reviewElement = document.createElement('div');
-        reviewElement.className = 'review';
+function displayFilteredReviews(reviews) {
+    const container = document.getElementById("reviewContainer");
+    container.innerHTML = '';
 
-        const nameDisplay = review.displayName 
-            ? `${review.displayName} (${review.username})` 
-            : review.username || 'Аноним';
+    if (reviews.length === 0) {
+        container.innerHTML = "<p class='no-reviews'>Нет отзывов по выбранным фильтрам</p>";
+        return;
+    }
 
-        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+    reviews.forEach(review => {
+        const el = document.createElement('div');
+        el.className = 'review';
 
-        reviewElement.innerHTML = `
-            <strong>${nameDisplay}</strong>
-            <div class="rating">${stars}</div>
-            <p>${review.comment}</p>
-            <small>${new Date(review.date).toLocaleString()}</small>
+        const rating = parseInt(review.rating) || 0;
+        const stars =  repeat(rating) + repeat(5 - rating);
+        const date = new Date(review.date).toLocaleDateString('ru-RU');
+
+        const name = review.displayName || review.username || 'Анонимный пользователь';
+
+        el.innerHTML = `
+          <div class="review-header">
+            <span class="review-author">${name}</span>
+            <span class="review-date">${date}</span>
+          </div>
+          <div class="review-rating">${stars}</div>
+          <div class="review-text">${review.comment}</div>
         `;
-        reviewContainer.appendChild(reviewElement);
-    }
-}
-function createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews) {
-    const paginationContainer = document.getElementById('pagination');
-    paginationContainer.innerHTML = '';
-
-    const prevButton = document.createElement('button');
-    prevButton.textContent = '←';
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
-            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
-        }
+        container.appendChild(el);
     });
-    paginationContainer.appendChild(prevButton);
-
-    for (let i = 1; i <= totalPages; i++) {
-        const pageButton = document.createElement('button');
-        pageButton.textContent = i;
-        pageButton.classList.toggle('active', i === currentPage);
-        pageButton.addEventListener('click', () => {
-            currentPage = i;
-            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
-            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
-        });
-        paginationContainer.appendChild(pageButton);
-    }
-
-    const nextButton = document.createElement('button');
-    nextButton.textContent = '→';
-    nextButton.disabled = currentPage === totalPages;
-    nextButton.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
-            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
-        }
-    });
-    paginationContainer.appendChild(nextButton);
 }
 
 // Функция обновления пагинации
@@ -1717,11 +1885,15 @@ async function submitReview(event) {
         
         const result = await response.json();
         
+        // Очищаем форму
         comment.value = '';
         displayName.value = '';
         starRating.value = '5';
         
+        // Показываем сообщение об успехе
         alert('Отзыв успешно отправлен!');
+        
+        // Перезагружаем отзывы
         await loadReviews();
         
     } catch (error) {
@@ -1732,4 +1904,46 @@ async function submitReview(event) {
         submitButton.disabled = false;
         submitButton.textContent = 'Отправить';
     }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const cartDropdown = document.getElementById("cartDropdown");
+    if (cartDropdown) {
+        cartDropdown.classList.remove("active");
+        cartDropdown.style.display = "none";
+    }
+
+    const cartButton = document.getElementById("cartButton");
+    if (cartButton) {
+        cartButton.blur(); // сброс фокуса с кнопки
+    }
+});
+
+
+function highlightActiveIcon() {
+  const path = window.location.pathname.toLowerCase(); // важно!
+  console.log("PATH:", path);
+
+  const isHome =
+    path.includes("index.html") ||
+    path.includes("national%20cuisine") || // пробелы в URL
+    path.includes("national cuisine") ||   // для локальных путей
+    path === "/" ||
+    path === "";
+
+  const homeIcon = document.getElementById("homeIcon");
+  const reviewsIcon = document.getElementById("reviewsIcon");
+  const authIcon = document.getElementById("authIcon");
+  const cabinetIcon = document.getElementById("cabinetIcon");
+
+  // Сброс классов (чтобы только одна была активной, кроме корзины)
+  [homeIcon, reviewsIcon, authIcon, cabinetIcon].forEach(icon => {
+    icon?.classList.remove("active-icon");
+  });
+
+  if (isHome) homeIcon?.classList.add("active-icon");
+  if (path.includes("review.html")) reviewsIcon?.classList.add("active-icon");
+  if (path.includes("login.html")) authIcon?.classList.add("active-icon");
+  if (path.includes("profile.html") || path.includes("cabinet.html")) {
+    cabinetIcon?.classList.add("active-icon");
+  }
 }
