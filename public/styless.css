@@ -15,79 +15,6 @@ body {
     display: flex;
     flex-direction: column;
 }
-input[type="text"],
-textarea {
-  border: 1px solid #ccc;
-  border-radius: 12px;      /* ← вот тут скругление */
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.review-header-flex {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.review-header-flex h2 {
-  margin: 0;
-}
-.rating-block {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  color: #fff; /* Или #000 под светлую тему */
-  font-family: Arial, sans-serif;
-}
-
-.star-icon {
-  font-size: 32px;
-  color: #9c9c9c;
-  flex-shrink: 0;
-  line-height: 1;
-}
-
-.rating-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  line-height: 1.2;
-}
-
-.rating-score {
-  font-size: 16px;
-  font-weight: bold;
-  color: black;
-}
-
-.rating-count {
-  font-size: 14px;
-  opacity: 0.8;
-    color: black;
-}
-
-
-input[type="text"]:focus,
-textarea:focus {
-  border-color: #999;
-}
-.rating-stars i {
-  font-size: 24px;
-  color: #ccc;
-  transition: color 0.2s;
-}
-
-.rating-stars i.selected {
-  color: #FFD700; /* золотой */
-}
-
-
     #toggleHistoryBtn {
   display: block;
   margin: 20px auto; /* Центрирование */
@@ -99,7 +26,71 @@ textarea:focus {
   cursor: pointer;
   font-size: 16px;
 }
+/* 💼 Личный кабинет — стили */
+.account-container {
+  max-width: 400px;
+  margin: 80px auto 30px;
+  padding: 25px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
 
+.account-container h2 {
+  font-size: 26px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
+}
+
+.account-container p {
+  font-size: 16px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.account-container label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.account-container input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  min-width: 150px;
+}
+
+.account-container button {
+  background-color: #9c9c9c;
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.account-container button:hover {
+  background-color: #9c9c9c;
+}
+
+/* Кнопка Выйти */
+.account-container p:last-child button {
+  background-color: #e53935;
+}
+
+.account-container p:last-child button:hover {
+  background-color: #d32f2f;
+}
 #toggleHistoryBtn:hover {
   background-color: #555;
 }
