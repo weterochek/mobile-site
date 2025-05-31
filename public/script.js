@@ -23,7 +23,7 @@ let isSubmitting = false;
         console.log("🟢 Должен быть редирект на мобильную версию...");
         sessionStorage.setItem("redirected", "true");
         window.location.href = "https://mobile-site.onrender.com";
-    } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia.onrender.com")) {
+    } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia-e0hb.onrender.com")) {
         console.log("🟢 Должен быть редирект на десктопную версию...");
         sessionStorage.setItem("redirected", "true");
         window.location.href = "https://makadamia.onrender.com";
@@ -1354,65 +1354,124 @@ document.addEventListener('DOMContentLoaded', () => {
 // Функция загрузки отзывов с пагинацией
 async function loadReviews() {
     try {
-        console.log('Начинаем загрузку отзывов...');
-        const response = await fetch('https://mobile-site.onrender.com/api/reviews');
-        
+        const response = await fetch('/reviews');
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Failed to load reviews');
         }
 
-        const data = await response.json();
-        console.log('Получены данные от сервера:', data);
+        const reviews = await response.json();
 
-        // Инициализируем массив отзывов
-        if (Array.isArray(data)) {
-            console.log('Данные уже являются массивом');
-            allReviews = [...data];
-        } else if (data && typeof data === 'object') {
-            console.log('Данные являются объектом, проверяем структуру');
-            if (data.reviews && Array.isArray(data.reviews)) {
-                allReviews = [...data.reviews];
-            } else if (Object.keys(data).length > 0) {
-                allReviews = Object.values(data);
-            }
-        }
+        allReviews = reviews;
+        updateReviewSummary();
+        applyFilters(); // Фильтрация + пагинация
 
-        // Проверяем, что получили массив
-        if (!Array.isArray(allReviews)) {
-            console.error('Не удалось получить массив отзывов');
-            allReviews = [];
-        }
-
-        // Фильтруем невалидные отзывы
-        allReviews = allReviews.filter(review => review && typeof review === 'object');
-
-        console.log('Обработанные отзывы:', allReviews);
-        
-        const reviewContainer = document.getElementById('reviewContainer');
-        if (!reviewContainer) {
-            console.error('Контейнер отзывов не найден');
-            return;
-        }
-
-        if (allReviews.length === 0) {
-            reviewContainer.innerHTML = '<div class="no-reviews">Пока нет отзывов. Будьте первым!</div>';
-            return;
-        }
-
-        // Сбрасываем текущую страницу на первую
-        currentPage = 1;
-        
-        // Обновляем пагинацию и отображаем первую страницу
-        updatePagination();
-        displayReviews(1); // Явно передаем номер страницы
-        
     } catch (error) {
         console.error('Ошибка при загрузке отзывов:', error);
         const reviewContainer = document.getElementById('reviewContainer');
         if (reviewContainer) {
-            reviewContainer.innerHTML = '<div class="error-message">Произошла ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</div>';
+            reviewContainer.innerHTML = '<p class="error">Ошибка при загрузке отзывов. Пожалуйста, попробуйте позже.</p>';
         }
     }
+}
+function updateReviewSummary() {
+    const total = allReviews.length;
+    const avg = total > 0 
+        ? (allReviews.reduce((sum, r) => sum + parseInt(r.rating || 0), 0) / total).toFixed(1)
+        : 0;
+
+    const avgEl = document.getElementById('averageRating');
+    const countEl = document.getElementById('totalReviews');
+
+    if (avgEl) avgEl.textContent = ` ${avg} / 5`;
+    if (countEl) countEl.textContent = `Отзывы: ${total}`;
+}
+
+function applyFilters() {
+    const starValue = document.getElementById("filterStars").value;
+    const dateValue = document.getElementById("filterDate").value;
+    
+    let filtered = [...allReviews];
+
+    if (starValue !== "all") {
+        filtered = filtered.filter(r => parseInt(r.rating) === parseInt(starValue));
+    }
+
+    filtered.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateValue === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    displayFilteredReviews(filtered);
+}
+filterStars.addEventListener("change", applyFilters);
+filterDate.addEventListener("change", applyFilters);
+function displayReviewsForPage(page, reviewsPerPage, filteredReviews) {
+    const reviewContainer = document.getElementById('reviewContainer');
+    reviewContainer.innerHTML = '';
+    const startIndex = (page - 1) * reviewsPerPage;
+    const endIndex = Math.min(startIndex + reviewsPerPage, filteredReviews.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const review = filteredReviews[i];
+        const reviewElement = document.createElement('div');
+        reviewElement.className = 'review';
+
+        const nameDisplay = review.displayName 
+            ? `${review.displayName} (${review.username})` 
+            : review.username || 'Аноним';
+
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+
+        reviewElement.innerHTML = `
+            <strong>${nameDisplay}</strong>
+            <div class="rating">${stars}</div>
+            <p>${review.comment}</p>
+            <small>${new Date(review.date).toLocaleString()}</small>
+        `;
+        reviewContainer.appendChild(reviewElement);
+    }
+}
+
+function createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews) {
+    const paginationContainer = document.getElementById('pagination');
+    paginationContainer.innerHTML = '';
+
+    const prevButton = document.createElement('button');
+    prevButton.textContent = '←';
+    prevButton.disabled = currentPage === 1;
+    prevButton.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
+            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
+        }
+    });
+    paginationContainer.appendChild(prevButton);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.toggle('active', i === currentPage);
+        pageButton.addEventListener('click', () => {
+            currentPage = i;
+            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
+            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
+        });
+        paginationContainer.appendChild(pageButton);
+    }
+
+    const nextButton = document.createElement('button');
+    nextButton.textContent = '→';
+    nextButton.disabled = currentPage === totalPages;
+    nextButton.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayReviewsForPage(currentPage, reviewsPerPage, filteredReviews);
+            createPaginationButtons(currentPage, totalPages, reviewsPerPage, filteredReviews);
+        }
+    });
+    paginationContainer.appendChild(nextButton);
 }
 
 // Функция обновления пагинации
