@@ -23,21 +23,7 @@
 		    <a href="#" id="cabinetButton" class="nav-item" onclick="openCabinet()" style="display: none;">Личный кабинет</a>
                 </div>
             </ul>
-            <div class="cart-container">
-                <a href="#cart" id="cartButton" class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </a>
-                <div id="cartDropdown" class="cart-dropdown">
-                    <h3>Ваша Корзина</h3>
-                    <div id="cartItems"></div>
-                    <p id="totalAmount"></p>
-                    <button onclick="goToCheckoutPage()">К Оформлению заказа</button>
-			<button id="clear-cart" class="clear-cart">Очистить корзину</button>
-                </div>
-            </div>
-        </nav>
-    </header>
-   <div class="review-container">
+    <div class="review-container">
 <div class="review-header-flex">
   <h2>Отзывы</h2>
 <div class="rating-block">
@@ -60,13 +46,14 @@
   <i class="fas fa-star" data-value="5"></i>
 </div>
 <input type="hidden" id="starRating" name="rating" value="0">
+
             <label for="displayName">Имя (необязательно):</label>
             <input type="text" id="displayName" placeholder="Ваше имя (или оставьте пустым)">
 
             <label for="comment">Комментарий:</label>
             <textarea id="comment" rows="1" placeholder="Введите ваш отзыв..." required></textarea>
 
-            <button type="submit" id="submitReview" class="submit-button">Отправить</button>
+            <button type="submit" id="submitReview">Отправить</button>
         </form>
 
         <h3>Фильтр отзывов:</h3>
@@ -92,11 +79,8 @@
         </div>
         
         <div id="reviewContainer"></div>
-        
-        <!-- Добавляем пагинацию -->
-        <div class="review-pagination">
-            <button class="page-btn" aria-label="Previous">←</button>
-            <button class="page-btn" aria-label="Next">→</button>
+        <div class="pagination" id="pagination">
+            <!-- Кнопки пагинации будут добавлены через JavaScript -->
         </div>
     </div>
 
