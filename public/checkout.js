@@ -176,16 +176,25 @@ document.addEventListener("DOMContentLoaded", () => {
                     submitButton.textContent = "Оформляем заказ...";
                 }
 
-                // Формируем данные заказа
-                const orderData = {
-                    address: document.getElementById("customerAddress").value,
-                    additionalInfo: document.getElementById("additionalInfo").value,
-                    deliveryTime: document.getElementById("deliveryTime").value,
-                    items: Object.keys(cart).map(productId => ({
-                        productId: productId,
-                        quantity: cart[productId].quantity
-                    }))
-                };
+const phoneInput = document.getElementById("customerPhone");
+if (!phoneInput || !phoneInput.value.trim()) {
+  alert("Пожалуйста, введите номер телефона.");
+  return;
+}
+
+const orderData = {
+  name: document.getElementById("customerName").value,
+  address: document.getElementById("customerAddress").value,
+  deliveryTime: document.getElementById("deliveryTime").value,
+  additionalInfo: document.getElementById("additionalInfo").value,
+  phone: phoneInput.value.trim(),
+  totalAmount: Object.values(cart).reduce((sum, item) => sum + item.price * item.quantity, 0),
+  items: Object.keys(cart).map(productId => ({
+    productId: productId,
+    quantity: cart[productId].quantity,
+    price: cart[productId].price
+  }))
+};
 
                 const response = await fetch("https://mobile-site.onrender.com/api/order", {
                     method: "POST",
