@@ -232,15 +232,7 @@ header nav {
     cursor: pointer;
 }
 
-.quantity-button-size:hover {
-    background-color: red;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
 
-.quantity-size-button:hover {
-    background-color: green;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-}
 
 /* Стили для всплывающего окна корзины */
 .menu-toggle {
@@ -392,7 +384,7 @@ nav {
 
 /* Стиль кнопок "+" и "-" */
 .quantity-control {
-    background-color: #f8f9fa;
+    background-color: #9c9c9c;
     border: 1px solid #ddd;
     color: #333;
     padding: 5px 10px;
