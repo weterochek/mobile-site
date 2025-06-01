@@ -117,6 +117,7 @@ form button:hover {
 #backToShopping {
     background-color: #ccc;
     color: #333;
+    border: 1px solid #ddd;
 }
 
 #backToShopping:hover {
