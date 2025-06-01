@@ -265,7 +265,7 @@ form button:hover {
     header {
         text-align: center;
         padding: 10px 0;
-        background-color: #4CAF50;
+        background-color: #9c9c9c;
         color: white;
         border-radius: 0;
         font-size: 1.5rem;
@@ -507,12 +507,12 @@ form button:hover {
 }
 
 .primary-button {
-    background-color: #4CAF50;
+    background-color: #9c9c9c;
     color: white;
 }
 
 .primary-button:hover {
-    background-color: #45a049;
+    background-color: #9c9c9c;
 }
 
 .secondary-button {
