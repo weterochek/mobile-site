@@ -52,7 +52,7 @@ main {
 #totalAmount {
     font-size: 1.2rem;
     font-weight: bold;
-    color: #4CAF50;
+    color: black;
 }
 
 /* Раздел информации о клиенте */
@@ -318,7 +318,7 @@ form button:hover {
         text-align: right;
         font-size: 1rem;
         font-weight: bold;
-        color: #4CAF50;
+        color: black;
         margin-top: 10px;
     }
 
@@ -449,7 +449,7 @@ form button:hover {
 .total-amount {
     font-size: 18px;
     font-weight: bold;
-    color: #4CAF50;
+    color: black;
     text-align: right;
     margin: 0;
 }
