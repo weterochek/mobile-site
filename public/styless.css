@@ -19,7 +19,7 @@ body {
   display: block;
   margin: 20px auto; /* Центрирование */
   padding: 10px 20px;
-  background-color: #333;
+  background-color: #9c9c9c;
   color: white;
   border: none;
   border-radius: 8px;
@@ -31,7 +31,7 @@ body {
   margin: 30px auto;
   padding: 20px;
   border-radius: 12px;
-  background-color: #f1f1f1;
+  background-color: #f9f9f9;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   border: 1px solid #ccc;
@@ -51,7 +51,7 @@ body {
 
 .download-button {
   display: inline-block;
-  background-color: #9с9с9с;
+  background-color: #9c9c9c;
   color: white;
   padding: 10px 18px;
   text-decoration: none;
