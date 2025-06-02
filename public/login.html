@@ -23,8 +23,8 @@
   <form>
     <input type="text" id="registerUsername" placeholder="Пользователь" required />
 <div class="password-wrapper">
-  <input type="password" id="loginPassword" placeholder="Пароль" required />
-  <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁</span>
+  <input type="password" id="registerPassword" placeholder="Пароль" required />
+  <span class="toggle-password" onclick="togglePassword(this, 'registerPassword')">👁</span>
 </div>
     <button type="submit">Зарегистрироваться</button>
   </form>
@@ -37,7 +37,7 @@
     <input type="text" id="loginUsername" placeholder="Пользователь" required />
 <div class="password-wrapper">
   <input type="password" id="loginPassword" placeholder="Пароль" required />
-  <span class="toggle-password" onclick="togglePassword('loginPassword', this)">👁</span>
+  <span class="toggle-password" onclick="togglePassword(this, 'loginPassword')">👁</span>
 </div>
     <button type="submit">Войти</button>
   </form>
@@ -45,12 +45,13 @@
   </div>
 
 <script src="auth.js"></script>
-  <script>
-function togglePassword(inputId, element) {
+<script>
+function togglePassword(element, inputId) {
   const input = document.getElementById(inputId);
-  const isVisible = input.type === "text";
-  input.type = isVisible ? "password" : "text";
-  element.textContent = isVisible ? "👁" : "🙈";
+  const isHidden = input.type === "password";
+
+  input.type = isHidden ? "text" : "password";
+  element.textContent = isHidden ? "🙈" : "👁";
 }
 </script>
 
