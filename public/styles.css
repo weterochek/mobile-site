@@ -7,6 +7,23 @@ body {
   background-color: #f0f2f5;
   font-family: Arial, sans-serif;
 }
+.forgot-link {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.forgot-link a {
+  color: #5a67d8;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.forgot-link a:hover {
+  color: #434190;
+  text-decoration: underline;
+}
+
 .password-wrapper {
   position: relative;
   width: 100%;
