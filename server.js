@@ -88,7 +88,7 @@ app.use((req, res, next) => {
 
 const Cart = require("./models/Cart"); // Подключаем модель
 
-app.post('/cart/add', authMiddleware, async (req, res) => {
+app.post('/cart/add', protect, async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: 'Авторизуйтесь, чтобы добавить товар в корзину' });
@@ -156,7 +156,7 @@ app.get('/orders', async (req, res) => {
         res.status(500).json({ message: "Ошибка получения заказов" });
     }
 });
-app.post("/api/order", authMiddleware, async (req, res) => {
+app.post("/api/order", protect, async (req, res) => {
     try {
         const { items, address, additionalInfo, createdAt } = req.body;
 
@@ -255,7 +255,7 @@ app.post('/reset-password/:token', async (req, res) => {
 });
 
 // Получение заказов пользователя
-app.get('/user-orders/:userId', authMiddleware, async (req, res) => {
+app.get('/user-orders/:userId', protect, async (req, res) => {
     try {
         const orders = await Order.find({ userId: req.params.userId }).populate("items.productId", "name price");
         res.json(orders);
@@ -450,10 +450,10 @@ app.post('/-token', (req, res) => {
 });
 
 // Приватный маршрут
-app.get('/private-route', authMiddleware, (req, res) => {
+app.get('/private-route', protect, (req, res) => {
   res.json({ message: `Добро пожаловать, пользователь ${req.user.id}` });
 });
-app.get('/account', authMiddleware, async (req, res) => {
+app.get('/account', protect, async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
             return res.status(401).json({ message: "Не авторизован" });
@@ -525,7 +525,7 @@ app.get('/api/reviews', async (req, res) => {
 });
 
 // Маршрут для создания отзыва
-app.post('/api/reviews', authMiddleware, async (req, res) => {
+app.post('/api/reviews', protect, async (req, res) => {
     try {
         const { rating, comment, displayName } = req.body;
         
