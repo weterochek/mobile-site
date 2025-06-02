@@ -254,31 +254,6 @@ app.post('/reset-password/:token', async (req, res) => {
   res.json({ message: "Пароль успешно обновлён" });
 });
 
-  await transporter.sendMail({
-    to: email,
-    subject: "Восстановление пароля",
-    html: `<p>Сброс пароля: <a href="${resetLink}">нажмите здесь</a></p>`
-  });
-
-  res.json({ message: "Ссылка для сброса отправлена на почту" });
-});
-
-app.post("/reset-password/:token", async (req, res) => {
-  const { token } = req.params;
-  const { password } = req.body;
-  const userId = passwordResetTokens[token];
-  if (!userId) return res.status(400).json({ message: "Неверный или просроченный токен" });
-
-  const user = await User.findById(userId);
-  if (!user) return res.status(404).json({ message: "Пользователь не найден" });
-
-  user.password = await bcrypt.hash(password, 12);
-  await user.save();
-
-  delete passwordResetTokens[token];
-
-  res.json({ message: "Пароль успешно обновлён" });
-});
 // Получение заказов пользователя
 app.get('/user-orders/:userId', authMiddleware, async (req, res) => {
     try {
