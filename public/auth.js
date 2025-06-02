@@ -18,6 +18,7 @@ function showLogin() {
 showLogin(); // По умолчанию
 
 // === Регистрация ===
+// === Регистрация ===
 const registerForm = document.querySelector("#registerForm form");
 registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -33,9 +34,29 @@ registerForm.addEventListener("submit", async (e) => {
         });
 
         const data = await response.json();
+
         if (response.ok) {
-            alert("Регистрация прошла успешно!");
-            showLogin();
+            console.log("✅ Регистрация прошла, выполняем авто-вход...");
+
+            const loginResponse = await fetch("https://mobile-site.onrender.com/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+
+            const loginData = await loginResponse.json();
+
+            if (loginResponse.ok) {
+                localStorage.setItem("accessToken", loginData.accessToken);
+                localStorage.setItem("refreshToken", loginData.refreshToken);
+                localStorage.setItem("userId", loginData.userId);
+                localStorage.setItem("username", username);
+                localStorage.removeItem("logoutFlag");
+
+                window.location.href = "/index.html";
+            } else {
+                alert(loginData.message || "Ошибка авто-входа после регистрации.");
+            }
         } else {
             alert(data.message || "Ошибка регистрации.");
         }
@@ -44,6 +65,7 @@ registerForm.addEventListener("submit", async (e) => {
         alert("Произошла ошибка.");
     }
 });
+
 
 // === Вход ===
 const loginForm = document.querySelector("#loginForm form");
