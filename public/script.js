@@ -1309,7 +1309,7 @@ async function loadProfileData() {
   } catch (error) {
     console.error("Ошибка загрузки профиля:", error);
   }
-}
+}})
 
   document.getElementById("editEmail")?.addEventListener("click", () => {
     document.getElementById("emailInput").disabled = false;
