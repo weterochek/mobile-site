@@ -400,25 +400,24 @@ app.get('/account', authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Ошибка сервера", error: error.message });
     }
 });
-app.put('/account', authMiddleware, async (req, res) => {
-    const { name, city, username, password } = req.body; // Получаем данные из запроса
+app.put("/account", protect, async (req, res) => {
+  const { name, city, email, username, password } = req.body;
 
-    try {
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ message: 'Пользователь не найден' });
-        }
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "Пользователь не найден" });
 
-        if (name) user.name = name;  // Обновляем имя
-        if (city) user.city = city;  // Обновляем город
-        if (username) user.username = username;  // Обновляем username
-        if (password) user.password = await bcrypt.hash(password, 12);  // Обновляем пароль
+    if (name) user.name = name;
+    if (city) user.city = city;
+    if (email) user.email = email;
+    if (username) user.username = username;
+    if (password) user.password = await bcrypt.hash(password, 12);
 
-        await user.save(); // Сохраняем обновлённые данные
-        res.json({ message: 'Аккаунт обновлён', user });
-    } catch (error) {
-        res.status(500).json({ message: 'Ошибка при обновлении аккаунта', error: error.message });
-    }
+    await user.save();
+    res.json({ message: "Аккаунт обновлён", user });
+  } catch (error) {
+    res.status(500).json({ message: "Ошибка обновления", error: error.message });
+  }
 });
 // Обработка корневого маршрута
 app.get("/", (req, res) => {
