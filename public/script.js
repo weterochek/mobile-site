@@ -966,13 +966,10 @@ async function refreshAccessToken() {
     if (localStorage.getItem("logoutFlag") === "true") {
         console.warn("⛔ Пропускаем refresh — пользователь вышел вручную");
 
-        // Чистим всё при ручном выходе
         localStorage.removeItem("accessToken");
         localStorage.removeItem("userId");
         localStorage.removeItem("username");
         localStorage.removeItem("userData");
-
-        // 💡 флаг можно удалить, если не нужен на следующей загрузке
         localStorage.removeItem("logoutFlag");
 
         return null;
@@ -986,44 +983,38 @@ async function refreshAccessToken() {
             credentials: "include"
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            const data = await response.json();
             console.warn("❌ Ошибка обновления токена:", data.message);
 
             if (data.message.includes("Refresh-токен истек") || data.message.includes("Недействителен")) {
                 console.error("⏳ Refresh-токен окончательно истек. Требуется повторный вход!");
-                logout();
+                logout?.();
             }
 
             return null;
         }
 
-        const data = await response.json();
-        console.log("✅ Новый accessToken:", data.accessToken);
-
         if (data.accessToken) {
             localStorage.setItem("accessToken", data.accessToken);
-                // ✅ Вызовем checkAuthStatus сразу после обновления токена
-    if (typeof checkAuthStatus === "function") {
-        checkAuthStatus();
-    }
 
-} else {
-    console.error("❌ Сервер не отправил новый accessToken!");
-    return null;
-}
+            // ✅ Вызовем checkAuthStatus сразу после обновления токена
+            if (typeof checkAuthStatus === "function") {
+                checkAuthStatus();
+            }
+
+            return data.accessToken;
         } else {
             console.error("❌ Сервер не отправил новый accessToken!");
             return null;
         }
 
-        return data.accessToken;
     } catch (error) {
         console.error("❌ Ошибка при обновлении токена:", error);
         return null;
     }
 }
-
 
 
 function generateTokens(user, site) {
