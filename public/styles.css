@@ -14,13 +14,14 @@ body {
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 40px; /* место под значок 👁 */
+  padding-right: 36px;
   box-sizing: border-box;
+  font-size: 16px;
 }
 
 .toggle-password {
   position: absolute;
-  right: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
@@ -28,7 +29,6 @@ body {
   color: #555;
   user-select: none;
 }
-
 .form-container {
   width: 300px;
   padding: 20px;
