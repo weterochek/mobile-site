@@ -181,24 +181,78 @@ app.post("/api/order", authMiddleware, async (req, res) => {
     }
 });
 const passwordResetTokens = {};
-app.post("/request-password-reset", async (req, res) => {
+app.post("/update-email", protect, async (req, res) => {
+  const userId = req.user.id;
+  const { email } = req.body;
+
+  if (!email) return res.status(400).json({ message: "Email обязателен" });
+
+  try {
+    const user = await User.findById(userId);
+    user.email = email;
+    await user.save();
+    res.status(200).json({ message: "Email обновлён" });
+  } catch (err) {
+    res.status(500).json({ message: "Ошибка сервера" });
+  }
+});
+const transporter = nodemailer.createTransport({
+  service: "gmail", // или 'yandex', 'mail.ru', 'smtp.yourhost.com'
+  auth: {
+    user: "seryojabaulin25@gmail.com",     // ← ТВОЙ EMAIL
+    pass: "exwtwuflxjzonrpa"         // ← Пароль или App Password
+  }
+});
+app.post('/request-password-reset', async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "Пользователь с этой почтой не найден" });
 
-  const token = crypto.randomBytes(32).toString("hex");
-  passwordResetTokens[token] = user._id;
+  if (!user) {
+    return res.status(404).json({ message: "Пользователь с этой почтой не найден" });
+  }
 
-  const resetLink = `https://твой_сайт/reset.html?token=${token}`;
+  const token = crypto.randomBytes(32).toString('hex');
+  user.resetToken = token;
+  user.resetTokenExpiration = Date.now() + 15 * 60 * 1000;
+  await user.save();
 
-  // Настройка nodemailer
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "your.email@gmail.com",
-      pass: "пароль_приложения"
-    }
+  const resetLink = `https://mobile-site.onrender.com/public/reset.html?token=${token}`;
+
+await transporter.sendMail({
+  from: '"Makadamia Support" <your_email@gmail.com>', // от кого
+  to: user.email, // кому
+  subject: "Восстановление пароля",
+  html: `
+    <h3>Здравствуйте, ${user.username}!</h3>
+    <p>Вы запросили восстановление пароля на сайте Makadamia.</p>
+    <p>Перейдите по ссылке ниже, чтобы задать новый пароль:</p>
+    <a href="${resetLink}">${resetLink}</a>
+    <p><small>Ссылка активна в течение 15 минут.</small></p>
+  `
+});
+
+res.json({ message: "Письмо с ссылкой отправлено на почту" });
+});
+app.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const user = await User.findOne({
+    resetToken: token,
+    resetTokenExpiration: { $gt: Date.now() }
   });
+
+  if (!user) {
+    return res.status(400).json({ message: "Ссылка устарела или недействительна" });
+  }
+
+  user.password = await bcrypt.hash(password, 12);
+  user.resetToken = undefined;
+  user.resetTokenExpiration = undefined;
+  await user.save();
+
+  res.json({ message: "Пароль успешно обновлён" });
+});
 
   await transporter.sendMail({
     to: email,
