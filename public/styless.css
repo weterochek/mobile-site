@@ -15,6 +15,13 @@ body {
     display: flex;
     flex-direction: column;
 }
+.account-container input[type="email"] {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    min-width: 150px;
+}
     #toggleHistoryBtn {
   display: block;
   margin: 20px auto; /* Центрирование */
