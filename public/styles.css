@@ -9,22 +9,24 @@ body {
 }
 .password-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 40px;
+  padding-right: 40px; /* место под значок 👁 */
+  box-sizing: border-box;
 }
 
 .toggle-password {
   position: absolute;
-  right: 8px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
-  border: none;
-  font-size: 18px;
   cursor: pointer;
+  font-size: 18px;
+  color: #555;
+  user-select: none;
 }
 
 .form-container {
