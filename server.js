@@ -6,6 +6,8 @@ const cors = require("cors");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const Joi = require("joi");
 const app = express();
 const orderRoutes = require("./routes/orderRoutes");
@@ -178,8 +180,51 @@ app.post("/api/order", authMiddleware, async (req, res) => {
         res.status(500).json({ message: "Ошибка при создании заказа", error: error.message });
     }
 });
+const passwordResetTokens = {};
+app.post("/request-password-reset", async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ message: "Пользователь с этой почтой не найден" });
 
+  const token = crypto.randomBytes(32).toString("hex");
+  passwordResetTokens[token] = user._id;
 
+  const resetLink = `https://твой_сайт/reset.html?token=${token}`;
+
+  // Настройка nodemailer
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "your.email@gmail.com",
+      pass: "пароль_приложения"
+    }
+  });
+
+  await transporter.sendMail({
+    to: email,
+    subject: "Восстановление пароля",
+    html: `<p>Сброс пароля: <a href="${resetLink}">нажмите здесь</a></p>`
+  });
+
+  res.json({ message: "Ссылка для сброса отправлена на почту" });
+});
+
+app.post("/reset-password/:token", async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  const userId = passwordResetTokens[token];
+  if (!userId) return res.status(400).json({ message: "Неверный или просроченный токен" });
+
+  const user = await User.findById(userId);
+  if (!user) return res.status(404).json({ message: "Пользователь не найден" });
+
+  user.password = await bcrypt.hash(password, 12);
+  await user.save();
+
+  delete passwordResetTokens[token];
+
+  res.json({ message: "Пароль успешно обновлён" });
+});
 // Получение заказов пользователя
 app.get('/user-orders/:userId', authMiddleware, async (req, res) => {
     try {
