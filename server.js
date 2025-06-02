@@ -12,7 +12,6 @@ const Joi = require("joi");
 const app = express();
 const { protect } = require('./middleware/authMiddleware');
 const orderRoutes = require("./routes/orderRoutes");
-const authMiddleware = require('./middleware/authMiddleware');
 const Order = require('./models/Order');
 const User = require('./models/User');
 const Product = require("./models/Products");  
