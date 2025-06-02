@@ -45,8 +45,6 @@ const corsOptions = {
 };
 app.use(express.json());
 app.use(cors(corsOptions));
-// Используем CORS с настройками
-app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use('/api', orderRoutes);
 // Подключение к MongoDB
@@ -180,7 +178,6 @@ app.post("/api/order", protect, async (req, res) => {
         res.status(500).json({ message: "Ошибка при создании заказа", error: error.message });
     }
 });
-const passwordResetTokens = {};
 app.post("/update-email", protect, async (req, res) => {
   const userId = req.user.id;
   const { email } = req.body;
