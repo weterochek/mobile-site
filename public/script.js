@@ -1003,6 +1003,15 @@ async function refreshAccessToken() {
 
         if (data.accessToken) {
             localStorage.setItem("accessToken", data.accessToken);
+                // ✅ Вызовем checkAuthStatus сразу после обновления токена
+    if (typeof checkAuthStatus === "function") {
+        checkAuthStatus();
+    }
+
+} else {
+    console.error("❌ Сервер не отправил новый accessToken!");
+    return null;
+}
         } else {
             console.error("❌ Сервер не отправил новый accessToken!");
             return null;
@@ -1254,14 +1263,6 @@ function openCabinet() {
         window.location.href = "/account.html";
     }
 }
-
-// Инициализация авторизации и кнопок при загрузке страницы
-window.addEventListener("load", () => {
-  if (typeof checkAuthStatus === "function") {
-    console.log("✅ checkAuthStatus вызван через window.load");
-    checkAuthStatus();
-  }
-});
 
 // 2. Остальной код, который не зависит от наличия DOM-элементов "внизу"
 document.addEventListener("DOMContentLoaded", function () {
