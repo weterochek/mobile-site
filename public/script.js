@@ -37,9 +37,7 @@ let isSubmitting = false;
         console.warn("⛔ Refresh отменён: пользователь вышел вручную");
         return;
     }
-
     const token = localStorage.getItem("accessToken");
-
     if (!token || isTokenExpired(token)) {
         console.log("🔄 Пробуем обновить токен при старте...");
         await refreshAccessToken();
