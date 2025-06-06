@@ -189,7 +189,7 @@ app.post("/account/resend-verification", protect, async (req, res) => {
 
   await user.save();
 
-  const verifyUrl = `https://mobile-site.onrender.com/verify-email?token=${token}&email=${email}`;
+  const verifyUrl = `https://mobile-site.onrender.com/verify-email?token=${token}&email=${user.pendingEmail}`;
 
   await sendEmail(user.pendingEmail, "Подтверждение email", `
     <h2>Подтвердите новый email</h2>
