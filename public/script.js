@@ -1314,16 +1314,18 @@ async function loadProfileData() {
     document.getElementById("usernameDisplay").textContent = user.username || "";
     document.getElementById("nameInput").value = user.name || "";
     document.getElementById("cityInput").value = user.city || "";
-    document.getElementById("emailInput").value = user.email || "";
+    document.getElementById("emailInput").value = user.pendingEmail || user.email || "";
 
-    if (!user.emailVerified) {
-      document.getElementById("emailWarning").style.display = "block";
-      document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
-      document.getElementById("resendEmailButton").style.display = "inline-block";
-    } else {
-      document.getElementById("emailWarning").style.display = "none";
-      document.getElementById("resendEmailButton").style.display = "none";
-    }
+
+// Показываем предупреждение только если email не подтверждён и ожидается новый
+if (!user.emailVerified || user.pendingEmail) {
+  document.getElementById("emailWarning").style.display = "block";
+  document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
+  document.getElementById("resendEmailButton").style.display = "inline-block";
+} else {
+  document.getElementById("emailWarning").style.display = "none";
+  document.getElementById("resendEmailButton").style.display = "none";
+}
 
   } catch (err) {
     console.error("Ошибка загрузки профиля:", err);
