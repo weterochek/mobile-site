@@ -331,6 +331,29 @@
     </div>
 </footer>
     <script src="script.js"></script>
-     
+     <script>
+  function checkAuthStatus() {
+    const token = localStorage.getItem("accessToken");
+    const authBtn = document.getElementById("authButton");
+    const cabinetBtn = document.getElementById("cabinetButton");
+
+    if (token) {
+      if (authBtn) authBtn.style.display = "none";
+      if (cabinetBtn) {
+        cabinetBtn.style.display = "inline-block";
+        cabinetBtn.href = "/account.html";
+      }
+    } else {
+      if (cabinetBtn) cabinetBtn.style.display = "none";
+      if (authBtn) {
+        authBtn.style.display = "inline-block";
+        authBtn.href = "/login.html"; // или куда ведёт вход
+      }
+    }
+  }
+
+  // вызов функции сразу
+  checkAuthStatus();
+</script>
 </body>
 </html>
