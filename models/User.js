@@ -14,9 +14,6 @@ emailVerificationToken: String,
 emailVerificationExpires: Date,
 emailVerificationLastSent: Date,
 emailVerified: { type: Boolean, default: false },
-
-resetToken: String,
-resetTokenExpiration: Date,
 });
 
 const User = mongoose.model('User', userSchema);
