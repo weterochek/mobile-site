@@ -1293,8 +1293,6 @@ function goToCheckoutPage() {
     saveCart();
     window.location.href = "checkout.html";
 }
-document.addEventListener("DOMContentLoaded", () => {
-  loadProfileData();
 async function loadProfileData() {
   try {
     const token = localStorage.getItem("accessToken");
@@ -1333,42 +1331,46 @@ async function loadProfileData() {
   }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+  loadProfileData();
+
   document.getElementById("saveEmail")?.addEventListener("click", async () => {
-  const email = document.getElementById("emailInput").value;
-  const token = localStorage.getItem("accessToken");
+    const email = document.getElementById("emailInput").value;
+    const token = localStorage.getItem("accessToken");
 
-  try {
-    const res = await fetch("/account/email-change", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ email })
-    });
+    try {
+      const res = await fetch("/account/email-change", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ email })
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (!res.ok) {
-      showStatus(result.message || "Ошибка смены email", "error");
-      return;
-    }
+      if (!res.ok) {
+        showStatus(result.message || "Ошибка смены email", "error");
+        return;
+      }
+
       const saveBtn = document.getElementById("saveEmail");
-saveBtn.disabled = true;
-setTimeout(() => {
-  saveBtn.disabled = false;
-}, 3000);
+      saveBtn.disabled = true;
+      setTimeout(() => {
+        saveBtn.disabled = false;
+      }, 3000);
 
-    showStatus("📨 Письмо с подтверждением отправлено на новую почту!", "success");
-  } catch (error) {
-    console.error("Ошибка смены email:", error);
-    showStatus("❌ Сбой при смене email", "error");
-  }
+      showStatus("📨 Письмо с подтверждением отправлено на новую почту!", "success");
+    } catch (error) {
+      console.error("Ошибка смены email:", error);
+      showStatus("❌ Сбой при смене email", "error");
+    }
 
-  document.getElementById("emailInput").disabled = true;
-  document.getElementById("saveEmail").style.display = "none";
+    document.getElementById("emailInput").disabled = true;
+    document.getElementById("saveEmail").style.display = "none";
+  });
 });
-
 function toggleContent(id) {
     const content = document.getElementById(id);
     content.classList.toggle('active');
@@ -1899,13 +1901,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function highlightActiveIcon() {
-  const path = window.location.pathname.toLowerCase(); // важно!
-  console.log("PATH:", path);
+  const path = window.location.pathname.toLowerCase();
 
   const isHome =
     path.includes("index.html") ||
-    path.includes("national%20cuisine") || // пробелы в URL
-    path.includes("national cuisine") ||   // для локальных путей
+    path.includes("national%20cuisine") ||
+    path.includes("national cuisine") ||
     path === "/" ||
     path === "";
 
@@ -1914,7 +1915,6 @@ function highlightActiveIcon() {
   const authIcon = document.getElementById("authIcon");
   const cabinetIcon = document.getElementById("cabinetIcon");
 
-  // Сброс классов (чтобы только одна была активной, кроме корзины)
   [homeIcon, reviewsIcon, authIcon, cabinetIcon].forEach(icon => {
     icon?.classList.remove("active-icon");
   });
