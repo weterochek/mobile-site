@@ -1333,33 +1333,42 @@ async function loadProfileData() {
   }
 }
 
-  document.getElementById("editEmail")?.addEventListener("click", () => {
-    document.getElementById("emailInput").disabled = false;
-    document.getElementById("saveEmail").style.display = "inline-block";
-  });
-
   document.getElementById("saveEmail")?.addEventListener("click", async () => {
-    const email = document.getElementById("emailInput").value;
-    await updateAccountField({ email });
-    document.getElementById("emailInput").disabled = true;
-    document.getElementById("saveEmail").style.display = "none";
-  });
-
-async function updateAccount(newUsername, newPassword) {
+  const email = document.getElementById("emailInput").value;
   const token = localStorage.getItem("accessToken");
 
-  const response = await fetch("https://mobile-site.onrender.com/account", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
-    },
-    body: JSON.stringify({ username: newUsername, password: newPassword }),
-  });
+  try {
+    const res = await fetch("/account/email-change", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
 
-  const data = await response.json();
-  console.log("Ответ от сервера:", data);
-}
+    const result = await res.json();
+
+    if (!res.ok) {
+      showStatus(result.message || "Ошибка смены email", "error");
+      return;
+    }
+      const saveBtn = document.getElementById("saveEmail");
+saveBtn.disabled = true;
+setTimeout(() => {
+  saveBtn.disabled = false;
+}, 3000);
+
+    showStatus("📨 Письмо с подтверждением отправлено на новую почту!", "success");
+  } catch (error) {
+    console.error("Ошибка смены email:", error);
+    showStatus("❌ Сбой при смене email", "error");
+  }
+
+  document.getElementById("emailInput").disabled = true;
+  document.getElementById("saveEmail").style.display = "none";
+});
+
 function toggleContent(id) {
     const content = document.getElementById(id);
     content.classList.toggle('active');
