@@ -1335,42 +1335,42 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProfileData();
 
   document.getElementById("saveEmail")?.addEventListener("click", async () => {
-    const email = document.getElementById("emailInput").value;
-    const token = localStorage.getItem("accessToken");
+  const email = document.getElementById("emailInput").value;
+  const token = localStorage.getItem("accessToken");
 
-    try {
-      const res = await fetch("/account/email-change", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ email })
-      });
+  try {
+    const res = await fetch("/account/email-change", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ email })
+    });
 
-      const result = await res.json();
+    const result = await res.json();
 
-      if (!res.ok) {
-        showStatus(result.message || "Ошибка смены email", "error");
-        return;
-      }
-
-      const saveBtn = document.getElementById("saveEmail");
-      saveBtn.disabled = true;
-      setTimeout(() => {
-        saveBtn.disabled = false;
-      }, 3000);
-
-      showStatus("📨 Письмо с подтверждением отправлено на новую почту!", "success");
-    } catch (error) {
-      console.error("Ошибка смены email:", error);
-      showStatus("❌ Сбой при смене email", "error");
+    if (!res.ok) {
+      showStatus(result.message || "Ошибка смены email", "error");
+      return;
     }
 
-    document.getElementById("emailInput").disabled = true;
-    document.getElementById("saveEmail").style.display = "none";
-  });
+    const saveBtn = document.getElementById("saveEmail");
+    saveBtn.disabled = true;
+    setTimeout(() => {
+      saveBtn.disabled = false;
+    }, 60000); // блокируем на минуту
+
+    showStatus("📨 Письмо с подтверждением отправлено на новую почту!", "success");
+  } catch (error) {
+    console.error("Ошибка смены email:", error);
+    showStatus("❌ Сбой при смене email", "error");
+  }
+
+  document.getElementById("emailInput").disabled = true;
+  document.getElementById("saveEmail").style.display = "none";
 });
+
 function toggleContent(id) {
     const content = document.getElementById(id);
     content.classList.toggle('active');
