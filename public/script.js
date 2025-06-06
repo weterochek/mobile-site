@@ -1296,37 +1296,42 @@ function goToCheckoutPage() {
 document.addEventListener("DOMContentLoaded", () => {
   loadProfileData();
 async function loadProfileData() {
-  const token = localStorage.getItem("accessToken");
-  if (!token) return;
-
   try {
+    const token = localStorage.getItem("accessToken");
     const res = await fetch("/account", {
-      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    if (!res.ok) throw new Error("Ошибка HTTP: " + res.status);
-    const user = await res.json();
+    const result = await res.json();
 
+    if (!res.ok) {
+      showStatus(result.message || "Ошибка загрузки профиля", "error");
+      return;
+    }
+
+    const user = result.user;
+
+    document.getElementById("username").textContent = user.username || "";
     document.getElementById("nameInput").value = user.name || "";
     document.getElementById("cityInput").value = user.city || "";
     document.getElementById("emailInput").value = user.email || "";
-    document.getElementById("usernameDisplay").textContent = user.username || "—";
 
-  } catch (error) {
-    console.error("Ошибка загрузки профиля:", error);
+    if (!user.emailVerified) {
+      document.getElementById("emailWarning").style.display = "block";
+      document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
+      document.getElementById("resendEmailButton").style.display = "inline-block";
+    } else {
+      document.getElementById("emailWarning").style.display = "none";
+      document.getElementById("resendEmailButton").style.display = "none";
+    }
+
+  } catch (err) {
+    console.error("Ошибка загрузки профиля:", err);
+    showStatus("❌ Не удалось загрузить данные", "error");
   }
-if (!user.emailVerified) {
-  document.getElementById("emailWarning").style.display = "block";
-  document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
-  document.getElementById("resendEmailButton").style.display = "inline-block";
-} else {
-  document.getElementById("emailWarning").style.display = "none";
-  document.getElementById("resendEmailButton").style.display = "none";
 }
-}})
 
   document.getElementById("editEmail")?.addEventListener("click", () => {
     document.getElementById("emailInput").disabled = false;
