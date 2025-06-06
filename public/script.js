@@ -1102,29 +1102,29 @@ function editField(field) {
 
 
 async function updateAccountField(data) {
-    const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("accessToken");
 
-    try {
-        const response = await fetch("https://mobile-site.onrender.com/account", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}` // Без этого сервер отклонит запрос
-            },
-            body: JSON.stringify(data),
-        });
+  try {
+    const res = await fetch("/account", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(data)
+    });
 
-        if (!response.ok) {
-            throw new Error("Ошибка при обновлении данных");
-        }
-
-        const result = await response.json();
-        console.log("✅ Данные успешно обновлены:", result);
-    } catch (error) {
-        console.error("❌ Ошибка обновления данных:", error);
+    const result = await res.json();
+    if (!res.ok) {
+      showStatus(result.message || "❌ Ошибка обновления данных", "error");
+      return;
     }
-}
 
+    showStatus("✅ Данные успешно обновлены", "success");
+  } catch (err) {
+    showStatus("❌ Сбой запроса", "error");
+  }
+}
 
 document.getElementById('editName').addEventListener('click', () => {
     document.getElementById('nameInput').disabled = false;
@@ -1262,6 +1262,20 @@ document.addEventListener("DOMContentLoaded", function () {
         logoutButton.style.display = 'none';
     }
 });
+
+function showStatus(message, type = "info") {
+  const el = document.getElementById("statusMessage");
+  if (!el) return;
+
+  el.textContent = message;
+  el.style.display = "block";
+  el.style.color = type === "error" ? "red" : type === "success" ? "green" : "#333";
+
+  clearTimeout(el._timeout);
+  el._timeout = setTimeout(() => {
+    el.style.display = "none";
+  }, 6000);
+}
 
 // Расчет баланса на основе корзины
 function calculateBalance() {
