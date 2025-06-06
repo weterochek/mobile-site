@@ -1311,7 +1311,7 @@ async function loadProfileData() {
 
     const user = result.user;
 
-    document.getElementById("username").textContent = user.username || "";
+    document.getElementById("usernameDisplay").textContent = user.username || "";
     document.getElementById("nameInput").value = user.name || "";
     document.getElementById("cityInput").value = user.city || "";
     document.getElementById("emailInput").value = user.email || "";
@@ -1333,6 +1333,17 @@ async function loadProfileData() {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadProfileData();
+    document.getElementById("editEmail")?.addEventListener("click", () => {
+  const emailInput = document.getElementById("emailInput");
+  const saveBtn = document.getElementById("saveEmail");
+
+  if (emailInput && saveBtn) {
+    emailInput.disabled = false;
+    saveBtn.style.display = "inline-block";
+    emailInput.focus();
+  }
+});
+
 
   document.getElementById("saveEmail")?.addEventListener("click", async () => {
   const email = document.getElementById("emailInput").value;
