@@ -1370,7 +1370,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("emailInput").disabled = true;
   document.getElementById("saveEmail").style.display = "none";
 });
-})
+});
 
 function toggleContent(id) {
     const content = document.getElementById(id);
