@@ -1103,31 +1103,6 @@ setInterval(async () => {
   }
 }, 30000);
 
-function editField(field) {
-    const input = document.getElementById(field + "Input");
-    console.log("Редактируем поле:", field, "Значение:", input.value);
-
-    if (input.disabled) {
-        input.disabled = false;
-        input.focus();
-    } else {
-        fetch("https://mobile-site.onrender.com/account", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-            },
-            body: JSON.stringify({ [field]: input.value }) // Отправляем данные на сервер
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Ответ сервера:", data);
-            input.disabled = true;
-        })
-        .catch(error => console.log("Ошибка обновления профиля:", error));
-    }
-}
-
 
 async function updateAccountField(data) {
   const token = localStorage.getItem("accessToken");
@@ -1343,7 +1318,7 @@ async function loadProfileData() {
   } catch (error) {
     console.error("Ошибка загрузки профиля:", error);
   }
-    if (!user.emailVerified) {
+if (!user.emailVerified) {
   document.getElementById("emailWarning").style.display = "block";
   document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
   document.getElementById("resendEmailButton").style.display = "inline-block";
