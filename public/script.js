@@ -1152,22 +1152,45 @@ document.getElementById('saveCity').addEventListener('click', async () => {
     document.getElementById('saveCity').style.display = 'none';
 });
 // Проверка состояния авторизации
-function checkAuthStatus() {
-  const token = localStorage.getItem("accessToken");
-  const username = localStorage.getItem("username");
+async function checkAuthStatus() {
+    const token = localStorage.getItem("accessToken");
+    const username = localStorage.getItem("username");
 
-  const authButton = document.getElementById("authButton");
-  const cabinetButton = document.getElementById("cabinetButton");
+    const authButton = document.getElementById("authButton");
+    const cabinetButton = document.getElementById("cabinetButton");
 
-  if (!authButton || !cabinetButton) return;
+    if (!authButton || !cabinetButton) {
+        console.warn("❌ Не найдены кнопки 'Вход' или 'Личный кабинет'!");
+        return;
+    }
 
-  if (token && username && !isTokenExpired(token)) {
-    authButton.style.display = "none";
-    cabinetButton.style.display = "inline-block";
-  } else {
-    cabinetButton.style.display = "none";
-    authButton.style.display = "inline-block";
-  }
+    if (token && username && !isTokenExpired(token)) {
+        console.log("✅ Пользователь авторизован");
+
+        authButton.style.display = "none";
+        authButton.classList.remove("nav-item-visible");
+
+        cabinetButton.style.display = "flex";
+        cabinetButton.classList.add("nav-item-visible");
+
+        cabinetButton.onclick = () => {
+            window.location.href = "/account.html";
+        };
+    } else {
+        console.log("⚠️ Пользователь не авторизован");
+
+        cabinetButton.style.display = "none";
+        cabinetButton.classList.remove("nav-item-visible");
+
+        authButton.style.display = "flex";
+        authButton.classList.add("nav-item-visible");
+
+        authButton.onclick = () => {
+            window.location.href = "/login.html";
+        };
+
+        sessionStorage.removeItem("authChecked");
+    }
 }
 const token = localStorage.getItem("accessToken");
 const username = localStorage.getItem("username");
