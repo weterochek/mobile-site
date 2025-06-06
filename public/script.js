@@ -1334,7 +1334,16 @@ if (!user.emailVerified || user.pendingEmail) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadProfileData();
+  await loadProfileData();
+
+// Автоматическая замена кнопок авторизации на "Личный кабинет"
+const authButton = document.getElementById("authButton");
+const cabinetButton = document.getElementById("cabinetButton");
+
+if (authButton && cabinetButton) {
+  authButton.style.display = "none";
+  cabinetButton.style.display = "inline-block";
+}
     document.getElementById("editEmail")?.addEventListener("click", () => {
   const emailInput = document.getElementById("emailInput");
   const saveBtn = document.getElementById("saveEmail");
