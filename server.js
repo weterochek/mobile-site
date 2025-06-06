@@ -117,6 +117,88 @@ app.post('/cart/add', protect, async (req, res) => {
     res.status(500).json({ message: "Ошибка сервера" });
   }
 });
+app.get("/verify-email", async (req, res) => {
+  const { token, email } = req.query;
+
+  const user = await User.findOne({
+    emailVerificationToken: token,
+    emailVerificationExpires: { $gt: Date.now() },
+    $or: [{ email }, { pendingEmail: email }]
+  });
+
+  if (!user) return res.status(400).send("❌ Ссылка недействительна или устарела.");
+
+  user.emailVerified = true;
+
+  if (user.pendingEmail === email) {
+    user.email = user.pendingEmail;
+    user.pendingEmail = undefined;
+  }
+
+  user.emailVerificationToken = undefined;
+  user.emailVerificationExpires = undefined;
+  await user.save();
+
+  res.send("✅ Email подтверждён. Можете закрыть эту страницу.");
+});
+
+app.post("/account/email-change", protect, async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findById(req.user.id);
+  if (!user) return res.status(404).json({ message: "Пользователь не найден" });
+
+  const now = Date.now();
+  if (user.emailVerificationLastSent && now - user.emailVerificationLastSent < 60000) {
+    return res.status(429).json({ message: "⏱ Повторная отправка через минуту" });
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+
+  user.pendingEmail = email;
+  user.emailVerificationToken = token;
+  user.emailVerificationExpires = now + 24 * 60 * 60 * 1000;
+  user.emailVerificationLastSent = now;
+
+  await user.save();
+
+  const verifyUrl = `https://your-site.com/verify-email?token=${token}&email=${email}`;
+
+  await sendEmail(email, "Подтверждение email", `
+    <h2>Подтвердите новый email</h2>
+    <p><a href="${verifyUrl}">Нажмите здесь</a> для подтверждения</p>
+  `);
+
+  res.json({ email: user.email });
+});
+
+app.post("/account/resend-verification", protect, async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user || !user.pendingEmail) {
+    return res.status(400).json({ message: "Нет нового email для подтверждения" });
+  }
+
+  const now = Date.now();
+  if (user.emailVerificationLastSent && now - user.emailVerificationLastSent < 60000) {
+    return res.status(429).json({ message: "⏱ Повторная отправка через минуту" });
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+  user.emailVerificationToken = token;
+  user.emailVerificationExpires = now + 24 * 60 * 60 * 1000;
+  user.emailVerificationLastSent = now;
+
+  await user.save();
+
+  const verifyUrl = `https://your-site.com/verify-email?token=${token}&email=${user.pendingEmail}`;
+
+  await sendEmail(user.pendingEmail, "Подтверждение email", `
+    <h2>Подтвердите новый email</h2>
+    <p><a href="${verifyUrl}">Нажмите здесь</a> для подтверждения</p>
+  `);
+
+  res.json({ message: "📨 Письмо отправлено повторно" });
+});
+
 
 // Указание папки со статическими файлами
 app.use(express.static(path.join(__dirname, "public")));
