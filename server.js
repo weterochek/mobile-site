@@ -161,7 +161,7 @@ app.post("/account/email-change", protect, async (req, res) => {
 
   await user.save();
 
-  const verifyUrl = `https://your-site.com/verify-email?token=${token}&email=${email}`;
+  const verifyUrl = `https://mobile-site.onrender.com/verify-email?token=${token}&email=${email}`;
 
   await sendEmail(email, "Подтверждение email", `
     <h2>Подтвердите новый email</h2>
@@ -189,7 +189,7 @@ app.post("/account/resend-verification", protect, async (req, res) => {
 
   await user.save();
 
-  const verifyUrl = `https://your-site.com/verify-email?token=${token}&email=${user.pendingEmail}`;
+  const verifyUrl = `https://mobile-site.onrender.com/verify-email?token=${token}&email=${email}`;
 
   await sendEmail(user.pendingEmail, "Подтверждение email", `
     <h2>Подтвердите новый email</h2>
@@ -259,28 +259,6 @@ app.post("/api/order", protect, async (req, res) => {
         console.error("Ошибка при создании заказа:", error);
         res.status(500).json({ message: "Ошибка при создании заказа", error: error.message });
     }
-});
-app.post("/update-email", protect, async (req, res) => {
-  const userId = req.user.id;
-  const { email } = req.body;
-
-  if (!email) return res.status(400).json({ message: "Email обязателен" });
-
-  try {
-    const user = await User.findById(userId);
-    user.email = email;
-    await user.save();
-    res.status(200).json({ message: "Email обновлён" });
-  } catch (err) {
-    res.status(500).json({ message: "Ошибка сервера" });
-  }
-});
-const transporter = nodemailer.createTransport({
-  service: "gmail", // или 'yandex', 'mail.ru', 'smtp.yourhost.com'
-  auth: {
-    user: "seryojabaulin25@gmail.com",     // ← ТВОЙ EMAIL
-    pass: "exwtwuflxjzonrpa"         // ← Пароль или App Password
-  }
 });
 app.post('/request-password-reset', async (req, res) => {
   const { email } = req.body;
