@@ -1229,7 +1229,9 @@ async function logout() {
     }
 }
 
-
+document.addEventListener("DOMContentLoaded", () => {
+  checkAuthStatus();
+});
 function handleAuthClick() {
     const token = localStorage.getItem('accessToken');
     if (token) {
