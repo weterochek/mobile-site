@@ -71,7 +71,6 @@ function isTokenExpired(token) {
     }
 }
 
-
 // Перенаправление HTTP на HTTPS
 app.use((req, res, next) => {
     if (process.env.NODE_ENV === "production") {
@@ -275,18 +274,13 @@ app.post('/request-password-reset', async (req, res) => {
 
   const resetLink = `https://mobile-site.onrender.com/reset.html?token=${token}`;
 
-await transporter.sendMail({
-  from: '"Makadamia Support" <your_email@gmail.com>', // от кого
-  to: user.email, // кому
-  subject: "Восстановление пароля",
-  html: `
-    <h3>Здравствуйте, ${user.username}!</h3>
-    <p>Вы запросили восстановление пароля на сайте Makadamia.</p>
-    <p>Перейдите по ссылке ниже, чтобы задать новый пароль:</p>
-    <a href="${resetLink}">${resetLink}</a>
-    <p><small>Ссылка активна в течение 15 минут.</small></p>
-  `
-});
+await sendEmail(user.email, "Восстановление пароля", `
+  <h3>Здравствуйте, ${user.username}!</h3>
+  <p>Вы запросили восстановление пароля на сайте Makadamia.</p>
+  <p>Перейдите по ссылке ниже, чтобы задать новый пароль:</p>
+  <a href="${resetLink}">${resetLink}</a>
+  <p><small>Ссылка активна в течение 15 минут.</small></p>
+`);
 
 res.json({ message: "Письмо с ссылкой отправлено на почту" });
 });
