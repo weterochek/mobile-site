@@ -16,8 +16,8 @@ const Order = require('./models/Order');
 const User = require('./models/User');
 const Product = require("./models/Products");  
 const Review = require('./models/Review');
-
-
+const { v4: uuidv4 } = require("uuid");
+const sendEmail = require("./utils/sendEmail");
 
 // Настройка CORS
 const allowedOrigins = [
