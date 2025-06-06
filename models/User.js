@@ -8,7 +8,15 @@ const userSchema = new mongoose.Schema({
   resetTokenExpiration: Date,
   name: { type: String, default: "" },
   city: { type: String, default: "" },
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }]  // Связь с заказами
+  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],  // Связь с заказами
+  pendingEmail: String,
+emailVerificationToken: String,
+emailVerificationExpires: Date,
+emailVerificationLastSent: Date,
+emailVerified: { type: Boolean, default: false },
+
+resetToken: String,
+resetTokenExpiration: Date,
 });
 
 const User = mongoose.model('User', userSchema);
