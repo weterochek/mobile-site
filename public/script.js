@@ -1333,7 +1333,7 @@ if (!user.emailVerified || user.pendingEmail) {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   await loadProfileData();
 
 // Автоматическая замена кнопок авторизации на "Личный кабинет"
