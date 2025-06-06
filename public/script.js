@@ -191,6 +191,7 @@ if (path.includes("index.html") || path === "/" || path.includes("national cuisi
 }
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("🔄 Дополнительная проверка токена после загрузки DOM...");
+    
 
     if (localStorage.getItem("logoutFlag") === "true") {
         console.warn("⛔ DOMContentLoaded: пользователь вышел — токен не обновляем");
@@ -203,6 +204,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         await refreshAccessToken();
     }
 });
+const resendEmailButton = document.getElementById("resendEmailButton");
+if (resendEmailButton) {
+  resendEmailButton.addEventListener("click", async () => {
+    const token = localStorage.getItem("accessToken");
+    try {
+      const res = await fetch("/account/resend-verification", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        showStatus(result.message || "Ошибка повторной отправки", "error");
+      } else {
+        showStatus("📨 Письмо отправлено повторно", "success");
+        resendEmailButton.disabled = true;
+        setTimeout(() => {
+          resendEmailButton.disabled = false;
+        }, 60000);
+      }
+    } catch (err) {
+      showStatus("❌ Сбой отправки", "error");
+    }
+  });
+}
 
 async function loadProductMap() {
     try {
@@ -1315,6 +1343,14 @@ async function loadProfileData() {
   } catch (error) {
     console.error("Ошибка загрузки профиля:", error);
   }
+    if (!user.emailVerified) {
+  document.getElementById("emailWarning").style.display = "block";
+  document.getElementById("emailWarning").textContent = "⚠️ Email не подтверждён!";
+  document.getElementById("resendEmailButton").style.display = "inline-block";
+} else {
+  document.getElementById("emailWarning").style.display = "none";
+  document.getElementById("resendEmailButton").style.display = "none";
+}
 }})
 
   document.getElementById("editEmail")?.addEventListener("click", () => {
