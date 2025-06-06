@@ -1155,26 +1155,22 @@ document.getElementById('saveCity').addEventListener('click', async () => {
 });
 // Проверка состояния авторизации
 function checkAuthStatus() {
-    // 🛑 1. Пропустить авторизацию, если пользователь явно вышел
-    if (localStorage.getItem("logoutFlag") === "true") {
-        console.warn("🚫 Обнаружен logoutFlag. Пропускаем автоавторизацию.");
-        return;
-    }
+  const token = localStorage.getItem("accessToken");
+  const username = localStorage.getItem("username");
 
-    // 📦 2. Получаем данные из хранилища
-    const token = localStorage.getItem("accessToken");
-    const username = localStorage.getItem("username");
+  const authButton = document.getElementById("authButton");
+  const cabinetButton = document.getElementById("cabinetButton");
 
-    // 🧩 3. Ищем кнопки в DOM
-    const authButton = document.getElementById("authButton");
-    const cabinetButton = document.getElementById("cabinetButton");
+  if (!authButton || !cabinetButton) return;
 
-    // ✅ Проверка, есть ли кнопки на странице
-    if (!authButton || !cabinetButton) {
-        console.warn("❌ Не найдены кнопки 'Вход' или 'Личный кабинет'!");
-        return;
-    }
-
+  if (token && username && !isTokenExpired(token)) {
+    authButton.style.display = "none";
+    cabinetButton.style.display = "inline-block";
+  } else {
+    cabinetButton.style.display = "none";
+    authButton.style.display = "inline-block";
+  }
+}
     // 🧠 4. Проверяем токен и имя пользователя
     if (token && username && !isTokenExpired(token)) {
         console.log("✅ Пользователь авторизован");
