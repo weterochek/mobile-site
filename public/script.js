@@ -1169,7 +1169,10 @@ function checkAuthStatus() {
     authButton.style.display = "inline-block";
   }
 }
+const token = localStorage.getItem("accessToken");
+const username = localStorage.getItem("username");
     // 🧠 4. Проверяем токен и имя пользователя
+
     if (token && username && !isTokenExpired(token)) {
         console.log("✅ Пользователь авторизован");
 
