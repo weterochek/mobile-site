@@ -520,13 +520,20 @@ app.get('/account', protect, async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "Пользователь не найден" });
         }
-              // 🚀 Отключаем кеширование
+
         res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         res.setHeader("Pragma", "no-cache");
         res.setHeader("Expires", "0");
 
-        res.json({ username: user.username, name: user.name, city: user.city });
-    } catch (error) {  // ✅ Добавляем обработку ошибки
+        res.json({ user: {
+            username: user.username,
+            name: user.name,
+            city: user.city,
+            email: user.email,
+            emailVerified: user.emailVerified,
+            pendingEmail: user.pendingEmail
+        }});
+    } catch (error) {
         console.error("Ошибка при загрузке аккаунта:", error);
         res.status(500).json({ message: "Ошибка сервера", error: error.message });
     }
