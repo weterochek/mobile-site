@@ -49,7 +49,7 @@ app.use(cookieParser());
 app.use('/api', orderRoutes);
 // Подключение к MongoDB
 const JWT_SECRET = process.env.JWT_SECRET || "ai3ohPh3Aiy9eeThoh8caaM9voh5Aezaenai0Fae2Pahsh2Iexu7Qu/";
-const mongoURI = process.env.MONGO_URI || "mongodb://11_ifelephant:ee590bdf579c7404d12fd8cf0990314242d56e62@axs-h.h.filess.io:27018/11_ifelephant";
+const mongoURI = process.env.MONGO_URI || "mongodb://11_whatslide:0a53b4a821bb53479e0982d4f721befc9b406376@odl9-t.h.filess.io:61004/11_whatslide";
 const REFRESH_SECRET = process.env.REFRESH_SECRET || "J8$GzP1d&KxT^m4YvNcR";
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
