@@ -26,7 +26,7 @@ let isSubmitting = false;
     } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia.onrender.com")) {
         console.log("🟢 Должен быть редирект на десктопную версию...");
         sessionStorage.setItem("redirected", "true");
-        window.location.href = "https://makadamia-e0hb.onrender.com";
+        window.location.href = "https://makadamia.onrender.com";
     } else {
         console.log("🔴 Условие редиректа не выполнено.");
     }
