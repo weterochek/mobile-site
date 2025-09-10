@@ -21,7 +21,7 @@ const sendEmail = require("./utils/sendEmail");
 
 // Настройка CORS
 const allowedOrigins = [
-  'https://makadamia-e0hb.onrender.com/', // Первый сайт
+  'https://makadamia.onrender.com', // Первый сайт
   'https://mobile-site.onrender.com', // Второй сайт
   'http://localhost:3000' // Для локальной разработки
 ];
