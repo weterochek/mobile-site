@@ -23,7 +23,7 @@ let isSubmitting = false;
         console.log("🟢 Должен быть редирект на мобильную версию...");
         sessionStorage.setItem("redirected", "true");
         window.location.href = "https://mobile-site.onrender.com";
-    } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia-e0hb.onrender.com")) {
+    } else if (!userAgent.includes("mobile") && !currentURL.includes("makadamia.onrender.com")) {
         console.log("🟢 Должен быть редирект на десктопную версию...");
         sessionStorage.setItem("redirected", "true");
         window.location.href = "https://makadamia-e0hb.onrender.com";
